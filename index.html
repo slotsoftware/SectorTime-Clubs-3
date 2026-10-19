@@ -1,0 +1,2921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#04070f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>KRONOS SLOT PRO OS v8.3 // Edición Senior Alta Visibilidad (1, 2, 4, 6, 8 y 10 Carriles)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
+
+        :root {
+            --bg-dark: #03060c;
+            --card-bg: #0b1324;
+            --border-col: #334155;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-mono-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(7, 12, 24, 0.99) 100%);
+            border: 2px solid rgba(100, 116, 139, 0.55);
+            box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.85);
+        }
+
+        /* Pestañas grandes y muy visibles para mayores de 60 años */
+        .nav-pill-active {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+            color: #03060c !important;
+            border-color: #fde047 !important;
+            font-weight: 900 !important;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Botones de carril activos en grande */
+        .lane-btn-active {
+            background: #38bdf8 !important;
+            color: #03060c !important;
+            border-color: #ffffff !important;
+            font-weight: 900 !important;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.65);
+        }
+
+        /* Colores Oficiales FIA F1 / MotoGP Timing de Alto Contraste */
+        .sector-purple {
+            background: rgba(168, 85, 247, 0.35) !important;
+            border-color: #d8b4fe !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.55);
+        }
+        .sector-green {
+            background: rgba(16, 185, 129, 0.32) !important;
+            border-color: #6ee7b7 !important;
+            color: #ffffff !important;
+        }
+        .sector-yellow {
+            background: rgba(245, 158, 11, 0.25) !important;
+            border-color: #fcd34d !important;
+            color: #ffffff !important;
+        }
+
+        /* Semáforo Gantry F1 Más Grande */
+        .f1-light {
+            width: 42px;
+            height: 42px;
+            border-radius: 9999px;
+            background: #141418;
+            border: 3px solid #475569;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.85);
+            transition: all 0.08s ease;
+        }
+        .f1-light.red-on {
+            background: radial-gradient(circle at 35% 35%, #fca5a5 0%, #ef4444 45%, #991b1b 100%);
+            border-color: #ffffff;
+            box-shadow: 0 0 32px #ef4444, 0 0 14px #f87171;
+            transform: scale(1.08);
+        }
+        .f1-light.green-on {
+            background: radial-gradient(circle at 35% 35%, #a7f3d0 0%, #10b981 45%, #065f46 100%);
+            border-color: #ffffff;
+            box-shadow: 0 0 32px #10b981, 0 0 14px #34d399;
+            transform: scale(1.08);
+        }
+        .f1-light.amber-on {
+            background: radial-gradient(circle at 35% 35%, #fef08a 0%, #f59e0b 45%, #92400e 100%);
+            border-color: #ffffff;
+            box-shadow: 0 0 32px #f59e0b, 0 0 14px #fbbf24;
+            transform: scale(1.08);
+        }
+
+        @keyframes trackCallPulse {
+            0%, 100% { border-color: #f59e0b; box-shadow: 0 0 35px rgba(245, 158, 11, 0.55); }
+            50% { border-color: #ef4444; box-shadow: none; }
+        }
+        .track-call-active {
+            animation: trackCallPulse 0.7s infinite;
+        }
+
+        .pos-p1-gold {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 55%, #ca8a04 100%) !important;
+            color: #03060c !important;
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.9);
+        }
+        .pos-p2-silver {
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 60%, #94a3b8 100%) !important;
+            color: #03060c !important;
+            border: 2px solid #ffffff !important;
+        }
+        .pos-p3-bronze {
+            background: linear-gradient(135deg, #fed7aa 0%, #f97316 60%, #c2410c 100%) !important;
+            color: #03060c !important;
+            border: 2px solid #ffffff !important;
+        }
+        .pos-last-lantern {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%) !important;
+            color: #ffffff !important;
+            border: 2px solid #fecaca !important;
+        }
+
+        .sensor-test-lamp {
+            transition: all 0.1s ease;
+        }
+        .sensor-test-lamp.lamp-triggered {
+            background: #10b981 !important;
+            color: #03060c !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 0 28px #10b981;
+            transform: scale(1.05);
+        }
+
+        /* Transición suave de fusión de 1.8 segundos entre fusion.mp4 y la pantalla de inicio */
+        #fusionIntroMasterOverlay {
+            transition: opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1), filter 1.8s cubic-bezier(0.22, 1, 0.36, 1), transform 1.8s ease;
+        }
+        #fusionIntroMasterOverlay.fusion-dissolve-active {
+            opacity: 0 !important;
+            filter: blur(22px) brightness(1.35) !important;
+            transform: scale(1.04) !important;
+            pointer-events: none !important;
+        }
+
+        @keyframes rotateTabletAnim {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+        }
+        .rotate-device-icon {
+            animation: rotateTabletAnim 2.2s ease-in-out infinite;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2.5 bg-[#03060c]">
+
+    <!-- ========================================================================================
+         PANTALLA PREVIA OBLIGATORIA DE GIRO HORIZONTAL + VÍDEO A TODA PANTALLA (fusion.mp4 - 10s)
+         ======================================================================================== -->
+    <div id="fusionIntroMasterOverlay" class="fixed inset-0 z-[120] bg-[#03060c] flex flex-col items-center justify-center overflow-hidden select-none">
+        
+        <!-- Vídeo a toda pantalla (fusion.mp4) que se funde con la pantalla de inicio a los 10s -->
+        <video id="fusionIntroVideo" src="fusion.mp4" autoplay muted loop playsinline preload="auto"
+               class="absolute inset-0 w-full h-full object-cover z-0 bg-[#03060c]">
+        </video>
+
+        <!-- Capa de bloqueo cuando la pantalla está en VERTICAL (Obliga a girar en Tablets, PC o Mac) -->
+        <div id="portraitForceLockCard" class="hidden relative z-20 bg-slate-950/92 backdrop-blur-xl border-4 border-amber-400 rounded-3xl p-8 max-w-xl w-[92%] text-center shadow-[0_0_70px_rgba(245,158,11,0.5)] space-y-5">
+            <div class="w-24 h-24 mx-auto rounded-3xl bg-amber-400 text-slate-950 flex items-center justify-center text-5xl shadow-xl border-4 border-white rotate-device-icon">
+                <i class="fa-solid fa-tablet-screen-button"></i>
+            </div>
+            <div class="space-y-2">
+                <span class="px-4 py-1 bg-red-600 text-white font-mono font-black text-sm uppercase rounded-full border-2 border-white">
+                    ORIENTACIÓN HORIZONTAL OBLIGATORIA
+                </span>
+                <h1 class="text-2xl md:text-3xl font-black text-white uppercase leading-tight pt-2">
+                    POR FAVOR, GIRA LA PANTALLA EN HORIZONTAL
+                </h1>
+                <p class="text-base md:text-lg text-amber-300 font-bold leading-relaxed">
+                    Para ver los tiempos y controles en tamaño grande, coloca tu <b>Tablet</b> en posición apaisada (o ensancha la ventana en tu <b>PC / Mac</b>).
+                </p>
+            </div>
+            <div class="bg-slate-900 px-4 py-3 rounded-2xl border-2 border-slate-700 text-xs font-mono text-sky-300 font-black uppercase">
+                <i class="fa-solid fa-film mr-1.5"></i>Al ponerla en horizontal, el vídeo se fusionará con la pantalla de inicio en 10s
+            </div>
+        </div>
+
+        <!-- Barra inferior informativa durante los 10 segundos en HORIZONTAL a pantalla completa -->
+        <div id="landscapeFusionHud" class="relative z-10 mt-auto mb-6 px-6 py-3.5 rounded-2xl bg-slate-950/80 backdrop-blur-md border-2 border-amber-400/80 flex items-center gap-5 shadow-2xl font-mono">
+            <div class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="text-sm md:text-base font-black text-white uppercase tracking-wide">
+                    KRONOS SLOT PRO OS // INICIANDO SISTEMA EN <span id="fusionCountdownNum" class="text-amber-300 text-lg">10</span>s
+                </span>
+            </div>
+            <button onclick="triggerSmoothFusionWithHomeScreen()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs md:text-sm rounded-xl border-2 border-white cursor-pointer shadow">
+                ENTRAR AHORA <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================================================
+         OVERLAY DE TELEMETRÍA EN VIVO PARA EL MÓVIL DEL PILOTO (EDICIÓN SENIOR LETRA GRANDE)
+         ======================================================================================== -->
+    <div id="pilotMobileLiveAppOverlay" class="hidden fixed inset-0 z-[90] bg-[#03060c] flex flex-col justify-between p-4 overflow-y-auto font-mono">
+        <div class="max-w-xl w-full mx-auto space-y-3.5 pb-10">
+            <!-- Cabecera grande del piloto -->
+            <div class="glass-panel rounded-2xl p-4 border-2 border-emerald-400 flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center text-2xl font-black shadow-lg border-2 border-white" id="pilotAppLaneBadge">
+                        CH1
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="pilotAppLiveDot" class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="text-xs font-black text-emerald-300 uppercase" id="pilotAppSyncStatus">CONECTADO EN VIVO A PISTA</span>
+                        </div>
+                        <h1 class="text-2xl font-black text-white uppercase leading-tight mt-0.5" id="pilotAppDriverName">PILOTO</h1>
+                        <div class="text-sm text-amber-300 font-bold" id="pilotAppClubName">CLUB</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-amber-300 font-black" id="pilotAppClockMini">05:00.0</div>
+                    <div class="text-4xl font-black text-white bg-amber-500 text-slate-950 px-3 py-1 rounded-xl leading-none mt-1 inline-block border-2 border-white" id="pilotAppPosition">1&ordm;</div>
+                </div>
+            </div>
+
+            <!-- Estado de carrera y Botón grande de Voz de Hombre Español en el Móvil -->
+            <div class="grid grid-cols-12 gap-2.5 items-center">
+                <div id="pilotAppRaceStatusBanner" class="col-span-7 px-4 py-3.5 rounded-2xl border-2 border-slate-600 bg-slate-900 text-sm font-black text-white uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-flag text-amber-400"></i>
+                    <span id="pilotAppRaceStatusText">PISTA EN ESPERA</span>
+                </div>
+                <button id="btnPilotMobileVoice" onclick="togglePilotMobileAudio()" class="col-span-5 py-3.5 px-3 rounded-2xl font-black text-sm uppercase bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-volume-high text-lg"></i> <span id="pilotMobileVoiceLabel">VOZ HOMBRE ON</span>
+                </button>
+            </div>
+
+            <!-- Aviso de última locución de radio en el móvil -->
+            <div class="bg-slate-950 px-4 py-2.5 rounded-xl border-2 border-sky-500/50 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 truncate">
+                    <i class="fa-solid fa-user-tie text-sky-400 text-base"></i>
+                    <span class="text-xs text-sky-200 font-bold truncate" id="pilotAppLastRadioMsg">Pulsa "VOZ HOMBRE ON" para escuchar tus vueltas en el teléfono</span>
+                </div>
+            </div>
+
+            <!-- RADAR TÁCTICO EN GRANDE: COCHE DE DELANTE / MI COCHE / COCHE DE DETRÁS -->
+            <div class="space-y-3">
+                <!-- 1. COCHE POR DELANTE (A CAZAR) -->
+                <div class="bg-slate-950 p-3.5 rounded-2xl border-2 border-rose-500/80 border-l-[10px] border-l-rose-500 flex justify-between items-center">
+                    <div>
+                        <div class="text-xs text-rose-300 font-black uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-angles-up"></i> COCHE POR DELANTE (A CAZAR)
+                        </div>
+                        <div class="text-lg font-black text-white mt-0.5" id="pilotAppAheadName">ERES EL LÍDER (1&ordm;)</div>
+                        <div class="text-xs text-slate-300 font-bold mt-0.5" id="pilotAppAheadBest">Mejor: --.--s | Última: --.--s</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-black text-rose-400" id="pilotAppAheadGap">LÍDER P1</div>
+                        <div class="text-xs text-amber-300 font-bold mt-0.5" id="pilotAppAheadPaceDiff">Marcando ritmo</div>
+                    </div>
+                </div>
+
+                <!-- 2. MI COCHE EN PISTA (NÚMEROS GIGANTES) -->
+                <div class="glass-panel p-4 rounded-2xl border-2 border-sky-400 space-y-3">
+                    <div class="flex justify-between items-center border-b-2 border-slate-700 pb-2">
+                        <span class="text-sm text-sky-300 font-black uppercase"><i class="fa-solid fa-car-side mr-1.5"></i>TIEMPOS DE MI COCHE</span>
+                        <span class="text-sm text-emerald-300 font-black" id="pilotAppOptimalTag">V. Óptima: --.--s</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2.5 text-center">
+                        <div class="bg-slate-950 p-3 rounded-xl border-2 border-sky-500/60">
+                            <div class="text-xs text-sky-300 font-black">VUELTAS</div>
+                            <div class="text-4xl font-black text-white mt-1" id="pilotAppLaps">0</div>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-xl border-2 border-amber-500/60">
+                            <div class="text-xs text-amber-300 font-black">ÚLTIMA V.</div>
+                            <div class="text-2xl font-black text-white mt-1" id="pilotAppLastLap">0.00s</div>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-xl border-2 border-emerald-500/60">
+                            <div class="text-xs text-emerald-300 font-black">MEJOR V.</div>
+                            <div class="text-2xl font-black text-emerald-400 mt-1" id="pilotAppBestLap">--.--s</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-sm">
+                        <div class="bg-slate-950 py-2.5 px-2 rounded-xl border border-slate-700">
+                            <span class="text-sky-300 block text-xs font-black">SECTOR 1</span>
+                            <strong class="text-white text-base" id="pilotAppS1">--.--s</strong>
+                        </div>
+                        <div class="bg-slate-950 py-2.5 px-2 rounded-xl border border-slate-700">
+                            <span class="text-amber-300 block text-xs font-black">SECTOR 2</span>
+                            <strong class="text-white text-base" id="pilotAppS2">--.--s</strong>
+                        </div>
+                        <div class="bg-slate-950 py-2.5 px-2 rounded-xl border border-slate-700">
+                            <span class="text-emerald-300 block text-xs font-black">META / S3</span>
+                            <strong class="text-white text-base" id="pilotAppS3">--.--s</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. COCHE POR DETRÁS (PERSEGUIDOR) -->
+                <div class="bg-slate-950 p-3.5 rounded-2xl border-2 border-emerald-500/80 border-l-[10px] border-l-emerald-500 flex justify-between items-center">
+                    <div>
+                        <div class="text-xs text-emerald-300 font-black uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-angles-down"></i> COCHE POR DETRÁS (PERSEGUIDOR)
+                        </div>
+                        <div class="text-lg font-black text-white mt-0.5" id="pilotAppBehindName">SIN PERSEGUIDOR</div>
+                        <div class="text-xs text-slate-300 font-bold mt-0.5" id="pilotAppBehindBest">Mejor: --.--s | Última: --.--s</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-black text-emerald-400" id="pilotAppBehindGap">PISTA LIMPIA</div>
+                        <div class="text-xs text-sky-300 font-bold mt-0.5" id="pilotAppBehindPaceDiff">Colchón seguro</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTORIAL DE TODAS LAS VUELTAS DEL PILOTO -->
+            <div class="glass-panel rounded-2xl p-4 border-2 border-slate-700 space-y-2.5">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                    <span class="text-sm font-black text-sky-300 uppercase"><i class="fa-solid fa-list-ol mr-1.5"></i>HISTORIAL DE MIS VUELTAS</span>
+                    <span class="text-sm text-amber-300 font-black" id="pilotAppMeanLap">Media: --.--s</span>
+                </div>
+                <div id="pilotAppLapHistoryBox" class="max-h-48 overflow-y-auto space-y-1.5 pr-1 text-sm">
+                </div>
+            </div>
+
+            <!-- Botones inferiores grandes -->
+            <div class="grid grid-cols-2 gap-3 pt-1" id="pilotAppBottomButtons">
+                <button onclick="downloadPilotTakeHomePass()" class="py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm rounded-2xl shadow-lg border-2 border-emerald-300 cursor-pointer">
+                    <i class="fa-solid fa-download mr-1.5"></i>GUARDAR PASAPORTE EN MÓVIL
+                </button>
+                <button id="btnBackToClubScreen" onclick="closePilotMobileLiveOverlay()" class="py-4 bg-slate-800 hover:bg-slate-700 text-white font-black text-sm rounded-2xl border-2 border-slate-600 cursor-pointer">
+                    <i class="fa-solid fa-tv mr-1.5"></i>VOLVER A PANTALLA DEL CLUB
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================================
+         MODAL CONEXIÓN Y TEST DE SENSORES USB (CON BOTÓN GRANDE DE CERRAR PUERTO USB)
+         ======================================================================================== -->
+    <div id="usbAndroidHelperModal" class="hidden fixed inset-0 z-[58] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-5xl w-full p-5 border-2 border-sky-400 shadow-2xl space-y-4 font-mono max-h-[95vh] overflow-y-auto">
+            
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b-2 border-slate-700 pb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 rounded-2xl bg-sky-500/20 border-2 border-sky-400 flex items-center justify-center text-3xl text-sky-300">
+                        <i class="fa-brands fa-usb"></i>
+                    </div>
+                    <div>
+                        <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase rounded border border-emerald-400">
+                            CONTROL DE SENSORES Y CABLE USB ARDUINO
+                        </span>
+                        <h3 class="text-lg md:text-xl font-black text-white uppercase mt-1">
+                            CONECTAR O CERRAR PUERTO USB SERIE (SENSORES S1, S2 Y META)
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <select id="usbBaudRateSelect" onchange="changeSerialBaudRate(this.value)" class="bg-slate-900 text-amber-300 font-black text-sm px-3 py-2.5 rounded-xl border-2 border-amber-400 cursor-pointer">
+                        <option value="115200" selected>Velocidad: 115200 Baudios</option>
+                        <option value="9600">Velocidad: 9600 Baudios</option>
+                    </select>
+                    <button onclick="document.getElementById('usbAndroidHelperModal').classList.add('hidden')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-black border-2 border-slate-600 cursor-pointer">
+                        <i class="fa-solid fa-xmark mr-1"></i>VOLVER A CARRERA
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Botones Gigantes y Claros -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <button onclick="connectViaDesktopWebSerial()" class="py-4 px-3 bg-purple-600 hover:bg-purple-500 text-white font-black text-sm rounded-2xl shadow-lg border-2 border-purple-300 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plug text-lg"></i> 1. CONECTAR USB (PC)
+                </button>
+                <button onclick="connectViaAndroidWebUSB()" class="py-4 px-3 bg-sky-600 hover:bg-sky-500 text-white font-black text-sm rounded-2xl shadow-lg border-2 border-sky-300 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-usb text-lg"></i> 2. CONECTAR TABLET
+                </button>
+                <button onclick="disconnectUsbSerialPort()" class="py-4 px-3 bg-red-600 hover:bg-red-500 text-white font-black text-sm rounded-2xl shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-power-off text-lg"></i> 3. CERRAR PUERTO USB
+                </button>
+                <button onclick="runFullSimulatedHardwareTest()" class="py-4 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm rounded-2xl shadow-lg border-2 border-emerald-300 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-vial text-lg"></i> 4. PROBAR S1-S2-META
+                </button>
+            </div>
+
+            <!-- Luces Grandes de Comprobación de Sensores -->
+            <div class="bg-slate-950 p-4 rounded-2xl border-2 border-slate-700 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-sky-300 font-black uppercase">
+                        <i class="fa-solid fa-lightbulb mr-1.5"></i>LUCES DE PASO DE SENSORES (PULSA ENCIMA PARA PROBAR O PASA EL COCHE):
+                    </span>
+                    <span id="usbModalStatus" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-300 text-xs font-black border border-amber-400">
+                        PUERTO EN ESPERA
+                    </span>
+                </div>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div id="testLamp-S1" onclick="parseUniversalSerialLine('S1,L1,1240,42')" class="sensor-test-lamp bg-slate-900 p-3.5 rounded-2xl border-2 border-slate-600 cursor-pointer">
+                        <div class="text-xs text-slate-300 font-bold">SENSOR SECTOR 1 (Pin D2)</div>
+                        <div class="text-lg font-black text-white mt-1" id="testLampVal-S1">ESPERANDO COCHE</div>
+                    </div>
+                    <div id="testLamp-S2" onclick="parseUniversalSerialLine('S2,L1,1310,39')" class="sensor-test-lamp bg-slate-900 p-3.5 rounded-2xl border-2 border-slate-600 cursor-pointer">
+                        <div class="text-xs text-slate-300 font-bold">SENSOR SECTOR 2 (Pin D3)</div>
+                        <div class="text-lg font-black text-white mt-1" id="testLampVal-S2">ESPERANDO COCHE</div>
+                    </div>
+                    <div id="testLamp-META" onclick="parseUniversalSerialLine('M,L1,1190,36')" class="sensor-test-lamp bg-slate-900 p-3.5 rounded-2xl border-2 border-slate-600 cursor-pointer">
+                        <div class="text-xs text-slate-300 font-bold">SENSOR META (Pin D4)</div>
+                        <div class="text-lg font-black text-white mt-1" id="testLampVal-META">ESPERANDO COCHE</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitor de Datos Recibidos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="bg-black p-3.5 rounded-2xl border-2 border-amber-500/50">
+                    <div class="text-xs text-amber-300 font-black uppercase mb-1.5">DATOS QUE ENTRAN POR EL CABLE USB:</div>
+                    <div id="usbRawByteSnifferBox" class="h-32 overflow-y-auto text-xs text-amber-200 space-y-1 font-mono">
+                        <div class="text-slate-400">Esperando conexión del Arduino...</div>
+                    </div>
+                </div>
+                <div class="bg-black p-3.5 rounded-2xl border-2 border-emerald-500/50">
+                    <div class="text-xs text-emerald-300 font-black uppercase mb-1.5">TIEMPOS TRADUCIDOS EN CARRERA:</div>
+                    <div id="usbModalLiveFeed" class="h-32 overflow-y-auto text-xs text-emerald-300 space-y-1 font-mono">
+                        <div>Listo. Puedes pulsar "3. CERRAR PUERTO USB" cuando quieras detener los sensores.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================================
+         MODAL DE ACTA OFICIAL DE CARRERA (LETRA GRANDE)
+         ======================================================================================== -->
+    <div id="postRaceReportModal" class="hidden fixed inset-0 z-[55] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl w-full max-w-7xl h-[90vh] flex flex-col justify-between p-5 border-2 border-amber-400 overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-700 pb-3 shrink-0">
+                <div>
+                    <span class="text-xs font-mono font-black text-amber-300 uppercase">CLASIFICACIÓN OFICIAL DEL CLUB</span>
+                    <h2 id="reportModalTitle" class="text-xl md:text-2xl font-black text-white uppercase">ACTA DE RESULTADOS DE LA MANGA</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportCSV()" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-sm rounded-xl cursor-pointer">
+                        <i class="fa-solid fa-download mr-1.5"></i>DESCARGAR EXCEL (CSV)
+                    </button>
+                    <button onclick="closePostRaceReportModal()" class="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white font-black text-sm rounded-xl cursor-pointer">
+                        <i class="fa-solid fa-xmark mr-1.5"></i>CERRAR ACTA
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 min-h-0 overflow-y-auto rounded-2xl border-2 border-slate-700 bg-slate-950 my-3">
+                <table class="w-full text-left font-mono-num text-sm">
+                    <thead class="bg-slate-900 text-amber-300 text-xs uppercase sticky top-0 border-b-2 border-slate-700">
+                        <tr>
+                            <th class="p-3">POSICIÓN</th>
+                            <th class="p-3">CARRIL</th>
+                            <th class="p-3">PILOTO &amp; CLUB</th>
+                            <th class="p-3 text-center">VUELTAS</th>
+                            <th class="p-3">DIFERENCIA</th>
+                            <th class="p-3">MEJOR VUELTA</th>
+                            <th class="p-3">VUELTA MEDIA</th>
+                            <th class="p-3">MEJORES SECTORES (S1 / S2 / META)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportModalTableBody" class="divide-y divide-slate-800"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================================
+         CABECERA PRINCIPAL DE DIRECCIÓN DE CARRERA (DISEÑO CLARO Y GRANDE PARA +60 AÑOS)
+         ======================================================================================== -->
+    <header id="topRaceBar" class="glass-panel rounded-2xl px-4 py-2.5 mb-2 grid grid-cols-12 items-center gap-3 shrink-0">
+        
+        <!-- BLOQUE IZQUIERDO: SELECCIÓN DIRECTA DE CARRILES (1, 2, 4, 6, 8, 10) Y TIEMPO -->
+        <div class="col-span-5 flex flex-col gap-2">
+            <!-- Selector grande de Carriles 1, 2, 4, 6, 8 y 10 con un solo toque -->
+            <div class="flex items-center justify-between gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border-2 border-slate-700">
+                <span class="text-xs font-black text-sky-300 uppercase shrink-0">
+                    <i class="fa-solid fa-road mr-1"></i>CARRILES:
+                </span>
+                <div class="grid grid-cols-6 gap-1.5 flex-1">
+                    <button onclick="setSystemTopology(1, null)" id="btnLane-1" class="lane-btn-active py-1.5 rounded-lg text-xs font-mono font-black border border-slate-600 cursor-pointer">1 CH</button>
+                    <button onclick="setSystemTopology(2, null)" id="btnLane-2" class="py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 text-white hover:bg-slate-700 border border-slate-600 cursor-pointer">2 CH</button>
+                    <button onclick="setSystemTopology(4, null)" id="btnLane-4" class="py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 text-white hover:bg-slate-700 border border-slate-600 cursor-pointer">4 CH</button>
+                    <button onclick="setSystemTopology(6, null)" id="btnLane-6" class="py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 text-white hover:bg-slate-700 border border-slate-600 cursor-pointer">6 CH</button>
+                    <button onclick="setSystemTopology(8, null)" id="btnLane-8" class="py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 text-white hover:bg-slate-700 border border-slate-600 cursor-pointer">8 CH</button>
+                    <button onclick="setSystemTopology(10, null)" id="btnLane-10" class="py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 text-white hover:bg-slate-700 border border-slate-600 cursor-pointer">10 CH</button>
+                </div>
+            </div>
+
+            <!-- Fila Inferior: Modo Tiempo/Vueltas + Reloj + Sectores (1S, 2S, 3S) -->
+            <div class="flex items-center justify-between gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border-2 border-slate-700 font-mono text-xs">
+                <div class="flex items-center gap-1">
+                    <button onclick="setRaceFormat('TIME')" id="btnMode-TIME" class="px-2.5 py-1 text-xs font-black rounded-lg bg-amber-400 text-slate-950 cursor-pointer">TIEMPO</button>
+                    <button onclick="setRaceFormat('LAPS')" id="btnMode-LAPS" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-200 hover:text-white cursor-pointer">VUELTAS</button>
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-600">
+                    <i class="fa-regular fa-clock text-amber-300"></i>
+                    <select id="headerTimePreset" onchange="applyQuickTimeMinutes(this.value)" class="bg-transparent text-xs font-black text-amber-300 focus:outline-none cursor-pointer">
+                        <option value="1" class="bg-slate-950">1 Minuto</option>
+                        <option value="3" class="bg-slate-950">3 Minutos</option>
+                        <option value="5" selected class="bg-slate-950">5 Minutos</option>
+                        <option value="10" class="bg-slate-950">10 Minutos</option>
+                        <option value="15" class="bg-slate-950">15 Minutos</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-1">
+                    <span class="text-slate-300 font-bold text-[11px]">SECTORES:</span>
+                    <button onclick="setSystemTopology(null, 1)" id="btnSec-1" class="px-2 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 cursor-pointer">1S</button>
+                    <button onclick="setSystemTopology(null, 2)" id="btnSec-2" class="px-2 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 cursor-pointer">2S</button>
+                    <button onclick="setSystemTopology(null, 3)" id="btnSec-3" class="px-2 py-1 text-xs font-black rounded-lg bg-emerald-500 text-slate-950 cursor-pointer">3S</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOQUE CENTRAL: SEMÁFORO GRANDE + RELOJ GIGANTE DE ALTA VISIBILIDAD -->
+        <div class="col-span-4 flex items-center justify-center gap-4 bg-black px-4 py-2.5 rounded-2xl border-2 border-slate-600 shadow-2xl">
+            <div class="flex flex-col items-center">
+                <div class="flex items-center gap-2 mb-1">
+                    <span id="raceStateBadge" class="px-2.5 py-0.5 text-[11px] font-mono font-black uppercase rounded bg-slate-800 text-amber-300 border border-slate-600">
+                        PISTA LISTA
+                    </span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700" id="f1Gantry">
+                    <div class="f1-light" id="f1L1"></div>
+                    <div class="f1-light" id="f1L2"></div>
+                    <div class="f1-light" id="f1L3"></div>
+                    <div class="f1-light" id="f1L4"></div>
+                    <div class="f1-light" id="f1L5"></div>
+                </div>
+            </div>
+            <div class="border-l-2 border-slate-700 pl-4 text-right min-w-[135px]">
+                <div id="masterClockLabel" class="text-xs font-mono uppercase text-amber-300 font-black">TIEMPO MANGA</div>
+                <div id="masterClock" class="text-3xl xl:text-4xl font-mono-num font-black text-white tracking-tight leading-none mt-1">05:00.0</div>
+            </div>
+        </div>
+
+        <!-- BLOQUE DERECHO: BOTONES GRANDES DE MANDO (SALIDA, PAUSA, CERRAR USB, VOZ HOMBRE) -->
+        <div class="col-span-3 flex flex-col gap-2">
+            <div class="grid grid-cols-4 gap-1.5">
+                <button onclick="startF1Sequence()" class="py-2.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-black text-xs rounded-xl shadow-lg border-2 border-emerald-300 cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-play"></i> SALIDA
+                </button>
+                <button onclick="toggleTrackCall()" class="py-2.5 px-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-mono font-black text-xs rounded-xl shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-pause"></i> PAUSA
+                </button>
+                <button onclick="toggleAutoDemo()" id="btnSimRaceTop" class="py-2.5 px-2 bg-purple-600 hover:bg-purple-500 text-white font-mono font-black text-xs rounded-xl shadow-lg border-2 border-purple-300 cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-robot"></i> DEMO
+                </button>
+                <button onclick="resetRaceSession()" class="py-2.5 px-2 bg-slate-800 hover:bg-red-700 text-white font-mono font-black text-xs rounded-xl border-2 border-slate-500 cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-rotate-right"></i> CERO
+                </button>
+            </div>
+            <!-- Botón Directo Rojo para Cerrar Puerto USB + Voz Hombre + Acta -->
+            <div class="grid grid-cols-3 gap-1.5">
+                <button onclick="disconnectUsbSerialPort()" class="py-1.5 px-2 bg-red-600 hover:bg-red-500 text-white font-mono font-black text-[11px] rounded-xl border border-red-300 cursor-pointer flex items-center justify-center gap-1 shadow" title="Detener entrada de datos USB inmediatamente">
+                    <i class="fa-solid fa-power-off"></i> CERRAR USB
+                </button>
+                <button onclick="toggleVoiceSpotter()" id="btnVoice" class="py-1.5 px-2 bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-black text-[11px] rounded-xl border border-indigo-300 cursor-pointer flex items-center justify-center gap-1">
+                    <span id="voiceIcon"><i class="fa-solid fa-volume-high"></i> VOZ ON</span>
+                </button>
+                <button onclick="finishAndOpenOfficialReport()" class="py-1.5 px-2 bg-teal-600 hover:bg-teal-500 text-white font-mono font-black text-[11px] rounded-xl border border-teal-300 cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-trophy"></i> VER ACTA
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================================
+         MENÚ DE NAVEGACIÓN PRINCIPAL (BOTONES GRANDES Y TEXTO MUY CLARO PARA +60 AÑOS)
+         ======================================================================================== -->
+    <nav class="flex items-center justify-between gap-2 mb-2 shrink-0 bg-slate-950 px-3 py-2 rounded-2xl border-2 border-slate-700 shadow-lg">
+        <div class="flex items-center gap-2 overflow-x-auto">
+            <button onclick="switchTab('live')" id="tabBtn-live" class="nav-pill-active px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-black border-2 transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-flag-checkered"></i> 1. CARRERA
+            </button>
+            <button onclick="switchTab('sectors')" id="tabBtn-sectors" class="px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-700 transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-stopwatch-20 text-purple-400"></i> 2. TABLA SECTORES
+            </button>
+            <button onclick="switchTab('charts')" id="tabBtn-charts" class="px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-700 transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-chart-column text-sky-400"></i> 3. GRÁFICOS VUELTAS Y SECTORES
+            </button>
+            <button onclick="switchTab('rotation')" id="tabBtn-rotation" class="px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-700 transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-users text-amber-400"></i> 4. PILOTOS Y MANGAS
+            </button>
+            <button onclick="switchTab('mobile')" id="tabBtn-mobile" class="px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-700 transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-qrcode text-emerald-400"></i> 5. QR MÓVIL
+            </button>
+            <button onclick="switchTab('config')" id="tabBtn-config" class="px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-700 transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders text-sky-400"></i> 6. AJUSTES
+            </button>
+        </div>
+
+        <!-- Botón directo y grande para abrir el panel USB -->
+        <div class="flex items-center gap-2 shrink-0">
+            <button onclick="connectArduinoUSB()" class="px-4 py-2 rounded-xl text-xs md:text-sm font-mono font-black bg-sky-500 hover:bg-sky-400 text-slate-950 border-2 border-white cursor-pointer flex items-center gap-2 shadow-lg">
+                <i class="fa-brands fa-usb text-base"></i> CONECTAR / CERRAR USB
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========================================================================================
+         VISTA 1: PANTALLA PRINCIPAL DE CARRERA (ADAPTABLE A 1, 2, 4, 6, 8 Y 10 CARRILES)
+         ======================================================================================== -->
+    <section id="view-live" class="flex-1 min-h-0 grid grid-cols-12 gap-3 overflow-hidden">
+        <!-- Parrilla Dinámica de Carriles (Ocupa 9 columnas para máxima lectura) -->
+        <div id="lanesGridContainer" class="col-span-9 grid grid-cols-1 grid-rows-1 gap-3 h-full min-h-0 overflow-y-auto pr-1"></div>
+
+        <!-- Columna Derecha (3 columnas): Récords de Sectores + Pasos por Meta + Estado de Voz y USB -->
+        <div class="col-span-3 flex flex-col gap-3 h-full min-h-0">
+            <!-- Récords de Pista y Sectores en letra grande -->
+            <div class="glass-panel rounded-2xl p-3.5 flex flex-col justify-between shrink-0">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-2">
+                    <span class="text-xs font-mono font-black text-sky-300 uppercase" id="mapTopologyLabel">PISTA: 1 CARRIL</span>
+                    <span class="text-xs font-mono font-black text-purple-300" id="overallPurpleLap">RÉCORD: --.---s</span>
+                </div>
+                <div id="purpleSectorsSummary" class="grid grid-cols-3 gap-2 text-center font-mono-num text-xs"></div>
+            </div>
+
+            <!-- Paso a paso de tiempos recibidos y control directo de Voz/USB -->
+            <div class="glass-panel rounded-2xl p-3.5 flex-1 min-h-0 flex flex-col justify-between">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-2 shrink-0">
+                    <span class="text-xs font-mono font-black text-emerald-300 uppercase">
+                        <i class="fa-solid fa-list-check mr-1.5"></i>ÚLTIMOS PASOS DE COCHES
+                    </span>
+                    <span id="usbLiveStatusPill" class="px-2 py-0.5 rounded bg-slate-800 text-amber-300 font-mono font-black text-[11px] border border-slate-600">
+                        USB LIBRE
+                    </span>
+                </div>
+
+                <div class="overflow-y-auto flex-1 min-h-0 pr-1">
+                    <table class="w-full text-left font-mono-num text-xs">
+                        <tbody id="liveLogBody" class="divide-y divide-slate-800">
+                            <tr><td colspan="4" class="py-8 text-center text-slate-400 font-mono text-sm">Esperando salida o paso por sensores...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Avisos de Voz Hombre Español y Botón Rápido Cerrar USB -->
+                <div class="mt-2 pt-2.5 border-t-2 border-slate-700 flex flex-col gap-2 text-xs font-mono shrink-0">
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-sky-500/40 flex items-center justify-between gap-2">
+                        <span id="spotterMessage" class="truncate text-sky-200 font-black">
+                            <i class="fa-solid fa-microphone mr-1.5 text-sky-400"></i>Voz Pista: Preparado
+                        </span>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-emerald-500/40 flex items-center justify-between gap-2">
+                        <span id="sectorAnalystMessage" class="truncate text-emerald-200 font-black">
+                            <i class="fa-solid fa-user-tie mr-1.5 text-emerald-400"></i>Voz Sectores (Hombre): Activa
+                        </span>
+                        <button onclick="toggleSectorAnalystVoice()" id="btnAnalystToggle" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-xs cursor-pointer shrink-0">
+                            ACTIVA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================================
+         VISTA 2: TABLA CLARA DE SECTORES (S1, S2 Y META) CON LETRA GRANDE
+         ======================================================================================== -->
+    <section id="view-sectors" class="hidden flex-1 min-h-0 flex flex-col glass-panel rounded-2xl p-5 overflow-hidden">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h2 class="text-lg font-black text-amber-300 font-mono uppercase">
+                    <i class="fa-solid fa-stopwatch-20 mr-2"></i>COMPARATIVA DE SECTORES (S1 + S2 + META) Y VUELTA ÓPTIMA
+                </h2>
+                <p class="text-sm text-slate-300 mt-0.5">Muestra los tiempos de cada tramo del circuito y la mejor vuelta teórica de cada jugador.</p>
+            </div>
+        </div>
+        <div class="overflow-y-auto flex-1 min-h-0 rounded-2xl border-2 border-slate-700 bg-slate-950">
+            <table class="w-full text-left font-mono-num text-sm">
+                <thead class="bg-slate-900 text-amber-300 text-xs uppercase sticky top-0 border-b-2 border-slate-700">
+                    <tr>
+                        <th class="p-3.5">POS</th>
+                        <th class="p-3.5">CARRIL Y PILOTO</th>
+                        <th class="p-3.5">VUELTAS</th>
+                        <th class="p-3.5">SECTOR 1 (Pin D2)</th>
+                        <th class="p-3.5" id="thSector2">SECTOR 2 (Pin D3)</th>
+                        <th class="p-3.5" id="thSector3">META / SECTOR 3 (Pin D4)</th>
+                        <th class="p-3.5">MEJOR VUELTA</th>
+                        <th class="p-3.5">VUELTA ÓPTIMA</th>
+                    </tr>
+                </thead>
+                <tbody id="sectorAnalysisTableBody" class="divide-y divide-slate-800"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ========================================================================================
+         VISTA 3: GRÁFICOS INTERACTIVOS DE VUELTAS Y SECTORES (DISEÑO CLARO Y GRANDE +60 AÑOS)
+         ======================================================================================== -->
+    <section id="view-charts" class="hidden flex-1 min-h-0 grid grid-cols-12 gap-4 overflow-hidden">
+        <!-- Columna Izquierda (9 columnas): Selector grande de tipo de gráfico + Lienzo del Gráfico -->
+        <div class="col-span-9 glass-panel rounded-2xl p-4 flex flex-col justify-between min-h-0">
+            
+            <!-- Botonera Superior Grande para Escoger el Gráfico de Vueltas o de Sectores -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-slate-700 pb-3 mb-3 shrink-0 font-mono">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+                    <button onclick="selectChartMode('LAPS_LINE')" id="btnChart-LAPS_LINE" class="nav-pill-active py-2.5 px-3 rounded-xl text-xs font-black border-2 border-slate-600 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-chart-line"></i> 1. EVOLUCIÓN VUELTAS
+                    </button>
+                    <button onclick="selectChartMode('SECTORS_BAR')" id="btnChart-SECTORS_BAR" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-600 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-chart-bar text-purple-400"></i> 2. COMPARATIVA SECTORES
+                    </button>
+                    <button onclick="selectChartMode('OPTIMAL_BAR')" id="btnChart-OPTIMAL_BAR" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-600 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-bolt text-emerald-400"></i> 3. MEJOR VS. ÓPTIMA
+                    </button>
+                    <button onclick="selectChartMode('DRIVER_HIST')" id="btnChart-DRIVER_HIST" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-600 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie text-amber-400"></i> 4. REGULARIDAD PILOTO
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sub-barra explicativa y selector de piloto en letra grande -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-2 shrink-0 font-mono">
+                <div>
+                    <h3 id="activeChartMainTitle" class="text-base md:text-lg font-black text-amber-300 uppercase">
+                        GRÁFICO 1: TIEMPO DE CADA VUELTA (TODOS LOS CARRILES)
+                    </h3>
+                    <p id="activeChartSubtitle" class="text-xs text-slate-300">
+                        Muestra cómo evoluciona el ritmo vuelta tras vuelta. Cuanto más baja y recta sea la línea, más rápido y constante es el piloto.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border-2 border-sky-400">
+                    <span class="text-xs font-black text-sky-300 uppercase">FILTRAR PILOTO:</span>
+                    <select id="chartDriverSelect" onchange="renderTelemetryCharts()" class="bg-slate-900 text-white font-black text-sm px-3 py-1 rounded-lg border border-slate-600 cursor-pointer">
+                        <option value="ALL">TODOS LOS CARRILES</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Contenedor del Gráfico con fondo oscuro de alto contraste -->
+            <div class="flex-1 min-h-0 bg-slate-950 p-3 rounded-2xl border-2 border-slate-700 relative">
+                <canvas id="seniorMainTelemetryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Columna Derecha (3 columnas): Tabla Resumen de Datos del Gráfico y Botón de Prueba -->
+        <div class="col-span-3 glass-panel rounded-2xl p-4 flex flex-col justify-between min-h-0 font-mono">
+            <div class="space-y-3 flex-1 min-h-0 flex flex-col">
+                <div class="border-b-2 border-slate-700 pb-2 shrink-0">
+                    <span class="text-xs font-black text-sky-300 uppercase">
+                        <i class="fa-solid fa-table-list mr-1.5"></i>TABLA DE DATOS DEL GRÁFICO
+                    </span>
+                    <p class="text-xs text-slate-300 mt-0.5">Haz clic sobre un piloto para ver su detalle individual:</p>
+                </div>
+
+                <!-- Tarjetas grandes de resumen por piloto -->
+                <div id="chartSummaryTableBox" class="space-y-2 overflow-y-auto flex-1 min-h-0 pr-1 text-xs">
+                </div>
+            </div>
+
+            <div class="pt-3 border-t-2 border-slate-700 space-y-2 shrink-0">
+                <button onclick="toggleAutoDemo()" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs rounded-xl shadow-lg border-2 border-purple-300 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-robot text-base"></i> PROBAR GRÁFICOS EN VIVO (DEMO)
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================================
+         VISTA 4: GESTIÓN DE PILOTOS DEL CLUB Y SORTEO DE MANGAS (MUY INTUITIVO)
+         ======================================================================================== -->
+    <section id="view-rotation" class="hidden flex-1 min-h-0 grid grid-cols-12 gap-4 overflow-hidden">
+        <!-- Lista de Pilotos del Club -->
+        <div class="col-span-6 glass-panel rounded-2xl p-4 flex flex-col justify-between min-h-0">
+            <div class="space-y-3 min-h-0 flex-1 flex flex-col">
+                <div class="flex justify-between items-center border-b-2 border-slate-700 pb-2.5 shrink-0">
+                    <h2 class="text-base font-black text-amber-300 font-mono uppercase">
+                        <i class="fa-solid fa-users mr-2"></i>LISTA DE PILOTOS DEL CLUB
+                    </h2>
+                    <span class="text-xs font-mono text-sky-300 font-black bg-slate-950 px-3 py-1 rounded-xl border border-slate-600" id="rotLaneCountLabel">
+                        Pista: 1 Carril
+                    </span>
+                </div>
+
+                <!-- Añadir nuevo piloto con campos grandes -->
+                <div class="grid grid-cols-12 gap-2 shrink-0 bg-slate-950 p-3 rounded-xl border-2 border-slate-700">
+                    <input id="newDriverInput" type="text" placeholder="Nombre Piloto (ej. JUAN)" class="col-span-5 bg-slate-900 border-2 border-slate-600 rounded-xl px-3 py-2 text-sm text-white font-black focus:outline-none focus:border-sky-400"/>
+                    <input id="newClubInput" type="text" placeholder="Club / Escudería" class="col-span-4 bg-slate-900 border-2 border-slate-600 rounded-xl px-3 py-2 text-sm text-amber-300 font-bold focus:outline-none focus:border-amber-400"/>
+                    <button onclick="addRosterDriver()" class="col-span-3 bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-black text-sm rounded-xl cursor-pointer flex items-center justify-center gap-1 shadow">
+                        <i class="fa-solid fa-plus"></i> AÑADIR
+                    </button>
+                </div>
+
+                <div id="rosterList" class="space-y-2 overflow-y-auto pr-1 font-mono text-sm flex-1 min-h-0"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-3 pt-3 border-t-2 border-slate-700 shrink-0">
+                <button onclick="assignRosterToActiveLanes()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-black text-sm rounded-xl shadow-lg cursor-pointer">
+                    <i class="fa-solid fa-car-side mr-1.5"></i>PONER PILOTOS EN PISTA
+                </button>
+                <button onclick="generateChampionshipHeats(true)" class="py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-mono font-black text-sm rounded-xl shadow-lg cursor-pointer">
+                    <i class="fa-solid fa-dice mr-1.5"></i>SORTEAR MANGAS AL AZAR
+                </button>
+            </div>
+        </div>
+
+        <!-- Mangas Generadas -->
+        <div class="col-span-6 glass-panel rounded-2xl p-4 flex flex-col justify-between min-h-0">
+            <div class="border-b-2 border-slate-700 pb-2.5 mb-3 flex justify-between items-center shrink-0">
+                <h2 class="text-base font-black text-sky-300 font-mono uppercase">
+                    <i class="fa-solid fa-clipboard-list mr-2"></i>CUADRO DE MANGAS PARA CARGAR EN PISTA
+                </h2>
+                <button onclick="generateChampionshipHeats(false)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs rounded-xl border border-slate-600 cursor-pointer">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i>Ordenar por Rotación
+                </button>
+            </div>
+            <div id="heatsContainer" class="space-y-2.5 overflow-y-auto flex-1 min-h-0 font-mono text-sm pr-1"></div>
+        </div>
+    </section>
+
+    <!-- ========================================================================================
+         VISTA 4: CÓDIGO QR GRANDE PARA EL MÓVIL DEL PILOTO (CON SIMULADOR EN VIVO AL LADO)
+         ======================================================================================== -->
+    <section id="view-mobile" class="hidden flex-1 min-h-0 grid grid-cols-12 gap-4 overflow-hidden">
+        <!-- Columna Izquierda: Selector Grande de Piloto + Código QR Gigante + Botones Claros -->
+        <div class="col-span-6 glass-panel rounded-2xl p-5 flex flex-col justify-between min-h-0 overflow-y-auto">
+            <div class="space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-mono uppercase rounded-xl border border-emerald-400 font-black">
+                        <i class="fa-solid fa-qrcode mr-1.5"></i>QR INDIVIDUAL POR PILOTO
+                    </span>
+                    <span id="liveCloudSyncBadge" class="px-3 py-1 bg-sky-500/20 text-sky-300 text-xs font-mono font-black rounded-xl border border-sky-400">
+                        <i class="fa-solid fa-tower-broadcast mr-1 animate-ping"></i> ENLACE EN VIVO ACTIVO
+                    </span>
+                </div>
+
+                <h2 class="text-lg md:text-xl font-black text-white uppercase leading-snug">
+                    ELIGE TU NOMBRE Y APUNTA CON LA CÁMARA DEL MÓVIL AL CUADRO BLANCO
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 font-mono pt-1">
+                    <div class="sm:col-span-8">
+                        <label class="block text-xs text-amber-300 mb-1 font-black uppercase">1. SELECCIONA EL PILOTO / CARRIL:</label>
+                        <select id="mobileDriverSelect" onchange="forceRefreshPilotQrCode()" class="w-full bg-slate-950 border-2 border-emerald-400 rounded-xl px-4 py-3 text-base font-black text-white cursor-pointer">
+                        </select>
+                    </div>
+                    <div class="sm:col-span-4">
+                        <label class="block text-xs text-slate-300 mb-1 font-bold uppercase">2. MODO DEL QR:</label>
+                        <select id="qrPayloadModeSelect" onchange="forceRefreshPilotQrCode()" class="w-full bg-slate-950 border-2 border-sky-400 rounded-xl px-3 py-3 text-sm font-black text-sky-300 cursor-pointer">
+                            <option value="LIVE_URL" selected>Pantalla en Vivo</option>
+                            <option value="WHATSAPP_DIRECT">Enviar WhatsApp</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cuadro del QR Gigante de Alto Contraste -->
+            <div class="bg-slate-950 p-4 rounded-2xl border-2 border-emerald-500/70 flex flex-wrap items-center justify-center gap-6 my-2">
+                <div class="flex flex-col items-center">
+                    <div id="dynamicQrContainer" class="w-48 h-48 bg-white p-3 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white"></div>
+                    <span class="text-xs font-mono text-emerald-300 font-black uppercase mt-2">
+                        <i class="fa-solid fa-camera mr-1"></i>ESCANEAR CON EL MÓVIL
+                    </span>
+                </div>
+                <div class="space-y-2.5 max-w-xs font-mono">
+                    <div class="text-sm font-black text-amber-300 uppercase">¿QUÉ VERÁ EL PILOTO EN SU MÓVIL?</div>
+                    <ul class="text-xs text-slate-200 space-y-1.5 leading-relaxed">
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i><b>Sus vueltas y sectores</b> en números grandes.</li>
+                        <li><i class="fa-solid fa-angles-up text-rose-400 mr-1.5"></i>A cuánto tiene al <b>coche de delante</b> y al de detrás.</li>
+                        <li><i class="fa-solid fa-volume-high text-amber-400 mr-1.5"></i><b>Voz de hombre español</b> cantándole sus tiempos.</li>
+                    </ul>
+                    <div class="grid grid-cols-1 gap-2 pt-1">
+                        <button onclick="openPilotMobileLiveOverlayFromTab()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl cursor-pointer shadow-lg border-2 border-white">
+                            <i class="fa-solid fa-mobile-screen-button mr-1.5"></i>ABRIR PANTALLA DEL MÓVIL AQUÍ
+                        </button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="downloadPilotTakeHomePass()" class="py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl cursor-pointer">
+                                <i class="fa-solid fa-download mr-1"></i>GUARDAR FICHA
+                            </button>
+                            <button onclick="shareViaWhatsApp()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl cursor-pointer">
+                                <i class="fa-brands fa-whatsapp mr-1"></i>WHATSAPP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Vista Previa en Vivo del Teléfono del Piloto + Resumen Escrito -->
+        <div class="col-span-6 glass-panel rounded-2xl p-5 grid grid-cols-12 gap-4 min-h-0 overflow-hidden font-mono">
+            <!-- Simulación en vivo del teléfono del piloto -->
+            <div class="col-span-7 bg-[#050914] rounded-3xl p-4 border-2 border-slate-600 flex flex-col justify-between shadow-2xl min-h-0 overflow-hidden">
+                <div class="flex justify-between items-center border-b-2 border-slate-800 pb-2 shrink-0">
+                    <span class="text-xs font-black text-emerald-300 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span> MÓVIL EN DIRECTO
+                    </span>
+                    <span id="mobPreviewPosBadge" class="px-2.5 py-0.5 rounded-lg bg-amber-400 text-slate-950 text-xs font-black">
+                        CH1 · P1
+                    </span>
+                </div>
+
+                <div id="mobilePhoneScreenContent" class="my-auto space-y-2.5 text-xs overflow-y-auto py-2 flex-1 min-h-0 pr-1">
+                </div>
+
+                <div class="border-t-2 border-slate-800 pt-2 flex justify-between items-center text-[11px] text-slate-300 shrink-0">
+                    <span>CAMBIA EN CADA VUELTA</span>
+                    <button onclick="toggleAutoDemo()" class="text-amber-300 hover:underline font-black cursor-pointer">
+                        <i class="fa-solid fa-robot mr-1"></i>Probar con Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hoja resumen para llevarse a casa -->
+            <div class="col-span-5 flex flex-col justify-between min-h-0">
+                <h3 class="text-xs font-black text-amber-300 uppercase mb-2 shrink-0">
+                    <i class="fa-solid fa-file-lines mr-1.5"></i>INFORME PERSONAL DEL PILOTO:
+                </h3>
+                <textarea id="mobileReportTextarea" readonly class="w-full flex-1 bg-slate-950 border-2 border-slate-700 rounded-2xl p-3 font-mono text-xs text-emerald-300 focus:outline-none resize-none leading-relaxed"></textarea>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================================
+         VISTA 5: AJUSTES CLAROS DE PISTA, SONIDO Y CONTROL USB
+         ======================================================================================== -->
+    <section id="view-config" class="hidden flex-1 min-h-0 grid grid-cols-12 gap-4 overflow-hidden">
+        <div class="col-span-6 glass-panel rounded-2xl p-5 space-y-4 overflow-y-auto min-h-0 font-mono">
+            <h2 class="text-lg font-black text-sky-300 uppercase border-b-2 border-slate-700 pb-2">
+                <i class="fa-solid fa-sliders mr-2"></i>CONFIGURACIÓN DE LA PISTA Y CARRILES
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div class="sm:col-span-2">
+                    <label class="block text-amber-300 font-black mb-1.5">NOMBRE DEL CLUB O CAMPEONATO:</label>
+                    <input id="cfgAppTitle" type="text" value="GRAN PREMIO OFICIAL // KRONOS PRO" oninput="saveTrackConfig()" class="w-full bg-slate-950 border-2 border-amber-400 rounded-xl px-4 py-2.5 text-base text-white font-black"/>
+                </div>
+                <div>
+                    <label class="block text-slate-200 font-bold mb-1.5">NÚMERO DE CARRILES EN PISTA:</label>
+                    <select id="cfgLanesSelect" onchange="setSystemTopology(parseInt(this.value, 10), null)" class="w-full bg-slate-950 border-2 border-sky-400 rounded-xl px-3 py-2.5 text-base text-white font-black cursor-pointer">
+                        <option value="1" selected>1 Carril (Entreno / Rally)</option>
+                        <option value="2">2 Carriles</option>
+                        <option value="4">4 Carriles</option>
+                        <option value="6">6 Carriles</option>
+                        <option value="8">8 Carriles</option>
+                        <option value="10">10 Carriles</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-200 font-bold mb-1.5">SENSORES EN PISTA (SECTORES):</label>
+                    <select id="cfgSectorsSelect" onchange="setSystemTopology(null, parseInt(this.value, 10))" class="w-full bg-slate-950 border-2 border-emerald-400 rounded-xl px-3 py-2.5 text-base text-white font-black cursor-pointer">
+                        <option value="1">1 Sensor (Solo Meta)</option>
+                        <option value="2">2 Sensores (Sector 1 + Meta)</option>
+                        <option value="3" selected>3 Sensores (Sector 1 + Sector 2 + Meta)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-200 font-bold mb-1.5">LONGITUD DE LA PISTA (METROS):</label>
+                    <input id="cfgTrackLen" type="number" step="0.5" value="18.0" onchange="saveTrackConfig()" class="w-full bg-slate-950 border-2 border-slate-600 rounded-xl px-3 py-2.5 text-base text-white font-black"/>
+                </div>
+                <div>
+                    <label class="block text-slate-200 font-bold mb-1.5">TIEMPO MÍNIMO POR VUELTA (SEG):</label>
+                    <input id="cfgMinLapSec" type="number" step="0.1" value="0.5" onchange="saveTrackConfig()" class="w-full bg-slate-950 border-2 border-slate-600 rounded-xl px-3 py-2.5 text-base text-white font-black"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-6 glass-panel rounded-2xl p-5 flex flex-col justify-between overflow-y-auto min-h-0 font-mono space-y-4">
+            <div class="space-y-3">
+                <h2 class="text-lg font-black text-emerald-300 uppercase border-b-2 border-slate-700 pb-2">
+                    <i class="fa-solid fa-plug-circle-bolt mr-2"></i>CONTROL DEL CABLE USB Y VOZ DE HOMBRE ESPAÑOL
+                </h2>
+                <p class="text-sm text-slate-200 leading-relaxed">
+                    Desde aquí puedes conectar el Arduino de los sensores, **cerrar el puerto USB** cuando quieras que deje de enviar lecturas, o probar la voz de hombre en español:
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <button onclick="connectArduinoUSB()" class="py-4 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-sm rounded-2xl shadow-lg border-2 border-white cursor-pointer">
+                        <i class="fa-brands fa-usb mr-1.5"></i>ABRIR PANEL CONEXIÓN USB
+                    </button>
+                    <button onclick="disconnectUsbSerialPort()" class="py-4 bg-red-600 hover:bg-red-500 text-white font-black text-sm rounded-2xl shadow-lg border-2 border-white cursor-pointer">
+                        <i class="fa-solid fa-power-off mr-1.5"></i>CERRAR PUERTO USB AHORA
+                    </button>
+                </div>
+                <button onclick="speakSectorAnalyst('Prueba de voz de hombre en español para los sensores de sector 1, sector 2 y línea de meta.', true)" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm rounded-2xl border-2 border-indigo-300 cursor-pointer">
+                    <i class="fa-solid fa-volume-high mr-1.5"></i>PROBAR VOZ DE HOMBRE ESPAÑOL
+                </button>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-2xl border-2 border-slate-700 space-y-2">
+                <label class="block text-xs text-amber-300 font-black uppercase">PROBAR TRAMA MANUALMENTE (COMO SI PASARA UN COCHE):</label>
+                <div class="flex gap-2">
+                    <input id="manualSerialInput" type="text" value="S1,L1,1240,40" class="flex-1 bg-slate-900 border-2 border-slate-600 rounded-xl px-3 py-2 text-sm text-emerald-300 font-black"/>
+                    <button onclick="parseUniversalSerialLine(document.getElementById('manualSerialInput').value)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm rounded-xl cursor-pointer">
+                        ENVIAR PRUEBA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const LANE_PALETTE = {
+            1:  { name: 'ROJO',     hex: '#ef4444', badge: 'bg-red-500 text-slate-950 border-white' },
+            2:  { name: 'BLANCO',   hex: '#f8fafc', badge: 'bg-white text-slate-950 border-slate-400' },
+            3:  { name: 'VERDE',    hex: '#10b981', badge: 'bg-emerald-400 text-slate-950 border-white' },
+            4:  { name: 'NARANJA',  hex: '#f97316', badge: 'bg-orange-400 text-slate-950 border-white' },
+            5:  { name: 'AZUL',     hex: '#38bdf8', badge: 'bg-sky-400 text-slate-950 border-white' },
+            6:  { name: 'AMARILLO', hex: '#eab308', badge: 'bg-yellow-300 text-slate-950 border-white' },
+            7:  { name: 'MORADO',   hex: '#a855f7', badge: 'bg-purple-400 text-slate-950 border-white' },
+            8:  { name: 'GRIS',     hex: '#94a3b8', badge: 'bg-slate-300 text-slate-950 border-white' },
+            9:  { name: 'ROSA',     hex: '#ec4899', badge: 'bg-pink-400 text-slate-950 border-white' },
+            10: { name: 'CIAN',     hex: '#06b6d4', badge: 'bg-cyan-300 text-slate-950 border-white' }
+        };
+
+        const DEFAULT_DRIVERS = [
+            { name: 'CARLOS',   club: 'SLOTING PLUS' },
+            { name: 'MANEL',    club: 'CLUB MANRESA' },
+            { name: 'JORDI',    club: 'BARCELONA SLOT' },
+            { name: 'ANTONIO',  club: 'SLOTING PLUS' },
+            { name: 'PACO',     club: 'MADRID SLOT' },
+            { name: 'RAMON',    club: 'CLUB MANRESA' },
+            { name: 'FERNANDO', club: 'ASTUR SLOT' },
+            { name: 'JOAN',     club: 'VALENCIA SLOT' },
+            { name: 'MIGUEL',   club: 'GIRONA SLOT' },
+            { name: 'PERE',     club: 'CATALUNYA SLOT' }
+        ];
+
+        const appState = {
+            appTitle: 'GRAN PREMIO OFICIAL // KRONOS PRO',
+            raceStatus: 'STANDBY',
+            raceFormat: 'TIME',
+            targetLaps: 25,
+            activeLanes: 1, // Empieza en 1 carril pero permite cambiar con 1 clic a 1, 2, 4, 6, 8 y 10 carriles
+            numSectors: 3,
+            sectorWeights: [0.35, 0.35, 0.30],
+            voiceEnabled: true,
+            sectorAnalystEnabled: true,
+            trackLengthMeters: 18.0,
+            scaleFactor: 32,
+            heatTotalSeconds: 300,
+            remainingSeconds: 300,
+            minLapSeconds: 0.5,
+            overallBestLap: Infinity,
+            overallBestDriver: '',
+            overallBestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
+            overallBestSectorDrivers: { 1: '', 2: '', 3: '' },
+            autoDemoTimer: null,
+            clockInterval: null,
+            lanes: {},
+            roster: DEFAULT_DRIVERS.map(d => ({ ...d })),
+            heats: [],
+            liveSyncRoomId: 'KRN' + Math.floor(1000 + Math.random() * 9000),
+            pilotOverlayActiveLane: 1,
+            isExternalPilotMobileClient: false,
+            pilotMobileVoiceUnlocked: false,
+            lastSpokenMobileLap: -1,
+            selectedChartMode: 'LAPS_LINE'
+        };
+
+        let seniorChartInstance = null;
+
+        // ============================================================================
+        // MOTOR DE GRÁFICOS DE VUELTAS Y SECTORES (4 VISTAS EN LETRA GRANDE +60 AÑOS)
+        // ============================================================================
+        function initSeniorTelemetryChart() {
+            if (typeof Chart === 'undefined') return;
+            const canvas = document.getElementById('seniorMainTelemetryChart');
+            if (!canvas) return;
+
+            seniorChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    scales: {
+                        y: {
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#f8fafc', font: { size: 13, family: 'JetBrains Mono', weight: 'bold' } },
+                            title: { display: true, text: 'Segundos (s)', color: '#fbbf24', font: { size: 13, weight: 'bold' } }
+                        },
+                        x: {
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#f8fafc', font: { size: 13, family: 'JetBrains Mono', weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff', font: { size: 13, family: 'JetBrains Mono', weight: 'bold' }, padding: 16 }
+                        },
+                        tooltip: {
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 14, family: 'JetBrains Mono' },
+                            padding: 12
+                        }
+                    }
+                }
+            });
+            renderTelemetryCharts();
+        }
+
+        function selectChartMode(mode) {
+            appState.selectedChartMode = mode;
+            ['LAPS_LINE', 'SECTORS_BAR', 'OPTIMAL_BAR', 'DRIVER_HIST'].forEach(m => {
+                const btn = document.getElementById(`btnChart-${m}`);
+                if (btn) {
+                    btn.className = (m === mode)
+                        ? 'nav-pill-active py-2.5 px-3 rounded-xl text-xs font-black border-2 border-slate-600 cursor-pointer flex items-center justify-center gap-1.5'
+                        : 'py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-600 cursor-pointer flex items-center justify-center gap-1.5';
+                }
+            });
+
+            // Si elige el gráfico 4 (Regularidad de 1 piloto) y está en "ALL", seleccionar Carril 1 automáticamente
+            const sel = document.getElementById('chartDriverSelect');
+            if (mode === 'DRIVER_HIST' && sel && sel.value === 'ALL') {
+                sel.value = '1';
+            }
+
+            renderTelemetryCharts();
+        }
+
+        function selectDriverInCharts(laneId) {
+            const sel = document.getElementById('chartDriverSelect');
+            if (sel) {
+                sel.value = String(laneId);
+                renderTelemetryCharts();
+            }
+        }
+
+        function renderTelemetryCharts() {
+            const summaryBox = document.getElementById('chartSummaryTableBox');
+            const filterSel = document.getElementById('chartDriverSelect');
+            const filterVal = filterSel ? filterSel.value : 'ALL';
+            const mode = appState.selectedChartMode || 'LAPS_LINE';
+
+            // Actualizar tarjetas laterales con resumen de tiempos de vueltas y sectores
+            if (summaryBox) {
+                let cardsHtml = '';
+                for (let i = 1; i <= appState.activeLanes; i++) {
+                    const l = appState.lanes[i];
+                    const pal = LANE_PALETTE[i];
+                    const opt = getDriverOptimalLap(l);
+                    const mean = getDriverMeanLap(l);
+                    const isSelected = (filterVal === String(i));
+                    cardsHtml += `
+                        <div onclick="selectDriverInCharts(${i})" class="p-3 rounded-xl border-2 cursor-pointer transition ${isSelected ? 'bg-slate-900 border-amber-400 shadow-lg' : 'bg-slate-950 border-slate-700 hover:border-slate-500'}">
+                            <div class="flex justify-between items-center">
+                                <span style="background:${pal.hex};color:#03060c;" class="px-2 py-0.5 rounded font-black text-xs">CH${i} ${l.name}</span>
+                                <span class="text-sky-300 font-black text-sm">${l.laps} Vueltas</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1 mt-2 text-xs">
+                                <div>Mejor: <b class="text-emerald-400">${l.bestLap < Infinity ? l.bestLap.toFixed(2) + 's' : '--.--'}</b></div>
+                                <div>Óptima: <b class="text-purple-300">${opt < Infinity ? opt.toFixed(2) + 's' : '--.--'}</b></div>
+                                <div>Media: <b class="text-amber-300">${mean > 0 ? mean.toFixed(2) + 's' : '--.--'}</b></div>
+                                <div>Última: <b class="text-white">${l.lastLap > 0 ? l.lastLap.toFixed(2) + 's' : '--.--'}</b></div>
+                            </div>
+                            <div class="mt-1.5 pt-1.5 border-t border-slate-800 text-[11px] text-slate-300 flex justify-between">
+                                <span>S1: <b class="text-white">${l.bestSectors[1] < Infinity ? l.bestSectors[1].toFixed(2) + 's' : '--'}</b></span>
+                                <span>S2: <b class="text-white">${l.bestSectors[2] < Infinity ? l.bestSectors[2].toFixed(2) + 's' : '--'}</b></span>
+                                <span>META: <b class="text-white">${l.bestSectors[3] < Infinity ? l.bestSectors[3].toFixed(2) + 's' : '--'}</b></span>
+                            </div>
+                        </div>
+                    `;
+                }
+                if (filterVal !== 'ALL') {
+                    cardsHtml = `
+                        <button onclick="selectDriverInCharts('ALL')" class="w-full py-2 bg-sky-500 text-slate-950 font-black text-xs rounded-xl cursor-pointer mb-1">
+                            <i class="fa-solid fa-users mr-1"></i>VER TODOS LOS CARRILES
+                        </button>
+                    ` + cardsHtml;
+                }
+                summaryBox.innerHTML = cardsHtml;
+            }
+
+            if (!seniorChartInstance) return;
+
+            const titleEl = document.getElementById('activeChartMainTitle');
+            const subEl = document.getElementById('activeChartSubtitle');
+            const lanesToShow = [];
+            for (let i = 1; i <= appState.activeLanes; i++) {
+                if (filterVal === 'ALL' || filterVal === String(i)) {
+                    lanesToShow.push(appState.lanes[i]);
+                }
+            }
+
+            // MODO 1: EVOLUCIÓN DE TIEMPOS VUELTA A VUELTA (LÍNEAS)
+            if (mode === 'LAPS_LINE') {
+                if (titleEl) titleEl.textContent = 'GRÁFICO 1: EVOLUCIÓN DE TIEMPOS VUELTA A VUELTA';
+                if (subEl) subEl.textContent = 'Compara el tiempo de cada vuelta. Permite ver quién mantiene el ritmo más constante sin salirse.';
+
+                seniorChartInstance.config.type = 'line';
+                let maxLaps = 0;
+                lanesToShow.forEach(l => { if (l.history.length > maxLaps) maxLaps = l.history.length; });
+
+                seniorChartInstance.data.labels = Array.from({ length: Math.max(5, maxLaps) }, (_, idx) => `Vuelta ${idx + 1}`);
+                seniorChartInstance.data.datasets = lanesToShow.map(l => ({
+                    label: `CH${l.id} ${l.name}`,
+                    data: l.history,
+                    borderColor: LANE_PALETTE[l.id].hex,
+                    backgroundColor: LANE_PALETTE[l.id].hex,
+                    borderWidth: 3.5,
+                    pointRadius: 5,
+                    tension: 0.25
+                }));
+                seniorChartInstance.options.scales.y.title.text = 'Tiempo por Vuelta (s)';
+                seniorChartInstance.update();
+                return;
+            }
+
+            // MODO 2: COMPARATIVA DE SECTORES S1, S2 Y META (BARRAS AGRUPADAS)
+            if (mode === 'SECTORS_BAR') {
+                if (titleEl) titleEl.textContent = 'GRÁFICO 2: COMPARATIVA DE SECTORES (S1, S2 Y META)';
+                if (subEl) subEl.textContent = 'Muestra los mejores tiempos de cada piloto en el Sector 1, Sector 2 y Meta para saber en qué tramo gana o pierde tiempo.';
+
+                seniorChartInstance.config.type = 'bar';
+                seniorChartInstance.data.labels = lanesToShow.map(l => `CH${l.id} ${l.name}`);
+
+                const s1Data = lanesToShow.map(l => l.bestSectors[1] < Infinity ? Number(l.bestSectors[1].toFixed(3)) : (l.lastSectors[1] || 0));
+                const s2Data = lanesToShow.map(l => l.bestSectors[2] < Infinity ? Number(l.bestSectors[2].toFixed(3)) : (l.lastSectors[2] || 0));
+                const s3Data = lanesToShow.map(l => l.bestSectors[3] < Infinity ? Number(l.bestSectors[3].toFixed(3)) : (l.lastSectors[3] || 0));
+
+                const datasets = [
+                    {
+                        label: 'Mejor Sector 1 (S1)',
+                        data: s1Data,
+                        backgroundColor: '#38bdf8',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }
+                ];
+                if (appState.numSectors >= 2) {
+                    datasets.push({
+                        label: appState.numSectors === 2 ? 'Mejor Meta (S2)' : 'Mejor Sector 2 (S2)',
+                        data: s2Data,
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    });
+                }
+                if (appState.numSectors === 3) {
+                    datasets.push({
+                        label: 'Mejor Meta / Sector 3 (S3)',
+                        data: s3Data,
+                        backgroundColor: '#10b981',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    });
+                }
+
+                seniorChartInstance.data.datasets = datasets;
+                seniorChartInstance.options.scales.y.title.text = 'Tiempo del Sector (s)';
+                seniorChartInstance.update();
+                return;
+            }
+
+            // MODO 3: MEJOR VUELTA REAL VS. VUELTA ÓPTIMA TEÓRICA Y MEDIA (BARRAS)
+            if (mode === 'OPTIMAL_BAR') {
+                if (titleEl) titleEl.textContent = 'GRÁFICO 3: MEJOR VUELTA REAL VS. VUELTA ÓPTIMA (SUMA DE MEJORES SECTORES)';
+                if (subEl) subEl.textContent = 'Compara la Mejor Vuelta Real con la Vuelta Óptima Teórica (S1+S2+Meta) y la Vuelta Media de cada jugador.';
+
+                seniorChartInstance.config.type = 'bar';
+                seniorChartInstance.data.labels = lanesToShow.map(l => `CH${l.id} ${l.name}`);
+
+                seniorChartInstance.data.datasets = [
+                    {
+                        label: 'Vuelta Óptima Teórica (S1+S2+Meta)',
+                        data: lanesToShow.map(l => {
+                            const o = getDriverOptimalLap(l);
+                            return o < Infinity ? Number(o.toFixed(3)) : 0;
+                        }),
+                        backgroundColor: '#a855f7',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Mejor Vuelta Real',
+                        data: lanesToShow.map(l => l.bestLap < Infinity ? Number(l.bestLap.toFixed(3)) : 0),
+                        backgroundColor: '#10b981',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Vuelta Media',
+                        data: lanesToShow.map(l => {
+                            const m = getDriverMeanLap(l);
+                            return m > 0 ? Number(m.toFixed(3)) : 0;
+                        }),
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }
+                ];
+                seniorChartInstance.options.scales.y.title.text = 'Segundos por Vuelta (s)';
+                seniorChartInstance.update();
+                return;
+            }
+
+            // MODO 4: DISTRIBUCIÓN Y REGULARIDAD DE VUELTAS DEL PILOTO SELECCIONADO
+            if (mode === 'DRIVER_HIST') {
+                const targetLaneId = (filterVal !== 'ALL') ? (parseInt(filterVal, 10) || 1) : 1;
+                const lane = appState.lanes[targetLaneId] || appState.lanes[1];
+
+                if (titleEl) titleEl.textContent = `GRÁFICO 4: REGULARIDAD DE VUELTAS — CH${lane.id} ${lane.name}`;
+                if (subEl) subEl.textContent = 'Cuenta cuántas vueltas ha hecho en su récord personal, cuántas en ritmo verde y cuántas con pérdida de tiempo.';
+
+                let bins = [0, 0, 0, 0];
+                if (lane.history.length > 0 && lane.bestLap < Infinity) {
+                    lane.history.forEach(t => {
+                        const diff = t - lane.bestLap;
+                        if (diff <= 0.05) bins[0]++;
+                        else if (diff <= 0.20) bins[1]++;
+                        else if (diff <= 0.45) bins[2]++;
+                        else bins[3]++;
+                    });
+                }
+
+                seniorChartInstance.config.type = 'bar';
+                seniorChartInstance.data.labels = [
+                    'Vueltas Récord (+0.05s)',
+                    'Ritmo Rápido (+0.20s)',
+                    'Ritmo Normal (+0.45s)',
+                    'Vueltas Lentas / Salida (>0.45s)'
+                ];
+                seniorChartInstance.data.datasets = [{
+                    label: `Cantidad de Vueltas (${lane.name})`,
+                    data: bins,
+                    backgroundColor: ['#a855f7', '#10b981', '#f59e0b', '#ef4444'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    borderRadius: 10
+                }];
+                seniorChartInstance.options.scales.y.title.text = 'Número de Vueltas';
+                seniorChartInstance.update();
+            }
+        }
+
+        // ============================================================================
+        // PUENTE DE TELEMETRÍA EN VIVO PARA EL MÓVIL DEL PILOTO (LOCAL + CLOUD MQTT)
+        // ============================================================================
+        let kronosBroadcastChannel = null;
+        let mqttLiveClient = null;
+        let lastQrRenderedText = '';
+
+        try {
+            if ('BroadcastChannel' in window) {
+                kronosBroadcastChannel = new BroadcastChannel('kronos_senior_live_channel');
+                kronosBroadcastChannel.onmessage = (ev) => {
+                    if (ev.data && ev.data.type === 'LIVE_SYNC') {
+                        applyIncomingLiveTelemetryPacket(ev.data.payload);
+                    }
+                };
+            }
+        } catch (e) {}
+
+        function initCloudMqttTelemetryBridge() {
+            if (typeof mqtt === 'undefined') return;
+            try {
+                mqttLiveClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+                    clientId: 'kronos_sr_' + Math.random().toString(16).substring(2, 9),
+                    clean: true,
+                    connectTimeout: 4000,
+                    reconnectPeriod: 3000
+                });
+                const topic = `kronos_slot_pro_live/${appState.liveSyncRoomId}`;
+                mqttLiveClient.on('connect', () => {
+                    mqttLiveClient.subscribe(topic);
+                    if (!appState.isExternalPilotMobileClient) broadcastLiveTelemetryState();
+                });
+                mqttLiveClient.on('message', (t, message) => {
+                    if (t === topic) {
+                        try { applyIncomingLiveTelemetryPacket(JSON.parse(message.toString())); } catch (e) {}
+                    }
+                });
+            } catch (e) {}
+        }
+
+        function broadcastLiveTelemetryState() {
+            if (appState.isExternalPilotMobileClient) return;
+            const lanesArr = [];
+            for (let i = 1; i <= appState.activeLanes; i++) {
+                const l = appState.lanes[i];
+                lanesArr.push({
+                    id: l.id, n: l.name, c: l.club, l: l.laps, ll: l.lastLap,
+                    bl: l.bestLap < Infinity ? l.bestLap : null,
+                    tt: l.totalRaceTime,
+                    s1: l.lastSectors[1], s2: l.lastSectors[2], s3: l.lastSectors[3],
+                    bs1: l.bestSectors[1] < Infinity ? l.bestSectors[1] : null,
+                    bs2: l.bestSectors[2] < Infinity ? l.bestSectors[2] : null,
+                    bs3: l.bestSectors[3] < Infinity ? l.bestSectors[3] : null,
+                    h: l.history.slice(-30)
+                });
+            }
+            const pkt = {
+                t: appState.appTitle,
+                al: appState.activeLanes,
+                ns: appState.numSectors,
+                rf: appState.raceFormat,
+                rs: appState.raceStatus,
+                rem: appState.remainingSeconds,
+                tl: appState.targetLaps,
+                lanes: lanesArr
+            };
+            try {
+                if (kronosBroadcastChannel) kronosBroadcastChannel.postMessage({ type: 'LIVE_SYNC', payload: pkt });
+                if (mqttLiveClient && mqttLiveClient.connected) {
+                    mqttLiveClient.publish(`kronos_slot_pro_live/${appState.liveSyncRoomId}`, JSON.stringify(pkt));
+                }
+            } catch (e) {}
+        }
+
+        function applyIncomingLiveTelemetryPacket(pkt) {
+            if (!pkt || !Array.isArray(pkt.lanes)) return;
+            appState.activeLanes = pkt.al || appState.activeLanes;
+            appState.numSectors = pkt.ns || appState.numSectors;
+            appState.raceStatus = pkt.rs || appState.raceStatus;
+            if (typeof pkt.rem === 'number') appState.remainingSeconds = pkt.rem;
+
+            pkt.lanes.forEach(item => {
+                const target = appState.lanes[item.id];
+                if (target) {
+                    target.name = item.n;
+                    target.club = item.c;
+                    target.laps = item.l;
+                    target.lastLap = item.ll;
+                    target.bestLap = item.bl !== null ? item.bl : Infinity;
+                    target.totalRaceTime = item.tt;
+                    target.lastSectors[1] = item.s1;
+                    target.lastSectors[2] = item.s2;
+                    target.lastSectors[3] = item.s3;
+                    target.bestSectors[1] = item.bs1 !== null ? item.bs1 : Infinity;
+                    target.bestSectors[2] = item.bs2 !== null ? item.bs2 : Infinity;
+                    target.bestSectors[3] = item.bs3 !== null ? item.bs3 : Infinity;
+                    target.history = Array.isArray(item.h) ? item.h : [];
+                }
+            });
+
+            renderPilotMobileLiveOverlay();
+            updateMobilePitWallView(false);
+        }
+
+        // Cálculo táctico para saber quién va delante y quién va detrás del piloto seleccionado
+        function getPilotTacticalContext(laneId) {
+            const standings = [];
+            for (let i = 1; i <= appState.activeLanes; i++) standings.push(appState.lanes[i]);
+            standings.sort((a, b) => (b.laps !== a.laps) ? (b.laps - a.laps) : (a.totalRaceTime - b.totalRaceTime));
+
+            const myIndex = standings.findIndex(s => s.id === laneId);
+            const me = standings[myIndex] || appState.lanes[laneId];
+            const carAhead = myIndex > 0 ? standings[myIndex - 1] : null;
+            const carBehind = (myIndex >= 0 && myIndex < standings.length - 1) ? standings[myIndex + 1] : null;
+
+            const formatGap = (frontCar, backCar) => {
+                if (!frontCar || !backCar) return '0.00s';
+                const dLaps = frontCar.laps - backCar.laps;
+                if (dLaps > 0) return `${dLaps} VUELTA${dLaps > 1 ? 'S' : ''}`;
+                return `${Math.abs(backCar.totalRaceTime - frontCar.totalRaceTime).toFixed(2)}s`;
+            };
+
+            const formatPace = (refCar, myCar) => {
+                if (!refCar || !myCar || myCar.lastLap <= 0 || refCar.lastLap <= 0) return 'Esperando vuelta...';
+                const diff = myCar.lastLap - refCar.lastLap;
+                if (Math.abs(diff) < 0.04) return 'Mismo ritmo';
+                return diff < 0 ? `¡Le recortas ${Math.abs(diff).toFixed(2)}s!` : `Pierdes +${diff.toFixed(2)}s`;
+            };
+
+            return {
+                pos: myIndex + 1,
+                totalCars: standings.length,
+                me,
+                carAhead,
+                carBehind,
+                gapToAhead: carAhead ? `A -${formatGap(carAhead, me)}` : 'LÍDER EN P1',
+                paceVsAhead: carAhead ? formatPace(carAhead, me) : 'En cabeza de carrera',
+                gapToBehind: carBehind ? `A +${formatGap(me, carBehind)}` : 'SIN RIVAL DETRÁS',
+                paceVsBehind: carBehind ? formatPace(carBehind, me) : 'Pista libre detrás'
+            };
+        }
+
+        function getDriverOptimalLap(lane) {
+            if (!lane) return Infinity;
+            const sCount = appState.numSectors;
+            if (sCount === 1) return lane.bestLap;
+            let sum = 0;
+            for (let s = 1; s <= sCount; s++) {
+                if (lane.bestSectors[s] === Infinity) return Infinity;
+                sum += lane.bestSectors[s];
+            }
+            return sum;
+        }
+
+        function getDriverMeanLap(lane) {
+            if (!lane || !lane.history || lane.history.length === 0) return 0;
+            return lane.history.reduce((a, b) => a + b, 0) / lane.history.length;
+        }
+
+        // ============================================================================
+        // MOTOR DE VOZ DE HOMBRE ESPAÑOL (TANTO PARA PISTA COMO PARA SENSORES/SECTORES)
+        // ============================================================================
+        function getSpanishMaleVoice() {
+            if (!('speechSynthesis' in window)) return null;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) return null;
+
+            const esVoices = voices.filter(v => v.lang.toLowerCase().startsWith('es'));
+            const explicitMale = esVoices.find(v => /pablo|alvaro|álvaro|jorge|sergio|diego|carlos|juan|enrique|antonio|miguel|david|male|hombre/i.test(v.name));
+            if (explicitMale) return explicitMale;
+
+            const nonFemale = esVoices.find(v => !/monica|mónica|paulina|helena|laura|lucia|lucía|elvira|female|mujer|sabina/i.test(v.name));
+            if (nonFemale) return nonFemale;
+
+            return esVoices[0] || null;
+        }
+
+        function speakSpotter(text, priority = false) {
+            const el = document.getElementById('spotterMessage');
+            if (el) el.innerHTML = `<i class="fa-solid fa-microphone mr-1.5 text-sky-400"></i>${text}`;
+            if (!appState.voiceEnabled || !('speechSynthesis' in window)) return;
+            try {
+                if (priority) window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'es-ES';
+                const maleVoice = getSpanishMaleVoice();
+                if (maleVoice) utter.voice = maleVoice;
+                utter.pitch = 0.80; // Tono masculino firme y claro
+                utter.rate = 1.12;
+                window.speechSynthesis.speak(utter);
+            } catch (e) {}
+        }
+
+        function speakSectorAnalyst(text, priority = false) {
+            const el = document.getElementById('sectorAnalystMessage');
+            if (el) el.innerHTML = `<i class="fa-solid fa-user-tie mr-1.5 text-emerald-400"></i>${text}`;
+            if (!appState.voiceEnabled || !appState.sectorAnalystEnabled || !('speechSynthesis' in window)) return;
+            try {
+                if (priority) window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'es-ES';
+                const maleVoice = getSpanishMaleVoice();
+                if (maleVoice) utter.voice = maleVoice;
+                utter.pitch = 0.76; // Voz de hombre español grave para los sensores de sector
+                utter.rate = 1.14;
+                window.speechSynthesis.speak(utter);
+            } catch (e) {}
+        }
+
+        function toggleVoiceSpotter() {
+            appState.voiceEnabled = !appState.voiceEnabled;
+            const icon = document.getElementById('voiceIcon');
+            if (icon) {
+                icon.innerHTML = appState.voiceEnabled
+                    ? '<i class="fa-solid fa-volume-high"></i> VOZ ON'
+                    : '<i class="fa-solid fa-volume-xmark"></i> SILENCIO';
+            }
+            if (appState.voiceEnabled) speakSpotter("Voz de hombre español activada.", true);
+        }
+
+        function toggleSectorAnalystVoice() {
+            appState.sectorAnalystEnabled = !appState.sectorAnalystEnabled;
+            const btn = document.getElementById('btnAnalystToggle');
+            if (btn) {
+                btn.textContent = appState.sectorAnalystEnabled ? 'ACTIVA' : 'APAGADA';
+                btn.className = appState.sectorAnalystEnabled
+                    ? 'px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-xs cursor-pointer shrink-0'
+                    : 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-bold text-xs cursor-pointer shrink-0';
+            }
+            if (appState.sectorAnalystEnabled) {
+                speakSectorAnalyst("Voz de hombre para sensores de sector activada.", true);
+            }
+        }
+
+        // ============================================================================
+        // CONEXIÓN Y CIERRE INMEDIATO DEL PUERTO USB SERIE
+        // ============================================================================
+        let activeSerialPort = null;
+        let activeSerialReader = null;
+        let activeUsbDevice = null;
+        let usbReadLoopActive = false;
+        let selectedBaudRate = 115200;
+
+        function changeSerialBaudRate(val) {
+            selectedBaudRate = parseInt(val, 10) || 115200;
+            logSerialConsole(`Velocidad seleccionada: ${selectedBaudRate} baudios.`);
+        }
+
+        function connectArduinoUSB() {
+            document.getElementById('usbAndroidHelperModal').classList.remove('hidden');
+        }
+
+        async function disconnectUsbSerialPort() {
+            usbReadLoopActive = false;
+            try {
+                if (activeSerialReader) {
+                    await activeSerialReader.cancel();
+                    try { activeSerialReader.releaseLock(); } catch (e) {}
+                    activeSerialReader = null;
+                }
+            } catch (e) {}
+
+            try {
+                if (activeSerialPort) {
+                    await activeSerialPort.close();
+                    activeSerialPort = null;
+                }
+            } catch (e) {}
+
+            try {
+                if (activeUsbDevice && activeUsbDevice.opened) {
+                    await activeUsbDevice.close();
+                }
+                activeUsbDevice = null;
+            } catch (e) {}
+
+            const st = document.getElementById('usbModalStatus');
+            if (st) {
+                st.textContent = 'PUERTO USB CERRADO';
+                st.className = 'px-3 py-1 rounded-lg bg-red-500/20 text-red-300 text-xs font-black border border-red-400';
+            }
+            const pill = document.getElementById('usbLiveStatusPill');
+            if (pill) {
+                pill.textContent = 'USB CERRADO';
+                pill.className = 'px-2 py-0.5 rounded bg-red-600/30 text-red-200 font-mono font-black text-[11px] border border-red-400';
+            }
+
+            logSerialConsole("PUERTO USB CERRADO. Los sensores ya no envían datos a la pantalla.");
+            speakSpotter("Puerto USB cerrado. Sensores desconectados.", true);
+        }
+
+        async function connectViaDesktopWebSerial() {
+            if (!('serial' in navigator)) {
+                logSerialConsole("Usa el botón 2 (Conectar Tablet WebUSB) en este dispositivo.");
+                return;
+            }
+            try {
+                await disconnectUsbSerialPort();
+                const port = await navigator.serial.requestPort();
+                await port.open({ baudRate: selectedBaudRate });
+                activeSerialPort = port;
+                usbReadLoopActive = true;
+
+                const st = document.getElementById('usbModalStatus');
+                if (st) {
+                    st.textContent = 'USB CONECTADO Y RECIBIENDO';
+                    st.className = 'px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-400';
+                }
+                const pill = document.getElementById('usbLiveStatusPill');
+                if (pill) {
+                    pill.textContent = 'USB CONECTADO';
+                    pill.className = 'px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-mono font-black text-[11px]';
+                }
+
+                logSerialConsole(`Conectado a ${selectedBaudRate} baudios.`);
+                speakSpotter("Puerto USB conectado. Sensores listos.", true);
+
+                const reader = port.readable.getReader();
+                activeSerialReader = reader;
+                const decoder = new TextDecoder();
+                let rxBuffer = '';
+
+                while (usbReadLoopActive) {
+                    const { value, done } = await reader.read();
+                    if (done || !usbReadLoopActive) break;
+                    if (value && value.byteLength > 0) {
+                        rxBuffer += decoder.decode(value, { stream: true });
+                        const lines = rxBuffer.split(/[\r\n]+/);
+                        rxBuffer = lines.pop() || '';
+                        for (const l of lines) {
+                            if (l.trim()) parseUniversalSerialLine(l.trim());
+                        }
+                    }
+                }
+            } catch (err) {
+                logSerialConsole(`Aviso WebSerial: ${err.message}`);
+            }
+        }
+
+        async function connectViaAndroidWebUSB() {
+            if (!('usb' in navigator)) {
+                logSerialConsole("Navegador sin soporte WebUSB.");
+                return;
+            }
+            try {
+                await disconnectUsbSerialPort();
+                const device = await navigator.usb.requestDevice({ filters: [] });
+                activeUsbDevice = device;
+                await device.open();
+                if (device.configuration === null) await device.selectConfiguration(1);
+                await device.claimInterface(0);
+                usbReadLoopActive = true;
+
+                const st = document.getElementById('usbModalStatus');
+                if (st) {
+                    st.textContent = 'TABLET USB CONECTADA';
+                    st.className = 'px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-400';
+                }
+                const pill = document.getElementById('usbLiveStatusPill');
+                if (pill) {
+                    pill.textContent = 'USB CONECTADO';
+                    pill.className = 'px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-mono font-black text-[11px]';
+                }
+
+                speakSpotter("Cable USB de tablet conectado.", true);
+                const decoder = new TextDecoder();
+                let rxBuffer = '';
+                while (usbReadLoopActive && device.opened) {
+                    const result = await device.transferIn(1, 64);
+                    if (result && result.data && result.data.byteLength > 0) {
+                        const rawBytes = new Uint8Array(result.data.buffer);
+                        rxBuffer += decoder.decode(rawBytes, { stream: true });
+                        const lines = rxBuffer.split(/[\r\n]+/);
+                        rxBuffer = lines.pop() || '';
+                        for (const l of lines) {
+                            if (l.trim()) parseUniversalSerialLine(l.trim());
+                        }
+                    }
+                }
+            } catch (err) {
+                logSerialConsole(`Aviso WebUSB: ${err.message}`);
+            }
+        }
+
+        // ============================================================================
+        // INICIALIZACIÓN Y ADAPTACIÓN AUTOMÁTICA A 1, 2, 4, 6, 8 Y 10 CARRILES
+        // ============================================================================
+        function initAllLanesData() {
+            for (let i = 1; i <= 10; i++) {
+                const def = DEFAULT_DRIVERS[i - 1];
+                appState.lanes[i] = {
+                    id: i,
+                    name: def.name,
+                    club: def.club,
+                    laps: 0,
+                    lastLap: 0,
+                    bestLap: Infinity,
+                    history: [],
+                    totalRaceTime: 0,
+                    tofMm: 35,
+                    nextExpectedSector: 1,
+                    currentLapSectors: { 1: null, 2: null, 3: null },
+                    lastSectors: { 1: null, 2: null, 3: null },
+                    bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
+                    sectorColors: { 1: '', 2: '', 3: '' }
+                };
+            }
+        }
+
+        function setSystemTopology(newLanes, newSectors) {
+            if (newLanes !== null) appState.activeLanes = newLanes;
+            if (newSectors !== null) appState.numSectors = newSectors;
+
+            // Actualizar botones grandes de 1, 2, 4, 6, 8 y 10 carriles
+            [1, 2, 4, 6, 8, 10].forEach(n => {
+                const btn = document.getElementById(`btnLane-${n}`);
+                if (btn) {
+                    btn.className = (n === appState.activeLanes)
+                        ? 'lane-btn-active py-1.5 rounded-lg text-xs font-mono font-black border border-white cursor-pointer'
+                        : 'py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 text-white hover:bg-slate-700 border border-slate-600 cursor-pointer';
+                }
+            });
+
+            // Actualizar botones de 1S, 2S y 3S
+            [1, 2, 3].forEach(s => {
+                const btn = document.getElementById(`btnSec-${s}`);
+                if (btn) {
+                    btn.className = (s === appState.numSectors)
+                        ? 'px-2 py-1 text-xs font-black rounded-lg bg-emerald-500 text-slate-950 cursor-pointer'
+                        : 'px-2 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 cursor-pointer';
+                }
+            });
+
+            const cfgLanes = document.getElementById('cfgLanesSelect');
+            if (cfgLanes) cfgLanes.value = String(appState.activeLanes);
+            const cfgSec = document.getElementById('cfgSectorsSelect');
+            if (cfgSec) cfgSec.value = String(appState.numSectors);
+
+            const rotLbl = document.getElementById('rotLaneCountLabel');
+            if (rotLbl) rotLbl.textContent = `Pista: ${appState.activeLanes} Carril${appState.activeLanes > 1 ? 'es' : ''}`;
+            const mapLbl = document.getElementById('mapTopologyLabel');
+            if (mapLbl) mapLbl.textContent = `PISTA: ${appState.activeLanes} CARRIL${appState.activeLanes > 1 ? 'ES' : ''} (${appState.numSectors}S)`;
+
+            renderLanesGrid();
+            renderPurpleSectorsBox();
+            renderSectorAnalysisTable();
+            populateDriverSelectDropdowns();
+            generateChampionshipHeats(false);
+            forceRefreshPilotQrCode();
+        }
+
+        function renderLanesGrid() {
+            const container = document.getElementById('lanesGridContainer');
+            const n = appState.activeLanes;
+            const sCount = appState.numSectors;
+
+            // Distribución limpia de rejilla para 1, 2, 4, 6, 8 y 10 carriles
+            if (n === 1) {
+                container.className = 'col-span-9 grid grid-cols-1 grid-rows-1 gap-3 h-full min-h-0';
+            } else if (n === 2) {
+                container.className = 'col-span-9 grid grid-cols-2 grid-rows-1 gap-3 h-full min-h-0';
+            } else if (n === 4) {
+                container.className = 'col-span-9 grid grid-cols-2 grid-rows-2 gap-3 h-full min-h-0';
+            } else if (n === 6) {
+                container.className = 'col-span-9 grid grid-cols-3 grid-rows-2 gap-2.5 h-full min-h-0';
+            } else if (n === 8) {
+                container.className = 'col-span-9 grid grid-cols-4 grid-rows-2 gap-2 h-full min-h-0';
+            } else {
+                container.className = 'col-span-9 grid grid-cols-5 grid-rows-2 gap-2 h-full min-h-0';
+            }
+
+            // Tamaños adaptados pero siempre muy legibles para mayores de 60 años
+            const isLarge = (n <= 2);
+            const isMed = (n === 4 || n === 6);
+
+            let html = '';
+            for (let i = 1; i <= n; i++) {
+                const lane = appState.lanes[i];
+                const pal = LANE_PALETTE[i];
+
+                let sectorsRow = '';
+                if (sCount >= 2) {
+                    sectorsRow = `
+                        <div class="grid grid-cols-${sCount} gap-1.5 font-mono-num shrink-0">
+                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 flex justify-between items-center ${lane.sectorColors[1]}">
+                                <span class="text-xs font-black text-sky-300">S1</span>
+                                <span class="font-black ${isLarge ? 'text-base' : 'text-xs'} text-white">${lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(2) + 's' : '--.--'}</span>
+                            </div>
+                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 flex justify-between items-center ${lane.sectorColors[2]}">
+                                <span class="text-xs font-black text-amber-300">${sCount === 2 ? 'META' : 'S2'}</span>
+                                <span class="font-black ${isLarge ? 'text-base' : 'text-xs'} text-white">${lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(2) + 's' : '--.--'}</span>
+                            </div>
+                            ${sCount === 3 ? `
+                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 flex justify-between items-center ${lane.sectorColors[3]}">
+                                <span class="text-xs font-black text-emerald-300">META</span>
+                                <span class="font-black ${isLarge ? 'text-base' : 'text-xs'} text-white">${lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(2) + 's' : '--.--'}</span>
+                            </div>` : ''}
+                        </div>
+                    `;
+                }
+
+                html += `
+                <div id="laneCard-${i}" style="border-left-color: ${pal.hex};" class="glass-panel rounded-2xl ${isLarge ? 'p-4' : 'p-2.5'} border-2 border-slate-600 border-l-[12px] flex flex-col justify-between h-full min-h-0">
+                    
+                    <!-- Cabecera del Carril: Número, Nombre Editable Grande y Posición -->
+                    <div class="flex justify-between items-center gap-2 border-b border-slate-700 pb-1.5 shrink-0">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span style="background:${pal.hex}; color:#03060c;" class="px-2.5 py-1 rounded-xl font-mono-num font-black ${isLarge ? 'text-base' : 'text-xs'} shrink-0 shadow">
+                                CH${i}
+                            </span>
+                            <input type="text" value="${lane.name}" onchange="updateDriverName(${i}, this.value)"
+                                   class="bg-transparent text-white font-black ${isLarge ? 'text-2xl w-44' : (isMed ? 'text-base w-28' : 'text-sm w-20')} uppercase truncate focus:outline-none focus:border-b-2 border-amber-400"/>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span id="posBadge-${i}" class="px-2.5 py-1 ${isLarge ? 'text-sm' : 'text-xs'} font-mono font-black rounded-xl bg-slate-800 text-white border border-slate-500">
+                                ${i}&ordm;
+                            </span>
+                            <button onclick="triggerNextCheckpoint(${i})" class="px-2.5 py-1 bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono font-black text-xs rounded-xl cursor-pointer shadow" title="Pulsar para simular paso del coche">
+                                +PASO
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Números Gigantes: Vueltas, Última Vuelta y Mejor Vuelta -->
+                    <div class="grid grid-cols-3 gap-2 my-auto text-center font-mono-num">
+                        <div class="bg-slate-950 p-2 rounded-xl border-2 border-sky-500/60 flex flex-col justify-center">
+                            <div class="text-[11px] text-sky-300 font-black uppercase">VUELTAS</div>
+                            <div id="laps-${i}" class="${isLarge ? 'text-5xl' : (isMed ? 'text-3xl' : 'text-2xl')} font-black text-white leading-none mt-1">${lane.laps}</div>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border-2 border-amber-500/60 flex flex-col justify-center">
+                            <div class="text-[11px] text-amber-300 font-black uppercase">ÚLTIMA</div>
+                            <div id="lastLap-${i}" class="${isLarge ? 'text-3xl' : (isMed ? 'text-xl' : 'text-sm')} font-black text-white leading-none mt-1">${lane.lastLap > 0 ? lane.lastLap.toFixed(2) + 's' : '0.00s'}</div>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border-2 border-emerald-500/60 flex flex-col justify-center">
+                            <div class="text-[11px] text-emerald-300 font-black uppercase">MEJOR</div>
+                            <div id="bestLap-${i}" class="${isLarge ? 'text-3xl' : (isMed ? 'text-xl' : 'text-sm')} font-black text-emerald-400 leading-none mt-1">${lane.bestLap < Infinity ? lane.bestLap.toFixed(2) + 's' : '--.--'}</div>
+                        </div>
+                    </div>
+
+                    ${sectorsRow}
+
+                    <!-- Pie del Carril: Diferencia con el Líder y Distancia VL53L0X -->
+                    <div class="flex justify-between items-center bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-700 font-mono text-xs shrink-0">
+                        <span id="gap-${i}" class="font-black text-amber-300 truncate">PREPARADO</span>
+                        <span class="text-slate-300 font-bold">ToF: <strong class="text-white">${lane.tofMm}mm</strong></span>
+                    </div>
+                </div>
+                `;
+            }
+            container.innerHTML = html;
+            updateMultiLaneStandings();
+        }
+
+        // ============================================================================
+        // PROCESAMIENTO DE SENSORES (S1, S2 Y META) Y CLASIFICACIÓN EN TIEMPO REAL
+        // ============================================================================
+        function parseUniversalSerialLine(line) {
+            logSerialConsole(`RX <- ${line}`);
+            const clean = line.trim().toUpperCase().replace(/\s+/g, '');
+            if (!clean) return;
+
+            const parts = clean.split(/[,:;]/);
+
+            // Trama de vuelta directa L1,3450,40
+            if (parts[0].startsWith('L') && parts.length >= 2) {
+                const laneId = parseInt(parts[0].substring(1), 10) || 1;
+                const timeMs = parseFloat(parts[1]) || 1250;
+                const tofMm = parts[2] ? parseInt(parts[2], 10) : 35;
+                flashSensorTestLamp('META', `${(timeMs / 1000).toFixed(2)}s`);
+                registerSectorOrLapEvent(laneId, appState.numSectors, timeMs, tofMm);
+                return;
+            }
+
+            // Tramas S1, S2 o M (Meta)
+            if ((parts[0].startsWith('S') || parts[0] === 'M' || parts[0] === 'META') && parts.length >= 2) {
+                const isMeta = (parts[0] === 'M' || parts[0] === 'META' || parts[0] === 'S3');
+                const secIdx = isMeta ? appState.numSectors : (parseInt(parts[0].substring(1), 10) || 1);
+                const laneId = parseInt(parts[1].replace('L', ''), 10) || 1;
+                const timeMs = parts[2] ? parseFloat(parts[2]) : 1250;
+                const tofMm = parts[3] ? parseInt(parts[3], 10) : 35;
+
+                const lampKey = isMeta ? 'META' : (secIdx === 1 ? 'S1' : 'S2');
+                flashSensorTestLamp(lampKey, `CH${laneId}: ${(timeMs / 1000).toFixed(2)}s`);
+                registerSectorOrLapEvent(laneId, secIdx, timeMs, tofMm);
+            }
+        }
+
+        function triggerNextCheckpoint(laneId) {
+            const lane = appState.lanes[laneId];
+            if (!lane) return;
+            const secIdx = lane.nextExpectedSector;
+            const simMs = Math.floor(1100 + Math.random() * 350);
+            const simMm = Math.floor(25 + Math.random() * 20);
+            registerSectorOrLapEvent(laneId, secIdx, simMs, simMm);
+        }
+
+        function registerSectorOrLapEvent(laneId, sectorIndex, timeMsFromHardware, tofMm) {
+            const lane = appState.lanes[laneId];
+            if (!lane) return;
+
+            if (appState.raceStatus === 'STANDBY') {
+                appState.raceStatus = 'RACING';
+                startMasterClock();
+            }
+            if (appState.raceStatus === 'TRACK_CALL') return;
+
+            const sCount = appState.numSectors;
+            const secTime = (timeMsFromHardware && timeMsFromHardware > 0) ? (timeMsFromHardware / 1000.0) : 1.25;
+            if (tofMm !== null && !isNaN(tofMm)) lane.tofMm = tofMm;
+
+            if (sCount === 1 || sectorIndex >= sCount) {
+                // Cierre de vuelta en META
+                lane.currentLapSectors[sCount] = secTime;
+                lane.lastSectors[sCount] = secTime;
+                if (secTime < lane.bestSectors[sCount]) lane.bestSectors[sCount] = secTime;
+                if (secTime < appState.overallBestSectors[sCount]) {
+                    appState.overallBestSectors[sCount] = secTime;
+                    appState.overallBestSectorDrivers[sCount] = lane.name;
+                }
+
+                let totalLap = secTime;
+                if (sCount > 1) {
+                    totalLap = 0;
+                    for (let s = 1; s <= sCount; s++) {
+                        totalLap += (lane.currentLapSectors[s] || 1.25);
+                    }
+                }
+                completeFullLap(laneId, totalLap);
+                lane.nextExpectedSector = 1;
+                lane.currentLapSectors = { 1: null, 2: null, 3: null };
+            } else {
+                // Paso por Sector 1 o Sector 2
+                lane.currentLapSectors[sectorIndex] = secTime;
+                lane.lastSectors[sectorIndex] = secTime;
+                lane.nextExpectedSector = sectorIndex + 1;
+
+                if (secTime < appState.overallBestSectors[sectorIndex]) {
+                    appState.overallBestSectors[sectorIndex] = secTime;
+                    appState.overallBestSectorDrivers[sectorIndex] = lane.name;
+                    lane.bestSectors[sectorIndex] = secTime;
+                    lane.sectorColors[sectorIndex] = 'sector-purple';
+                } else if (secTime < lane.bestSectors[sectorIndex]) {
+                    lane.bestSectors[sectorIndex] = secTime;
+                    lane.sectorColors[sectorIndex] = 'sector-green';
+                } else {
+                    lane.sectorColors[sectorIndex] = 'sector-yellow';
+                }
+
+                speakSectorAnalyst(`${lane.name}, sector ${sectorIndex} en ${secTime.toFixed(2)} segundos.`);
+                prependLiveLogRow(`S${sectorIndex}`, laneId, lane.name, secTime);
+            }
+
+            renderLanesGrid();
+            renderPurpleSectorsBox();
+            renderSectorAnalysisTable();
+            renderTelemetryCharts();
+            renderPilotMobileLiveOverlay();
+            updateMobilePitWallView(false);
+            broadcastLiveTelemetryState();
+        }
+
+        function completeFullLap(laneId, lapSec) {
+            const lane = appState.lanes[laneId];
+            if (lapSec < appState.minLapSeconds) return;
+
+            lane.laps++;
+            lane.lastLap = lapSec;
+            lane.totalRaceTime += lapSec;
+            lane.history.push(lapSec);
+
+            if (lapSec < lane.bestLap) lane.bestLap = lapSec;
+            if (lapSec < appState.overallBestLap) {
+                appState.overallBestLap = lapSec;
+                appState.overallBestDriver = lane.name;
+                const recEl = document.getElementById('overallPurpleLap');
+                if (recEl) recEl.textContent = `RÉCORD: ${lapSec.toFixed(2)}s (${lane.name})`;
+            }
+
+            speakSpotter(`${lane.name}, vuelta ${lane.laps}, tiempo ${lapSec.toFixed(2)} segundos.`);
+            prependLiveLogRow(`V${lane.laps}`, laneId, lane.name, lapSec);
+
+            if (appState.raceFormat === 'LAPS' && lane.laps >= appState.targetLaps) {
+                finishAndOpenOfficialReport();
+            }
+        }
+
+        function updateMultiLaneStandings() {
+            const activeList = [];
+            for (let i = 1; i <= appState.activeLanes; i++) activeList.push(appState.lanes[i]);
+            activeList.sort((a, b) => (b.laps !== a.laps) ? (b.laps - a.laps) : (a.totalRaceTime - b.totalRaceTime));
+
+            const leader = activeList[0];
+            activeList.forEach((lane, idx) => {
+                const pos = idx + 1;
+                const badge = document.getElementById(`posBadge-${lane.id}`);
+                const gapEl = document.getElementById(`gap-${lane.id}`);
+                if (badge) {
+                    badge.innerHTML = `${pos}&ordm; PUESTO`;
+                    badge.className = pos === 1
+                        ? 'px-2.5 py-1 text-xs font-mono font-black rounded-xl pos-p1-gold'
+                        : (pos === 2 ? 'px-2.5 py-1 text-xs font-mono font-black rounded-xl pos-p2-silver' : 'px-2.5 py-1 text-xs font-mono font-black rounded-xl bg-slate-800 text-white border border-slate-500');
+                }
+                if (gapEl) {
+                    if (pos === 1) {
+                        gapEl.textContent = 'LÍDER EN PISTA';
+                    } else {
+                        const dLaps = leader.laps - lane.laps;
+                        gapEl.textContent = dLaps > 0 ? `A +${dLaps} VUELTA${dLaps > 1 ? 'S' : ''}` : `A +${Math.abs(lane.totalRaceTime - leader.totalRaceTime).toFixed(2)}s`;
+                    }
+                }
+            });
+            return activeList;
+        }
+
+        function renderPurpleSectorsBox() {
+            const box = document.getElementById('purpleSectorsSummary');
+            if (!box) return;
+            const sCount = appState.numSectors;
+            let html = '';
+            for (let s = 1; s <= sCount; s++) {
+                const val = appState.overallBestSectors[s];
+                const drv = appState.overallBestSectorDrivers[s];
+                html += `
+                    <div class="bg-slate-950 p-2 rounded-xl border border-purple-500/50">
+                        <div class="text-[11px] text-purple-300 font-black">${s === sCount ? 'META' : 'SECTOR ' + s}</div>
+                        <div class="text-sm font-black text-white mt-0.5">${val < Infinity ? val.toFixed(2) + 's' : '--.--'}</div>
+                        <div class="text-[10px] text-amber-300 font-bold truncate">${drv || '---'}</div>
+                    </div>
+                `;
+            }
+            box.innerHTML = html;
+        }
+
+        function renderSectorAnalysisTable() {
+            const tbody = document.getElementById('sectorAnalysisTableBody');
+            if (!tbody) return;
+            const activeList = [];
+            for (let i = 1; i <= appState.activeLanes; i++) activeList.push(appState.lanes[i]);
+            activeList.sort((a, b) => a.bestLap - b.bestLap);
+
+            tbody.innerHTML = activeList.map((lane, idx) => {
+                const opt = (lane.bestSectors[1] < Infinity && lane.bestSectors[2] < Infinity && lane.bestSectors[3] < Infinity)
+                    ? (lane.bestSectors[1] + lane.bestSectors[2] + lane.bestSectors[3]).toFixed(2) + 's'
+                    : '--.--';
+                return `
+                    <tr class="hover:bg-slate-900">
+                        <td class="p-3.5 font-black text-amber-300 text-base">${idx + 1}&ordm;</td>
+                        <td class="p-3.5 font-black text-white text-base">CH${lane.id} — ${lane.name}</td>
+                        <td class="p-3.5 font-black text-sky-300 text-base">${lane.laps}</td>
+                        <td class="p-3.5 font-bold text-white">${lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(2) + 's' : '--.--'}</td>
+                        <td class="p-3.5 font-bold text-white">${lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(2) + 's' : '--.--'}</td>
+                        <td class="p-3.5 font-bold text-white">${lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(2) + 's' : '--.--'}</td>
+                        <td class="p-3.5 font-black text-emerald-400 text-base">${lane.bestLap < Infinity ? lane.bestLap.toFixed(2) + 's' : '--.--'}</td>
+                        <td class="p-3.5 font-black text-purple-300 text-base">${opt}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function prependLiveLogRow(tag, laneId, driverName, timeSec) {
+            const tbody = document.getElementById('liveLogBody');
+            if (!tbody) return;
+            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="py-1.5 font-black text-amber-300">${tag}</td>
+                <td class="py-1.5 font-black text-white">CH${laneId} ${driverName}</td>
+                <td class="py-1.5 text-right font-black text-emerald-400">${timeSec.toFixed(2)}s</td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+            while (tbody.children.length > 25) tbody.removeChild(tbody.lastChild);
+        }
+
+        function flashSensorTestLamp(key, txt) {
+            const lamp = document.getElementById(`testLamp-${key}`);
+            const val = document.getElementById(`testLampVal-${key}`);
+            if (lamp && val) {
+                lamp.classList.add('lamp-triggered');
+                val.textContent = txt;
+                setTimeout(() => lamp.classList.remove('lamp-triggered'), 450);
+            }
+        }
+
+        function runFullSimulatedHardwareTest() {
+            parseUniversalSerialLine('S1,L1,1220,42');
+            setTimeout(() => parseUniversalSerialLine('S2,L1,1310,39'), 650);
+            setTimeout(() => parseUniversalSerialLine('M,L1,1180,36'), 1300);
+        }
+
+        function logSerialConsole(msg) {
+            const t = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            const b1 = document.getElementById('usbRawByteSnifferBox');
+            const b2 = document.getElementById('usbModalLiveFeed');
+            if (b1) { const d = document.createElement('div'); d.textContent = t; b1.insertBefore(d, b1.firstChild); }
+            if (b2) { const d = document.createElement('div'); d.textContent = t; b2.insertBefore(d, b2.firstChild); }
+        }
+
+        // Control de Semáforo y Reloj
+        function clearF1Lights() {
+            for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.remove('red-on', 'green-on', 'amber-on');
+        }
+
+        function startF1Sequence() {
+            clearF1Lights();
+            appState.raceStatus = 'COUNTDOWN';
+            speakSpotter("Atención pilotos. Semáforo de salida en marcha.", true);
+            for (let i = 1; i <= 5; i++) {
+                setTimeout(() => {
+                    document.getElementById(`f1L${i}`).classList.add('red-on');
+                }, i * 700);
+            }
+            setTimeout(() => {
+                clearF1Lights();
+                for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('green-on');
+                appState.raceStatus = 'RACING';
+                document.getElementById('raceStateBadge').textContent = 'EN CARRERA';
+                speakSpotter("¡Salida! Carrera en marcha.", true);
+                startMasterClock();
+            }, 4200);
+        }
+
+        function toggleTrackCall() {
+            if (appState.raceStatus === 'RACING') {
+                appState.raceStatus = 'TRACK_CALL';
+                clearF1Lights();
+                for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('amber-on');
+                document.getElementById('raceStateBadge').textContent = 'CARRERA PAUSADA';
+                speakSpotter("Pausa en pista.", true);
+            } else {
+                appState.raceStatus = 'RACING';
+                clearF1Lights();
+                for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('green-on');
+                document.getElementById('raceStateBadge').textContent = 'EN CARRERA';
+                speakSpotter("Reanudamos la carrera.", true);
+            }
+        }
+
+        function toggleAutoDemo() {
+            if (appState.autoDemoTimer) {
+                clearInterval(appState.autoDemoTimer);
+                appState.autoDemoTimer = null;
+                document.getElementById('btnSimRaceTop').innerHTML = '<i class="fa-solid fa-robot"></i> DEMO';
+                speakSpotter("Demostración detenida.", true);
+            } else {
+                appState.raceStatus = 'RACING';
+                startMasterClock();
+                document.getElementById('btnSimRaceTop').innerHTML = '<i class="fa-solid fa-stop"></i> PARAR';
+                speakSpotter(`Demostración automática en ${appState.activeLanes} carriles iniciada.`, true);
+                appState.autoDemoTimer = setInterval(() => {
+                    const rndLane = 1 + Math.floor(Math.random() * appState.activeLanes);
+                    triggerNextCheckpoint(rndLane);
+                }, 1100);
+            }
+        }
+
+        function startMasterClock() {
+            if (appState.clockInterval) clearInterval(appState.clockInterval);
+            appState.clockInterval = setInterval(() => {
+                if (appState.raceStatus !== 'RACING') return;
+                if (appState.raceFormat === 'TIME') {
+                    appState.remainingSeconds = Math.max(0, appState.remainingSeconds - 0.1);
+                    renderMasterClock();
+                    if (appState.remainingSeconds <= 0) {
+                        appState.raceStatus = 'FINISHED';
+                        clearInterval(appState.clockInterval);
+                        speakSpotter("Final de tiempo de la manga.", true);
+                        finishAndOpenOfficialReport();
+                    }
+                }
+            }, 100);
+        }
+
+        function renderMasterClock() {
+            const el = document.getElementById('masterClock');
+            if (!el) return;
+            const mins = Math.floor(appState.remainingSeconds / 60);
+            const secs = (appState.remainingSeconds % 60).toFixed(1);
+            el.textContent = `${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
+        }
+
+        function setRaceFormat(fmt) {
+            appState.raceFormat = fmt;
+            document.getElementById('btnMode-TIME').className = fmt === 'TIME'
+                ? 'px-2.5 py-1 text-xs font-black rounded-lg bg-amber-400 text-slate-950 cursor-pointer'
+                : 'px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-200 cursor-pointer';
+            document.getElementById('btnMode-LAPS').className = fmt === 'LAPS'
+                ? 'px-2.5 py-1 text-xs font-black rounded-lg bg-amber-400 text-slate-950 cursor-pointer'
+                : 'px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-200 cursor-pointer';
+        }
+
+        function applyQuickTimeMinutes(m) {
+            appState.heatTotalSeconds = (parseInt(m, 10) || 5) * 60;
+            appState.remainingSeconds = appState.heatTotalSeconds;
+            renderMasterClock();
+        }
+
+        function resetRaceSession() {
+            if (appState.clockInterval) clearInterval(appState.clockInterval);
+            if (appState.autoDemoTimer) toggleAutoDemo();
+            appState.raceStatus = 'STANDBY';
+            appState.remainingSeconds = appState.heatTotalSeconds;
+            appState.overallBestLap = Infinity;
+            appState.overallBestSectors = { 1: Infinity, 2: Infinity, 3: Infinity };
+            clearF1Lights();
+            initAllLanesData();
+            renderMasterClock();
+            renderLanesGrid();
+            renderPurpleSectorsBox();
+            renderSectorAnalysisTable();
+            renderTelemetryCharts();
+            speakSpotter("Marcadores puestos a cero.", true);
+        }
+
+        function updateDriverName(laneId, val) {
+            appState.lanes[laneId].name = val.trim().toUpperCase() || `PILOTO ${laneId}`;
+            populateDriverSelectDropdowns();
+        }
+
+        // Gestión de Pilotos y Sorteo de Mangas
+        function renderRoster() {
+            const box = document.getElementById('rosterList');
+            if (!box) return;
+            box.innerHTML = appState.roster.map((r, i) => `
+                <div class="flex items-center justify-between bg-slate-950 px-3.5 py-2.5 rounded-xl border border-slate-700">
+                    <div>
+                        <span class="text-amber-300 font-black mr-2">${i + 1}.</span>
+                        <strong class="text-white text-base">${r.name}</strong>
+                        <span class="text-xs text-slate-300 ml-2">(${r.club})</span>
+                    </div>
+                    <button onclick="removeRosterDriver(${i})" class="px-2.5 py-1 bg-red-600/30 hover:bg-red-600 text-white rounded-lg text-xs font-bold cursor-pointer">
+                        Quitar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addRosterDriver() {
+            const nIn = document.getElementById('newDriverInput');
+            const cIn = document.getElementById('newClubInput');
+            if (!nIn || !nIn.value.trim()) return;
+            appState.roster.push({
+                name: nIn.value.trim().toUpperCase(),
+                club: (cIn && cIn.value.trim()) ? cIn.value.trim().toUpperCase() : 'CLUB OFICIAL'
+            });
+            nIn.value = '';
+            if (cIn) cIn.value = '';
+            renderRoster();
+            generateChampionshipHeats(false);
+        }
+
+        function removeRosterDriver(idx) {
+            if (appState.roster.length <= 1) return;
+            appState.roster.splice(idx, 1);
+            renderRoster();
+            generateChampionshipHeats(false);
+        }
+
+        function assignRosterToActiveLanes() {
+            for (let i = 1; i <= appState.activeLanes; i++) {
+                const r = appState.roster[(i - 1) % appState.roster.length];
+                if (r) {
+                    appState.lanes[i].name = r.name;
+                    appState.lanes[i].club = r.club;
+                }
+            }
+            renderLanesGrid();
+            switchTab('live');
+            speakSpotter("Pilotos colocados en sus carriles.", true);
+        }
+
+        function generateChampionshipHeats(randomize = false) {
+            const list = [...appState.roster];
+            if (randomize) list.sort(() => Math.random() - 0.5);
+            const nLanes = appState.activeLanes;
+            appState.heats = [];
+
+            for (let h = 0; h < list.length; h++) {
+                const assignments = [];
+                for (let l = 0; l < nLanes; l++) {
+                    const p = list[(h + l) % list.length];
+                    assignments.push({ laneId: l + 1, driver: p.name, club: p.club });
+                }
+                appState.heats.push({ heatNum: h + 1, assignments });
+            }
+
+            const box = document.getElementById('heatsContainer');
+            if (box) {
+                box.innerHTML = appState.heats.map((heat, idx) => `
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-700 flex flex-wrap justify-between items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-amber-300 font-black">MANGA #${heat.heatNum}:</span>
+                            ${heat.assignments.map(a => `<span class="px-2 py-1 rounded bg-slate-800 text-white text-xs font-bold">CH${a.laneId}: ${a.driver}</span>`).join('')}
+                        </div>
+                        <button onclick="loadHeatToTrack(${idx})" class="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-black text-xs cursor-pointer shadow">
+                            CARGAR MANGA
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadHeatToTrack(idx) {
+            const heat = appState.heats[idx];
+            if (!heat) return;
+            resetRaceSession();
+            heat.assignments.forEach(a => {
+                appState.lanes[a.laneId].name = a.driver;
+                appState.lanes[a.laneId].club = a.club;
+            });
+            renderLanesGrid();
+            switchTab('live');
+            speakSpotter(`Manga número ${heat.heatNum} preparada en pista.`, true);
+        }
+
+        // ============================================================================
+        // QR DEL PILOTO EN VIVO, SIMULADOR DEL MÓVIL Y PASAPORTE PARA CASA
+        // ============================================================================
+        function populateDriverSelectDropdowns() {
+            const sel = document.getElementById('mobileDriverSelect');
+            if (sel) {
+                let html = '';
+                for (let i = 1; i <= appState.activeLanes; i++) {
+                    html += `<option value="${i}">CARRIL ${i} — ${appState.lanes[i].name} (${appState.lanes[i].club})</option>`;
+                }
+                sel.innerHTML = html;
+            }
+
+            const chartSel = document.getElementById('chartDriverSelect');
+            if (chartSel) {
+                const prev = chartSel.value || 'ALL';
+                let cHtml = `<option value="ALL">TODOS LOS CARRILES (${appState.activeLanes} CH)</option>`;
+                for (let i = 1; i <= appState.activeLanes; i++) {
+                    cHtml += `<option value="${i}">SOLO CARRIL ${i} — ${appState.lanes[i].name}</option>`;
+                }
+                chartSel.innerHTML = cHtml;
+                if (prev === 'ALL' || parseInt(prev, 10) <= appState.activeLanes) {
+                    chartSel.value = prev;
+                }
+            }
+        }
+
+        function forceRefreshPilotQrCode() {
+            lastQrRenderedText = '';
+            updateMobilePitWallView(true);
+        }
+
+        function updateMobilePitWallView(forceQrRedraw = false) {
+            const sel = document.getElementById('mobileDriverSelect');
+            const laneId = sel ? (parseInt(sel.value, 10) || 1) : 1;
+            const qrMode = document.getElementById('qrPayloadModeSelect')?.value || 'LIVE_URL';
+
+            if (!appState.isExternalPilotMobileClient) {
+                appState.pilotOverlayActiveLane = laneId;
+            }
+
+            const tac = getPilotTacticalContext(laneId);
+            const me = tac.me;
+            if (!me) return;
+
+            const ahead = tac.carAhead;
+            const behind = tac.carBehind;
+            const optLap = getDriverOptimalLap(me);
+            const meanLap = getDriverMeanLap(me);
+            const bestStr = me.bestLap < Infinity ? me.bestLap.toFixed(2) + 's' : '--.--s';
+            const lastStr = me.lastLap > 0 ? me.lastLap.toFixed(2) + 's' : '0.00s';
+            const optStr = optLap < Infinity ? optLap.toFixed(2) + 's' : '--.--s';
+            const meanStr = meanLap > 0 ? meanLap.toFixed(2) + 's' : '--.--s';
+
+            const badgeEl = document.getElementById('mobPreviewPosBadge');
+            if (badgeEl) badgeEl.textContent = `CH${me.id} · ${tac.pos}º DE ${tac.totalCars}`;
+
+            const summary =
+`🏁 KRONOS SLOT PRO // ${appState.appTitle}
+👤 PILOTO: ${me.name} (CARRIL ${me.id} - ${me.club})
+🏆 POSICIÓN: ${tac.pos}º de ${tac.totalCars}
+------------------------------------
+🔼 DELANTE: ${ahead ? `${ahead.name} (${tac.gapToAhead})` : 'ERES EL LÍDER (1º)'}
+🚗 MI COCHE: ${me.laps} Vueltas
+   • Última Vuelta: ${lastStr}
+   • Mejor Vuelta:  ${bestStr}
+   • Vuelta Óptima: ${optStr}
+   • Media:         ${meanStr}
+   • Sectores: S1 ${me.lastSectors[1] ? me.lastSectors[1].toFixed(2) + 's' : '--'} | S2 ${me.lastSectors[2] ? me.lastSectors[2].toFixed(2) + 's' : '--'} | META ${me.lastSectors[3] ? me.lastSectors[3].toFixed(2) + 's' : '--'}
+🔽 DETRÁS: ${behind ? `${behind.name} (${tac.gapToBehind})` : 'SIN PERSEGUIDOR'}
+------------------------------------
+📋 HISTORIAL DE VUELTAS (${me.history.length}):
+${me.history.length > 0 ? me.history.map((t, i) => `V${i + 1}: ${t.toFixed(2)}s`).join(' | ') : 'Esperando primera vuelta...'}`;
+
+            const txtArea = document.getElementById('mobileReportTextarea');
+            if (txtArea) txtArea.value = summary;
+
+            // Actualizar la pantalla simulada del teléfono a la derecha
+            const phoneScreen = document.getElementById('mobilePhoneScreenContent');
+            if (phoneScreen) {
+                const lapsHtml = me.history.length > 0
+                    ? me.history.slice().reverse().map((t, idx) => {
+                        const vNum = me.history.length - idx;
+                        const isBest = Math.abs(t - me.bestLap) < 0.001;
+                        return `<span class="px-2 py-1 rounded-lg border text-xs font-bold ${isBest ? 'bg-emerald-500/30 border-emerald-400 text-white' : 'bg-slate-950 border-slate-700 text-slate-200'}">V${vNum}: ${t.toFixed(2)}s</span>`;
+                    }).join('')
+                    : '<span class="text-xs text-slate-400 italic">Pulsa DEMO arriba para ver cambiar los tiempos en vivo...</span>';
+
+                phoneScreen.innerHTML = `
+                    <!-- Coche de Delante -->
+                    <div class="bg-slate-900 p-2.5 rounded-xl border-l-4 border-l-rose-500 border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] text-rose-300 font-black uppercase">🔼 DELANTE (A CAZAR)</div>
+                            <div class="text-sm font-black text-white">${ahead ? `${tac.pos - 1}º · CH${ahead.id} ${ahead.name}` : '¡VAS LÍDER 1º!'}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs font-black text-rose-400">${tac.gapToAhead}</div>
+                            <div class="text-[10px] text-amber-300 font-bold">${tac.paceVsAhead}</div>
+                        </div>
+                    </div>
+
+                    <!-- Mi Coche -->
+                    <div class="bg-slate-900 p-3 rounded-xl border-2 border-sky-400 space-y-2">
+                        <div class="flex justify-between items-center border-b border-slate-700 pb-1">
+                            <span class="text-xs font-black text-sky-300">🚗 CH${me.id} ${me.name}</span>
+                            <span class="text-xs font-black text-emerald-300">Ópt: ${optStr}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 text-center">
+                            <div class="bg-slate-950 p-2 rounded-lg border border-slate-700">
+                                <div class="text-[10px] text-slate-300 font-bold">VUELTAS</div>
+                                <div class="text-xl font-black text-white">${me.laps}</div>
+                            </div>
+                            <div class="bg-slate-950 p-2 rounded-lg border border-amber-500/50">
+                                <div class="text-[10px] text-amber-300 font-bold">ÚLTIMA</div>
+                                <div class="text-base font-black text-white">${lastStr}</div>
+                            </div>
+                            <div class="bg-slate-950 p-2 rounded-lg border border-emerald-500/50">
+                                <div class="text-[10px] text-emerald-300 font-bold">MEJOR</div>
+                                <div class="text-base font-black text-emerald-400">${bestStr}</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[11px]">
+                            <div class="bg-slate-950 py-1 rounded border border-slate-700">S1: <b class="text-white">${me.lastSectors[1] ? me.lastSectors[1].toFixed(2) + 's' : '--'}</b></div>
+                            <div class="bg-slate-950 py-1 rounded border border-slate-700">S2: <b class="text-white">${me.lastSectors[2] ? me.lastSectors[2].toFixed(2) + 's' : '--'}</b></div>
+                            <div class="bg-slate-950 py-1 rounded border border-slate-700">META: <b class="text-white">${me.lastSectors[3] ? me.lastSectors[3].toFixed(2) + 's' : '--'}</b></div>
+                        </div>
+                    </div>
+
+                    <!-- Coche de Detrás -->
+                    <div class="bg-slate-900 p-2.5 rounded-xl border-l-4 border-l-emerald-500 border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] text-emerald-300 font-black uppercase">🔽 DETRÁS (PERSEGUIDOR)</div>
+                            <div class="text-sm font-black text-white">${behind ? `${tac.pos + 1}º · CH${behind.id} ${behind.name}` : 'SIN RIVAL DETRÁS'}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs font-black text-emerald-400">${tac.gapToBehind}</div>
+                            <div class="text-[10px] text-sky-300 font-bold">${tac.paceVsBehind}</div>
+                        </div>
+                    </div>
+
+                    <!-- Vueltas del Piloto -->
+                    <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 space-y-1.5">
+                        <div class="flex justify-between text-[11px] font-black">
+                            <span class="text-sky-300">MIS VUELTAS (${me.history.length})</span>
+                            <span class="text-amber-300">Media: ${meanStr}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 max-h-24 overflow-y-auto">${lapsHtml}</div>
+                    </div>
+                `;
+            }
+
+            // Construir texto corto para el QR (lectura rápida con cualquier cámara móvil)
+            let qrPayload = '';
+            const baseUrl = window.location.href.split('?')[0].split('#')[0];
+            if (qrMode === 'WHATSAPP_DIRECT') {
+                const waText = `🏁 KRONOS ${me.name} (CH${me.id}) Pos:${tac.pos}/${tac.totalCars} | Vueltas:${me.laps} | Mejor:${bestStr} | Delante:${ahead ? ahead.name : 'LIDER'}`;
+                qrPayload = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+            } else if (!baseUrl.startsWith('about:') && !baseUrl.startsWith('blob:')) {
+                qrPayload = `${baseUrl}?pilot_live=${laneId}&room=${appState.liveSyncRoomId}&al=${appState.activeLanes}`;
+            } else {
+                qrPayload = `KRONOS LIVE\nPILOTO: ${me.name} (CH${me.id})\nPOS: ${tac.pos}/${tac.totalCars} (${me.laps}V)\nMEJOR: ${bestStr}\nDELANTE: ${ahead ? ahead.name : 'LIDER'}`;
+            }
+
+            if (forceQrRedraw || qrPayload !== lastQrRenderedText) {
+                lastQrRenderedText = qrPayload;
+                const qrBox = document.getElementById('dynamicQrContainer');
+                if (qrBox && typeof QRCode !== 'undefined') {
+                    qrBox.innerHTML = '';
+                    new QRCode(qrBox, {
+                        text: qrPayload,
+                        width: 168,
+                        height: 168,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.L
+                    });
+                }
+            }
+        }
+
+        function shareViaWhatsApp() {
+            const text = document.getElementById('mobileReportTextarea')?.value || '';
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function openPilotMobileLiveOverlayFromTab() {
+            const sel = document.getElementById('mobileDriverSelect');
+            appState.pilotOverlayActiveLane = sel ? (parseInt(sel.value, 10) || 1) : 1;
+            document.getElementById('pilotMobileLiveAppOverlay').classList.remove('hidden');
+            renderPilotMobileLiveOverlay();
+        }
+
+        function closePilotMobileLiveOverlay() {
+            if (appState.isExternalPilotMobileClient) return;
+            document.getElementById('pilotMobileLiveAppOverlay').classList.add('hidden');
+        }
+
+        function togglePilotMobileAudio() {
+            appState.pilotMobileVoiceUnlocked = !appState.pilotMobileVoiceUnlocked;
+            const lbl = document.getElementById('pilotMobileVoiceLabel');
+            const btn = document.getElementById('btnPilotMobileVoice');
+            if (lbl) lbl.textContent = appState.pilotMobileVoiceUnlocked ? 'VOZ HOMBRE ACTIVA' : 'ACTIVAR VOZ';
+            if (btn) {
+                btn.className = appState.pilotMobileVoiceUnlocked
+                    ? 'col-span-5 py-3.5 px-3 rounded-2xl font-black text-sm uppercase bg-emerald-500 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-2'
+                    : 'col-span-5 py-3.5 px-3 rounded-2xl font-black text-sm uppercase bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-2';
+            }
+            if (appState.pilotMobileVoiceUnlocked) {
+                const lane = appState.lanes[appState.pilotOverlayActiveLane || 1];
+                const msg = `Voz de hombre español activada en el móvil para ${lane ? lane.name : 'el piloto'}.`;
+                const radioEl = document.getElementById('pilotAppLastRadioMsg');
+                if (radioEl) radioEl.textContent = msg;
+                speakSpotter(msg, true);
+            }
+        }
+
+        function renderPilotMobileLiveOverlay() {
+            const overlay = document.getElementById('pilotMobileLiveAppOverlay');
+            if (!overlay || overlay.classList.contains('hidden')) return;
+
+            const laneId = appState.pilotOverlayActiveLane || 1;
+            const tac = getPilotTacticalContext(laneId);
+            const lane = tac.me;
+            if (!lane) return;
+
+            const ahead = tac.carAhead;
+            const behind = tac.carBehind;
+            const optLap = getDriverOptimalLap(lane);
+            const meanLap = getDriverMeanLap(lane);
+
+            document.getElementById('pilotAppLaneBadge').textContent = `CH${lane.id}`;
+            document.getElementById('pilotAppDriverName').textContent = lane.name;
+            document.getElementById('pilotAppClubName').textContent = lane.club;
+            document.getElementById('pilotAppPosition').innerHTML = `${tac.pos}&ordm;`;
+
+            const mins = Math.floor(appState.remainingSeconds / 60);
+            const secs = (appState.remainingSeconds % 60).toFixed(1);
+            document.getElementById('pilotAppClockMini').textContent = `${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
+
+            const statusText = document.getElementById('pilotAppRaceStatusText');
+            if (statusText) {
+                statusText.textContent = appState.raceStatus === 'RACING'
+                    ? 'EN CARRERA (EN VIVO)'
+                    : (appState.raceStatus === 'TRACK_CALL' ? 'CARRERA EN PAUSA' : 'PISTA EN ESPERA');
+            }
+
+            // Coche por delante
+            document.getElementById('pilotAppAheadName').textContent = ahead
+                ? `${tac.pos - 1}º · CH${ahead.id} ${ahead.name}`
+                : '¡VAS LÍDER EN 1ª POSICIÓN!';
+            document.getElementById('pilotAppAheadBest').textContent = ahead
+                ? `Mejor: ${ahead.bestLap < Infinity ? ahead.bestLap.toFixed(2) + 's' : '--'} | Última: ${ahead.lastLap > 0 ? ahead.lastLap.toFixed(2) + 's' : '--'}`
+                : 'Pista libre delante';
+            document.getElementById('pilotAppAheadGap').textContent = tac.gapToAhead;
+            document.getElementById('pilotAppAheadPaceDiff').textContent = tac.paceVsAhead;
+
+            // Mi coche
+            document.getElementById('pilotAppOptimalTag').textContent = `V. Óptima: ${optLap < Infinity ? optLap.toFixed(2) + 's' : '--.--s'}`;
+            document.getElementById('pilotAppLaps').textContent = lane.laps;
+            document.getElementById('pilotAppLastLap').textContent = lane.lastLap > 0 ? lane.lastLap.toFixed(2) + 's' : '0.00s';
+            document.getElementById('pilotAppBestLap').textContent = lane.bestLap < Infinity ? lane.bestLap.toFixed(2) + 's' : '--.--s';
+            document.getElementById('pilotAppS1').textContent = lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(2) + 's' : '--.--s';
+            document.getElementById('pilotAppS2').textContent = lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(2) + 's' : '--.--s';
+            document.getElementById('pilotAppS3').textContent = lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(2) + 's' : '--.--s';
+
+            // Coche por detrás
+            document.getElementById('pilotAppBehindName').textContent = behind
+                ? `${tac.pos + 1}º · CH${behind.id} ${behind.name}`
+                : 'SIN PERSEGUIDOR DETRÁS';
+            document.getElementById('pilotAppBehindBest').textContent = behind
+                ? `Mejor: ${behind.bestLap < Infinity ? behind.bestLap.toFixed(2) + 's' : '--'} | Última: ${behind.lastLap > 0 ? behind.lastLap.toFixed(2) + 's' : '--'}`
+                : 'Nadie por detrás';
+            document.getElementById('pilotAppBehindGap').textContent = tac.gapToBehind;
+            document.getElementById('pilotAppBehindPaceDiff').textContent = tac.paceVsBehind;
+
+            // Historial completo de vueltas en grande
+            document.getElementById('pilotAppMeanLap').textContent = `Media: ${meanLap > 0 ? meanLap.toFixed(2) + 's' : '--.--s'}`;
+            const histBox = document.getElementById('pilotAppLapHistoryBox');
+            if (histBox) {
+                if (lane.history.length === 0) {
+                    histBox.innerHTML = `<div class="text-slate-400 italic py-4 text-center">Esperando paso por meta...</div>`;
+                } else {
+                    histBox.innerHTML = lane.history.slice().reverse().map((t, idx) => {
+                        const vNum = lane.history.length - idx;
+                        const isBest = Math.abs(t - lane.bestLap) < 0.001;
+                        return `
+                            <div class="flex justify-between items-center px-3 py-2 rounded-xl border ${isBest ? 'bg-emerald-950/70 border-emerald-400 text-white font-black' : 'bg-slate-950 border-slate-800 text-slate-200 font-bold'}">
+                                <span>VUELTA #${vNum} ${isBest ? '★ MEJOR VUELTA' : ''}</span>
+                                <span class="text-base">${t.toFixed(2)}s</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Si el piloto tiene la voz activada en su móvil, cantarle cada vuelta nueva con voz de hombre español
+            if (appState.pilotMobileVoiceUnlocked && lane.laps > appState.lastSpokenMobileLap && lane.lastLap > 0) {
+                appState.lastSpokenMobileLap = lane.laps;
+                const msg = `${lane.name}, vuelta ${lane.laps} en ${lane.lastLap.toFixed(2)} segundos. Vas en posición ${tac.pos}.`;
+                const radioEl = document.getElementById('pilotAppLastRadioMsg');
+                if (radioEl) radioEl.textContent = msg;
+                speakSpotter(msg, false);
+            }
+        }
+
+        // Descarga un archivo HTML limpio y grande con el Pasaporte Personal del Piloto para llevárselo a casa
+        function downloadPilotTakeHomePass() {
+            const laneId = appState.pilotOverlayActiveLane || (parseInt(document.getElementById('mobileDriverSelect')?.value, 10) || 1);
+            const tac = getPilotTacticalContext(laneId);
+            const me = tac.me;
+            const optLap = getDriverOptimalLap(me);
+            const meanLap = getDriverMeanLap(me);
+
+            const rows = me.history.map((t, i) => `
+                <tr style="border-bottom:1px solid #334155;">
+                    <td style="padding:10px;font-weight:bold;">Vuelta #${i + 1}</td>
+                    <td style="padding:10px;font-weight:bold;color:#34d399;">${t.toFixed(2)} s</td>
+                </tr>
+            `).join('');
+
+            const htmlDoc = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>PASAPORTE PILOTO - ${me.name}</title></head>
+<body style="background:#03060c;color:#fff;font-family:sans-serif;padding:20px;">
+  <div style="max-width:600px;margin:0 auto;background:#0b1324;border:3px solid #10b981;border-radius:20px;padding:20px;">
+    <h1 style="margin:0;color:#fbbf24;font-size:26px;">🏁 PASAPORTE PERSONAL: ${me.name} (CH${me.id})</h1>
+    <p style="font-size:16px;color:#cbd5e1;"><b>Club:</b> ${me.club} | <b>Posición:</b> ${tac.pos}º de ${tac.totalCars}</p>
+    <hr style="border-color:#334155;margin:15px 0;"/>
+    <p style="font-size:18px;"><b>Total Vueltas:</b> ${me.laps} | <b>Mejor Vuelta:</b> ${me.bestLap < Infinity ? me.bestLap.toFixed(2) + 's' : '--'} | <b>Media:</b> ${meanLap > 0 ? meanLap.toFixed(2) + 's' : '--'}</p>
+    <p style="font-size:16px;"><b>Vuelta Óptima:</b> ${optLap < Infinity ? optLap.toFixed(2) + 's' : '--'} | <b>Sectores:</b> S1 ${me.bestSectors[1] < Infinity ? me.bestSectors[1].toFixed(2) + 's' : '--'} / S2 ${me.bestSectors[2] < Infinity ? me.bestSectors[2].toFixed(2) + 's' : '--'} / META ${me.bestSectors[3] < Infinity ? me.bestSectors[3].toFixed(2) + 's' : '--'}</p>
+    <h3 style="color:#38bdf8;margin-top:20px;">TODAS MIS VUELTAS (${me.history.length}):</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:16px;">${rows || '<tr><td>Sin vueltas registradas</td></tr>'}</table>
+  </div>
+</body></html>`;
+
+            const blob = new Blob([htmlDoc], { type: 'text/html;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `PASAPORTE_${me.name}_CH${me.id}.html`;
+            a.click();
+        }
+
+        function checkUrlForPilotMobileModeOnBoot() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const pilotLane = params.get('pilot_live');
+                const roomParam = params.get('room');
+                const alParam = params.get('al');
+                if (roomParam) appState.liveSyncRoomId = roomParam.trim().toUpperCase();
+                if (alParam) appState.activeLanes = parseInt(alParam, 10) || 1;
+                if (pilotLane) {
+                    appState.pilotOverlayActiveLane = parseInt(pilotLane, 10) || 1;
+                    appState.isExternalPilotMobileClient = true;
+                    const btnBack = document.getElementById('btnBackToClubScreen');
+                    if (btnBack) btnBack.classList.add('hidden');
+                    document.getElementById('pilotMobileLiveAppOverlay').classList.remove('hidden');
+                    renderPilotMobileLiveOverlay();
+                }
+            } catch (e) {}
+        }
+
+        // Acta Final y Exportación CSV
+        function finishAndOpenOfficialReport() {
+            const tbody = document.getElementById('reportModalTableBody');
+            const list = updateMultiLaneStandings();
+            const leader = list[0];
+
+            if (tbody) {
+                tbody.innerHTML = list.map((l, idx) => {
+                    const mean = l.history.length > 0 ? (l.history.reduce((a, b) => a + b, 0) / l.history.length).toFixed(2) + 's' : '--.--';
+                    const gap = idx === 0 ? 'GANADOR' : `A +${Math.max(0, leader.laps - l.laps)} v.`;
+                    return `
+                        <tr>
+                            <td class="p-3 font-black text-amber-300 text-base">${idx + 1}&ordm;</td>
+                            <td class="p-3 font-black text-white">CH${l.id}</td>
+                            <td class="p-3 font-black text-white text-base">${l.name} <span class="text-xs text-slate-400">(${l.club})</span></td>
+                            <td class="p-3 text-center font-black text-sky-300 text-lg">${l.laps}</td>
+                            <td class="p-3 font-bold text-amber-300">${gap}</td>
+                            <td class="p-3 font-black text-emerald-400 text-base">${l.bestLap < Infinity ? l.bestLap.toFixed(2) + 's' : '--.--'}</td>
+                            <td class="p-3 font-bold text-white">${mean}</td>
+                            <td class="p-3 text-xs text-slate-200">${l.bestSectors[1] < Infinity ? l.bestSectors[1].toFixed(2) + 's' : '--'} / ${l.bestSectors[2] < Infinity ? l.bestSectors[2].toFixed(2) + 's' : '--'} / ${l.bestSectors[3] < Infinity ? l.bestSectors[3].toFixed(2) + 's' : '--'}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            document.getElementById('postRaceReportModal').classList.remove('hidden');
+        }
+
+        function closePostRaceReportModal() {
+            document.getElementById('postRaceReportModal').classList.add('hidden');
+        }
+
+        function exportCSV() {
+            let csv = 'Carril,Piloto,Vueltas,Mejor_Vuelta\n';
+            for (let i = 1; i <= appState.activeLanes; i++) {
+                const l = appState.lanes[i];
+                csv += `CH${i},"${l.name}",${l.laps},${l.bestLap < Infinity ? l.bestLap.toFixed(3) : ''}\n`;
+            }
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'RESULTADOS_KRONOS_SLOT.csv';
+            a.click();
+        }
+
+        function saveTrackConfig() {
+            appState.trackLengthMeters = parseFloat(document.getElementById('cfgTrackLen').value) || 18.0;
+            appState.minLapSeconds = parseFloat(document.getElementById('cfgMinLapSec').value) || 0.5;
+        }
+
+        function switchTab(tabId) {
+            ['live', 'sectors', 'charts', 'rotation', 'mobile', 'config'].forEach(id => {
+                const v = document.getElementById(`view-${id}`);
+                const b = document.getElementById(`tabBtn-${id}`);
+                if (v) v.classList.add('hidden');
+                if (b) {
+                    b.className = 'px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-bold bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-700 transition cursor-pointer shrink-0 flex items-center gap-1.5';
+                }
+            });
+            const targetV = document.getElementById(`view-${tabId}`);
+            const targetB = document.getElementById(`tabBtn-${tabId}`);
+            if (targetV) targetV.classList.remove('hidden');
+            if (targetB) {
+                targetB.className = 'nav-pill-active px-3.5 py-2 rounded-xl text-xs md:text-sm font-mono font-black border-2 transition cursor-pointer shrink-0 flex items-center gap-1.5';
+            }
+            if (tabId === 'charts') renderTelemetryCharts();
+            if (tabId === 'mobile') forceRefreshPilotQrCode();
+        }
+
+        // ============================================================================
+        // CONTROL DE PANTALLA PREVIA OBLIGATORIA HORIZONTAL + FUSIÓN 10 SEGUNDOS (fusion.mp4)
+        // ============================================================================
+        const fusionIntroController = {
+            introCompleted: false,
+            fadingOut: false,
+            secondsRemaining: 10,
+            countdownTimer: null
+        };
+
+        function isViewportPortrait() {
+            return window.innerHeight > window.innerWidth;
+        }
+
+        function evaluateScreenOrientationAndVideoIntro() {
+            // Si es el móvil de un piloto que escaneó el QR, no bloquear su teléfono vertical
+            if (appState.isExternalPilotMobileClient) {
+                const masterOv = document.getElementById('fusionIntroMasterOverlay');
+                if (masterOv) masterOv.style.display = 'none';
+                return;
+            }
+
+            const masterOv = document.getElementById('fusionIntroMasterOverlay');
+            const portraitCard = document.getElementById('portraitForceLockCard');
+            const landscapeHud = document.getElementById('landscapeFusionHud');
+            const videoEl = document.getElementById('fusionIntroVideo');
+
+            if (!masterOv) return;
+
+            // Asegurar siempre que el vídeo fusion.mp4 esté reproduciéndose
+            if (videoEl && videoEl.paused) {
+                videoEl.play().catch(() => {});
+            }
+
+            if (isViewportPortrait()) {
+                // PANTALLA EN VERTICAL: Forzar aviso obligatorio de giro y pausar la cuenta atrás de 10s
+                masterOv.style.display = 'flex';
+                masterOv.classList.remove('fusion-dissolve-active');
+                if (portraitCard) portraitCard.classList.remove('hidden');
+                if (landscapeHud) landscapeHud.classList.add('hidden');
+
+                if (fusionIntroController.countdownTimer) {
+                    clearInterval(fusionIntroController.countdownTimer);
+                    fusionIntroController.countdownTimer = null;
+                }
+            } else {
+                // PANTALLA EN HORIZONTAL (Tablet girada o PC/Mac):
+                if (portraitCard) portraitCard.classList.add('hidden');
+
+                if (fusionIntroController.introCompleted) {
+                    masterOv.style.display = 'none';
+                    return;
+                }
+
+                masterOv.style.display = 'flex';
+                if (landscapeHud) landscapeHud.classList.remove('hidden');
+
+                // Iniciar la cuenta atrás de 10 segundos a pantalla completa si no estaba en marcha
+                if (!fusionIntroController.countdownTimer && !fusionIntroController.fadingOut) {
+                    const countEl = document.getElementById('fusionCountdownNum');
+                    if (countEl) countEl.textContent = String(fusionIntroController.secondsRemaining);
+
+                    fusionIntroController.countdownTimer = setInterval(() => {
+                        if (isViewportPortrait()) return;
+                        fusionIntroController.secondsRemaining--;
+                        const numSpan = document.getElementById('fusionCountdownNum');
+                        if (numSpan) numSpan.textContent = String(Math.max(0, fusionIntroController.secondsRemaining));
+
+                        if (fusionIntroController.secondsRemaining <= 0) {
+                            clearInterval(fusionIntroController.countdownTimer);
+                            fusionIntroController.countdownTimer = null;
+                            triggerSmoothFusionWithHomeScreen();
+                        }
+                    }, 1000);
+                }
+            }
+        }
+
+        function triggerSmoothFusionWithHomeScreen() {
+            if (fusionIntroController.fadingOut) return;
+            fusionIntroController.fadingOut = true;
+
+            if (fusionIntroController.countdownTimer) {
+                clearInterval(fusionIntroController.countdownTimer);
+                fusionIntroController.countdownTimer = null;
+            }
+
+            const masterOv = document.getElementById('fusionIntroMasterOverlay');
+            if (!masterOv) return;
+
+            // Activar el efecto de fusión visual (difuminado + fundido suave de 1.8s con la pantalla de inicio)
+            masterOv.classList.add('fusion-dissolve-active');
+
+            setTimeout(() => {
+                fusionIntroController.introCompleted = true;
+                fusionIntroController.fadingOut = false;
+                if (!isViewportPortrait()) {
+                    masterOv.style.display = 'none';
+                }
+            }, 1800);
+        }
+
+        window.addEventListener('resize', evaluateScreenOrientationAndVideoIntro);
+        window.addEventListener('orientationchange', evaluateScreenOrientationAndVideoIntro);
+
+        window.onload = function() {
+            initAllLanesData();
+            renderRoster();
+            initSeniorTelemetryChart();
+            setSystemTopology(1, 3); // Arranca en 1 carril y 3 sensores, pero con los botones grandes 1, 2, 4, 6, 8 y 10 listos arriba
+            renderMasterClock();
+            checkUrlForPilotMobileModeOnBoot();
+            evaluateScreenOrientationAndVideoIntro();
+            initCloudMqttTelemetryBridge();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+            }
+        };
+    </script>
+</body>
+</html>
