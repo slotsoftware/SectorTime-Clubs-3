@@ -148,6 +148,20 @@
             animation: rotateTabletAnim 2.2s ease-in-out infinite;
         }
 
+        /* Escalado fluido de números en los cuadros de pilotos según tamaño de pantalla y número de carriles */
+        .lane-stat-fluid-xl {
+            font-size: clamp(1.45rem, 3.2vw, 3.6rem);
+            line-height: 1;
+        }
+        .lane-stat-fluid-lg {
+            font-size: clamp(1.15rem, 2.3vw, 2.5rem);
+            line-height: 1.05;
+        }
+        .lane-stat-fluid-md {
+            font-size: clamp(0.95rem, 1.6vw, 1.65rem);
+            line-height: 1.1;
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #090d16; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
@@ -159,13 +173,26 @@
     <!-- ========================================================================================
          PANTALLA PREVIA DE GIRO HORIZONTAL + VÍDEO A PANTALLA COMPLETA (fusion.mp4 - 10s)
          ======================================================================================== -->
-    <div id="fusionIntroMasterOverlay" class="fixed inset-0 z-[120] bg-[#03060c] flex flex-col items-center justify-center overflow-hidden select-none">
+    <div id="fusionIntroMasterOverlay" class="fixed inset-0 z-[120] bg-[#03060c] flex flex-col items-center justify-start overflow-hidden select-none">
         <video id="fusionIntroVideo" src="fusion.mp4" autoplay muted loop playsinline preload="auto"
                class="absolute inset-0 w-full h-full object-cover z-0 bg-[#03060c]">
         </video>
 
+        <!-- Barra ARRIBA DEL TODO durante los 10 segundos en HORIZONTAL a pantalla completa -->
+        <div id="landscapeFusionHud" class="relative z-10 mt-3 px-5 py-2.5 rounded-2xl bg-slate-950/90 backdrop-blur-md border-2 border-amber-400 flex flex-wrap items-center justify-between gap-4 shadow-2xl font-mono w-[96%] max-w-6xl">
+            <div class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="text-xs md:text-sm font-black text-white uppercase tracking-wide">
+                    SECTOR TIME CLUBS // SLOTING PLUS &amp; SLOT SOFTWARE (Albert Closa) — FUSIÓN EN <span id="fusionCountdownNum" class="text-amber-300 text-base">10</span>s
+                </span>
+            </div>
+            <button onclick="enterAppWithFullscreen()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl border-2 border-white cursor-pointer shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-expand"></i> ENTRAR EN PANTALLA COMPLETA AHORA
+            </button>
+        </div>
+
         <!-- Capa de bloqueo cuando la pantalla está en VERTICAL -->
-        <div id="portraitForceLockCard" class="hidden relative z-20 bg-slate-950/92 backdrop-blur-xl border-4 border-amber-400 rounded-3xl p-8 max-w-xl w-[92%] text-center shadow-[0_0_70px_rgba(245,158,11,0.5)] space-y-5">
+        <div id="portraitForceLockCard" class="hidden relative z-20 my-auto bg-slate-950/92 backdrop-blur-xl border-4 border-amber-400 rounded-3xl p-8 max-w-xl w-[92%] text-center shadow-[0_0_70px_rgba(245,158,11,0.5)] space-y-5">
             <div class="w-24 h-24 mx-auto rounded-3xl bg-amber-400 text-slate-950 flex items-center justify-center text-5xl shadow-xl border-4 border-white rotate-device-icon">
                 <i class="fa-solid fa-tablet-screen-button"></i>
             </div>
@@ -180,19 +207,6 @@
                     SLOTING PLUS &amp; SLOT SOFTWARE — Creado por <b>Albert Closa</b>
                 </p>
             </div>
-        </div>
-
-        <!-- Barra inferior informativa durante los 10 segundos en HORIZONTAL a pantalla completa -->
-        <div id="landscapeFusionHud" class="relative z-10 mt-auto mb-6 px-6 py-3.5 rounded-2xl bg-slate-950/90 backdrop-blur-md border-2 border-amber-400 flex flex-wrap items-center justify-center gap-4 shadow-2xl font-mono">
-            <div class="flex items-center gap-3">
-                <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping"></span>
-                <span class="text-sm md:text-base font-black text-white uppercase tracking-wide">
-                    SECTOR TIME CLUBS // SLOTING PLUS &amp; SLOT SOFTWARE (Albert Closa) — <span id="fusionCountdownNum" class="text-amber-300 text-lg">10</span>s
-                </span>
-            </div>
-            <button onclick="enterAppWithFullscreen()" class="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs md:text-sm rounded-xl border-2 border-white cursor-pointer shadow-lg flex items-center gap-2">
-                <i class="fa-solid fa-expand"></i> ENTRAR EN PANTALLA COMPLETA AHORA
-            </button>
         </div>
     </div>
 
@@ -216,25 +230,28 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm text-amber-300 font-black" id="pilotAppClockMini">05:00.0</div>
+                    <div class="text-sm text-amber-300 font-black" id="pilotAppClockMini">00:05:00.0</div>
                     <div class="text-4xl font-black text-white bg-amber-500 text-slate-950 px-3 py-1 rounded-xl leading-none mt-1 inline-block border-2 border-white" id="pilotAppPosition">1&ordm;</div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-12 gap-2.5 items-center">
-                <div id="pilotAppRaceStatusBanner" class="col-span-7 px-4 py-3.5 rounded-2xl border-2 border-slate-600 bg-slate-900 text-sm font-black text-white uppercase flex items-center gap-2">
+            <div class="grid grid-cols-12 gap-2 items-center">
+                <div id="pilotAppRaceStatusBanner" class="col-span-5 px-3 py-3 rounded-2xl border-2 border-slate-600 bg-slate-900 text-xs font-black text-white uppercase flex items-center gap-2">
                     <i class="fa-solid fa-flag text-amber-400"></i>
-                    <span id="pilotAppRaceStatusText">PISTA EN ESPERA</span>
+                    <span id="pilotAppRaceStatusText">PISTA LISTA</span>
                 </div>
-                <button id="btnPilotMobileVoice" onclick="togglePilotMobileAudio()" class="col-span-5 py-3.5 px-3 rounded-2xl font-black text-sm uppercase bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-volume-high text-lg"></i> <span id="pilotMobileVoiceLabel">VOZ HOMBRE ON</span>
+                <button id="btnPilotMobileVoice" onclick="togglePilotMobileAudio()" class="col-span-4 py-3 px-2 rounded-2xl font-black text-xs uppercase bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-volume-high"></i> <span id="pilotMobileVoiceLabel">VOZ MUJER ACTIVA</span>
+                </button>
+                <button onclick="speakFullMobileTacticalReportNow()" class="col-span-3 py-3 px-2 rounded-2xl font-black text-xs uppercase bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-bullhorn"></i> CANTAR YA
                 </button>
             </div>
 
-            <div class="bg-slate-950 px-4 py-2.5 rounded-xl border-2 border-sky-500/50 flex items-center justify-between gap-2">
+            <div class="bg-slate-950 px-4 py-2.5 rounded-xl border-2 border-pink-500/60 flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 truncate">
-                    <i class="fa-solid fa-user-tie text-sky-400 text-base"></i>
-                    <span class="text-xs text-sky-200 font-bold truncate" id="pilotAppLastRadioMsg">Voz Hombre Español (Vueltas) y Mujer (Sectores)</span>
+                    <i class="fa-solid fa-venus text-pink-400 text-base"></i>
+                    <span class="text-xs text-pink-200 font-bold truncate" id="pilotAppLastRadioMsg">Locutora Móvil: Canta tus vueltas, quién va delante, quién detrás y bromas</span>
                 </div>
             </div>
 
@@ -303,6 +320,7 @@
                 </div>
             </div>
 
+            <!-- HISTORIAL DE TODAS LAS VUELTAS DEL PILOTO -->
             <div class="glass-panel rounded-2xl p-4 border-2 border-slate-700 space-y-2.5">
                 <div class="flex justify-between items-center border-b border-slate-700 pb-2">
                     <span class="text-sm font-black text-sky-300 uppercase"><i class="fa-solid fa-list-ol mr-1.5"></i>HISTORIAL DE MIS VUELTAS</span>
@@ -545,7 +563,7 @@
             </div>
         </div>
 
-        <!-- BLOQUE CENTRAL: SEMÁFORO GRANDE + RELOJ GIGANTE (SOPORTA 24:00:00.0) -->
+        <!-- BLOQUE CENTRAL: SEMÁFORO GRANDE + RELOJ GIGANTE (SOPORTA 24:00:00.0 CON HORAS SIEMPRE VISIBLES) -->
         <div class="col-span-4 flex items-center justify-center gap-3 bg-black px-3 py-1.5 rounded-2xl border-2 border-slate-600 shadow-2xl">
             <div class="flex flex-col items-center">
                 <div class="flex items-center gap-2 mb-0.5">
@@ -561,9 +579,9 @@
                     <div class="f1-light" id="f1L5"></div>
                 </div>
             </div>
-            <div class="border-l-2 border-slate-700 pl-3 text-right min-w-[140px]">
-                <div id="masterClockLabel" class="text-[11px] font-mono uppercase text-amber-300 font-black">TIEMPO MANGA</div>
-                <div id="masterClock" class="text-2xl xl:text-3xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5">05:00.0</div>
+            <div class="border-l-2 border-slate-700 pl-3 text-right min-w-[165px]">
+                <div id="masterClockLabel" class="text-[10px] font-mono uppercase text-amber-300 font-black">CRONÓMETRO (HH:MM:SS.d)</div>
+                <div id="masterClock" class="text-xl xl:text-2xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5">00:05:00.0</div>
             </div>
         </div>
 
@@ -667,23 +685,23 @@
                     </table>
                 </div>
 
-                <!-- Avisos de Voz Hombre Español (Vueltas) y Voz Mujer Española (Sectores) -->
+                <!-- Avisos de 2 Voces de Mujeres Españolas Diferentes (Locutora 1: Vueltas + Humor / Locutora 2: Sectores) -->
                 <div class="mt-2 pt-2 border-t-2 border-slate-700 flex flex-col gap-1.5 text-xs font-mono shrink-0">
-                    <div class="bg-slate-950 p-2 rounded-xl border border-sky-500/60 flex items-center justify-between gap-2">
-                        <span id="spotterMessage" class="truncate text-sky-200 font-black">
-                            <i class="fa-solid fa-mars mr-1.5 text-sky-400"></i>Vueltas (Hombre Español): Listo
+                    <div class="bg-slate-950 p-2 rounded-xl border border-amber-500/60 flex items-center justify-between gap-2">
+                        <span id="spotterMessage" class="truncate text-amber-200 font-black">
+                            <i class="fa-solid fa-venus mr-1.5 text-amber-400"></i>Vueltas + Humor (Mujer 1): Lista
                         </span>
-                        <button onclick="testSpanishMaleLapVoice()" class="px-2.5 py-0.5 rounded bg-sky-400 hover:bg-sky-300 text-slate-950 font-black text-[10px] cursor-pointer shrink-0 shadow">
-                            PROBAR HOMBRE
+                        <button onclick="testSpanishFemaleLapVoice()" class="px-2.5 py-0.5 rounded bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] cursor-pointer shrink-0 shadow">
+                            PROBAR MUJER 1
                         </button>
                     </div>
                     <div class="bg-slate-950 p-2 rounded-xl border border-pink-500/60 flex items-center justify-between gap-2">
                         <span id="sectorAnalystMessage" class="truncate text-pink-200 font-black">
-                            <i class="fa-solid fa-venus mr-1.5 text-pink-400"></i>Sectores (Mujer Española): Activa
+                            <i class="fa-solid fa-venus-double mr-1.5 text-pink-400"></i>Sectores (Mujer 2): Activa
                         </span>
                         <div class="flex items-center gap-1 shrink-0">
                             <button onclick="testSpanishFemaleSectorVoice()" class="px-2 py-0.5 rounded bg-pink-400 hover:bg-pink-300 text-slate-950 font-black text-[10px] cursor-pointer shadow">
-                                PROBAR MUJER
+                                PROBAR MUJER 2
                             </button>
                             <button onclick="toggleSectorAnalystVoice()" id="btnAnalystToggle" class="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[10px] cursor-pointer">
                                 ON
@@ -928,8 +946,8 @@
                     <div class="text-sm font-black text-amber-300 uppercase">SECTOR TIME CLUBS EN TU MÓVIL</div>
                     <ul class="text-xs text-slate-200 space-y-1.5 leading-relaxed">
                         <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i><b>Vueltas y sectores</b> en números grandes.</li>
-                        <li><i class="fa-solid fa-angles-up text-rose-400 mr-1.5"></i>Distancia al <b>coche de delante</b> y detrás.</li>
-                        <li><i class="fa-solid fa-volume-high text-amber-400 mr-1.5"></i><b>Voz de hombre español</b> para las vueltas.</li>
+                        <li><i class="fa-solid fa-angles-up text-rose-400 mr-1.5"></i>Te canta <b>quién va delante</b> y <b>quién va detrás</b>.</li>
+                        <li><i class="fa-solid fa-volume-high text-pink-400 mr-1.5"></i><b>2 Voces de Mujer Española</b> con toques de humor.</li>
                     </ul>
                     <div class="grid grid-cols-1 gap-2 pt-1">
                         <button onclick="openPilotMobileLiveOverlayFromTab()" class="w-full py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs rounded-xl cursor-pointer shadow-lg border-2 border-white">
@@ -1056,37 +1074,37 @@
 
         <div class="col-span-6 glass-panel rounded-2xl p-5 flex flex-col justify-between overflow-y-auto min-h-0 font-mono space-y-3">
             <div class="space-y-3">
-                <h2 class="text-base font-black text-emerald-300 uppercase border-b-2 border-slate-700 pb-2">
-                    <i class="fa-solid fa-microphone-lines mr-2"></i>LOCUTOR HOMBRE ESPAÑOL (VUELTAS) Y MUJER (SECTORES)
+                <h2 class="text-base font-black text-pink-300 uppercase border-b-2 border-slate-700 pb-2">
+                    <i class="fa-solid fa-venus-double mr-2"></i>2 VOCES DE MUJERES ESPAÑOLAS DIFERENTES + HUMOR
                 </h2>
                 <p class="text-xs text-slate-200 leading-relaxed">
-                    En muchas Tablets y PCs el sistema operativo solo trae instalada una voz femenina. Por eso hemos integrado el <b>Locutor Hombre Español Real (`Enrique / Álvaro es-ES`)</b> que garantiza <b>voz real de hombre español</b> para las vueltas, y <b>voz de mujer española</b> para los sectores:
+                    La retransmisión utiliza <b>dos locutoras españolas distintas</b>: la <b>Mujer 1</b> canta las vueltas, la posición, quién está delante/detrás y mete comentarios con <b>sentido del humor para los 3 últimos</b>; la <b>Mujer 2</b> canta los sectores S1 y S2:
                 </p>
 
-                <div class="bg-slate-950 p-3.5 rounded-2xl border-2 border-sky-400 space-y-2">
-                    <label class="block text-xs text-sky-300 font-black uppercase">
-                        <i class="fa-solid fa-mars mr-1"></i>1. VOZ DE HOMBRE ESPAÑOL (CANTA LAS VUELTAS Y SALIDA):
+                <div class="bg-slate-950 p-3.5 rounded-2xl border-2 border-amber-400 space-y-2">
+                    <label class="block text-xs text-amber-300 font-black uppercase">
+                        <i class="fa-solid fa-venus mr-1"></i>1. VOZ MUJER ESPAÑOLA 1 (VUELTAS, MÓVIL Y HUMOR A LOS 3 ÚLTIMOS):
                     </label>
                     <div class="flex gap-2">
-                        <select id="cfgMaleVoiceSelect" onchange="saveSelectedVoices()" class="flex-1 bg-slate-900 border-2 border-sky-500/60 rounded-xl px-3 py-2 text-xs text-white font-black cursor-pointer">
-                            <option value="CLOUD_MALE_ES" selected>★ Locutor Hombre Español Real (Garantizado)</option>
+                        <select id="cfgFemaleLapVoiceSelect" onchange="saveSelectedVoices()" class="flex-1 bg-slate-900 border-2 border-amber-500/60 rounded-xl px-3 py-2 text-xs text-white font-black cursor-pointer">
+                            <option value="AUTO_WOMAN_1" selected>★ Locutora Española 1 (Mónica / Elvira - Tono Firme y Humor)</option>
                         </select>
-                        <button onclick="testSpanishMaleLapVoice()" class="px-4 py-2 bg-sky-400 hover:bg-sky-300 text-slate-950 font-black text-xs rounded-xl cursor-pointer shrink-0 shadow">
-                            <i class="fa-solid fa-volume-high mr-1"></i>PROBAR HOMBRE
+                        <button onclick="testSpanishFemaleLapVoice()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl cursor-pointer shrink-0 shadow">
+                            <i class="fa-solid fa-volume-high mr-1"></i>PROBAR MUJER 1
                         </button>
                     </div>
                 </div>
 
                 <div class="bg-slate-950 p-3.5 rounded-2xl border-2 border-pink-400 space-y-2">
                     <label class="block text-xs text-pink-300 font-black uppercase">
-                        <i class="fa-solid fa-venus mr-1"></i>2. VOZ DE MUJER ESPAÑOLA (CANTA LOS SECTORES S1 Y S2):
+                        <i class="fa-solid fa-venus mr-1"></i>2. VOZ MUJER ESPAÑOLA 2 (CANTA LOS SECTORES S1 Y S2):
                     </label>
                     <div class="flex gap-2">
                         <select id="cfgFemaleVoiceSelect" onchange="saveSelectedVoices()" class="flex-1 bg-slate-900 border-2 border-pink-500/60 rounded-xl px-3 py-2 text-xs text-white font-black cursor-pointer">
-                            <option value="AUTO" selected>★ Locutora Mujer Española (Elvira / Mónica es-ES)</option>
+                            <option value="AUTO_WOMAN_2" selected>★ Locutora Española 2 (Helena / Lucía - Tono Ágil Sectores)</option>
                         </select>
                         <button onclick="testSpanishFemaleSectorVoice()" class="px-4 py-2 bg-pink-400 hover:bg-pink-300 text-slate-950 font-black text-xs rounded-xl cursor-pointer shrink-0 shadow">
-                            <i class="fa-solid fa-volume-high mr-1"></i>PROBAR MUJER
+                            <i class="fa-solid fa-volume-high mr-1"></i>PROBAR MUJER 2
                         </button>
                     </div>
                 </div>
@@ -1151,8 +1169,8 @@
             sectorWeights: [0.35, 0.35, 0.30],
             voiceEnabled: true,
             sectorAnalystEnabled: true,
-            preferredMaleVoiceURI: 'CLOUD_MALE_ES',
-            preferredFemaleVoiceURI: 'AUTO',
+            preferredFemaleLapVoiceURI: 'AUTO_WOMAN_1',
+            preferredFemaleVoiceURI: 'AUTO_WOMAN_2',
             trackLengthMeters: 18.0,
             scaleFactor: 32,
             heatTotalSeconds: 300,
@@ -1182,7 +1200,7 @@
             liveSyncRoomId: 'STC' + Math.floor(1000 + Math.random() * 9000),
             pilotOverlayActiveLane: 1,
             isExternalPilotMobileClient: false,
-            pilotMobileVoiceUnlocked: false,
+            pilotMobileVoiceUnlocked: true,
             lastSpokenMobileLap: -1,
             selectedChartMode: 'LAPS_LINE'
         };
@@ -1243,7 +1261,7 @@
                     targetLaps: appState.targetLaps === Infinity ? 'INF' : appState.targetLaps,
                     trackLengthMeters: appState.trackLengthMeters,
                     minLapSeconds: appState.minLapSeconds,
-                    preferredMaleVoiceURI: appState.preferredMaleVoiceURI,
+                    preferredFemaleLapVoiceURI: appState.preferredFemaleLapVoiceURI,
                     preferredFemaleVoiceURI: appState.preferredFemaleVoiceURI
                 };
                 store.put(snapshot);
@@ -1292,7 +1310,7 @@
                             if (data.targetLaps) {
                                 appState.targetLaps = data.targetLaps === 'INF' ? Infinity : (parseInt(data.targetLaps, 10) || 25);
                             }
-                            if (data.preferredMaleVoiceURI) appState.preferredMaleVoiceURI = data.preferredMaleVoiceURI;
+                            if (data.preferredFemaleLapVoiceURI) appState.preferredFemaleLapVoiceURI = data.preferredFemaleLapVoiceURI;
                             if (data.preferredFemaleVoiceURI) appState.preferredFemaleVoiceURI = data.preferredFemaleVoiceURI;
                         }
                         renderClubDatabaseSelector();
@@ -1433,234 +1451,166 @@
         }
 
         // ============================================================================
-        // MODO DE PANTALLA COMPLETA REAL (FULLSCREEN API)
+        // MOTOR DE 2 VOCES DE MUJERES ESPAÑOLAS DIFERENTES + SENTIDO DEL HUMOR:
+        // - MUJER 1: Canta las VUELTAS, el MÓVIL (delante/detrás) y BROMAS A LOS 3 ÚLTIMOS
+        // - MUJER 2: Canta los SECTORES (S1 y S2) con timbre y cadencia distintos
         // ============================================================================
-        function toggleAppFullscreen() {
-            const docEl = document.documentElement;
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                if (docEl.requestFullscreen) {
-                    docEl.requestFullscreen().catch(() => {});
-                } else if (docEl.webkitRequestFullscreen) {
-                    docEl.webkitRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(() => {});
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
-            }
-        }
-
-        function enterAppWithFullscreen() {
-            const docEl = document.documentElement;
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                if (docEl.requestFullscreen) {
-                    docEl.requestFullscreen().catch(() => {});
-                } else if (docEl.webkitRequestFullscreen) {
-                    docEl.webkitRequestFullscreen();
-                }
-            }
-            triggerSmoothFusionWithHomeScreen();
-        }
-
-        document.addEventListener('fullscreenchange', () => {
-            const lbl = document.getElementById('fullscreenBtnLabel');
-            const icn = document.getElementById('fullscreenBtnIcon');
-            if (document.fullscreenElement) {
-                if (lbl) lbl.textContent = 'SALIR PANTALLA COMPLETA';
-                if (icn) icn.className = 'fa-solid fa-compress';
-            } else {
-                if (lbl) lbl.textContent = 'PANTALLA COMPLETA';
-                if (icn) icn.className = 'fa-solid fa-expand';
-            }
-        });
-
-        // ============================================================================
-        // MOTOR DE VOCES GARANTIZADAS:
-        // 1. VUELTAS: VOZ DE HOMBRE ESPAÑOL REAL (Locutor Masculino Español Online + Nativa Masculina)
-        // 2. SECTORES: VOZ DE MUJER ESPAÑOLA REAL (Locutora Elvira / Mónica es-ES)
-        // ============================================================================
+        const FEMALE_VOICE_REGEX = /elvira|monica|mónica|helena|laura|lucia|lucía|paulina|sabina|carmen|maria|maría|conchita|ines|inés|vega|abril|elena|rocio|rocío|paloma|female|mujer|femenin|google español/i;
         const MALE_VOICE_REGEX = /alvaro|álvaro|pablo|jorge|sergio|diego|carlos|juan|enrique|antonio|miguel|david|pedro|manuel|javier|raul|raúl|alejandro|fernando|male|hombre|masculin/i;
-        const FEMALE_VOICE_REGEX = /elvira|monica|mónica|helena|laura|lucia|lucía|paulina|sabina|carmen|maria|maría|conchita|ines|inés|vega|abril|elena|rocio|rocío|paloma|female|mujer|femenin/i;
 
-        let activeMaleCloudAudio = null;
+        // Repertorio de chistes y comentarios con humor para los 3 últimos clasificados y para el líder
+        const HUMOR_LAST_PLACE_JOKES = [
+            "¡A ese ritmo te van a adelantar hasta los comisarios de pista andando!",
+            "¡Písale al gatillo sin miedo, que la electricidad del club hoy está pagada!",
+            "¿Has parado a pedir un café con leche en la recta o qué ha pasado?",
+            "¡Quita el freno de mano, que vas buscando caracoles por la cuneta!",
+            "¡Madre mía, te está sacando pegatinas hasta el coche escoba!",
+            "¡Alguien que le eche tres en uno a ese motor, que parece un tractor cuesta arriba!",
+            "¡Si vas más despacio te vamos a cobrar alquiler de aparcamiento en el carril!"
+        ];
 
-        function getOrderedSpanishVoices() {
+        const HUMOR_BOTTOM_THREE_JOKES = [
+            "¡Espabila que estás en el furgón de cola y se te escapa el podio!",
+            "¡Menos mirar el paisaje y más darle al gatillo, que vas entre los tres últimos!",
+            "¡Aprieta los dientes que los de delante ya van por otro código postal!",
+            "¡Saca el codo por la ventanilla y acelera, que estás en zona de peligro!",
+            "¡O le metes turbo ahora mismo o te toca pagar el almuerzo de todo el club!"
+        ];
+
+        const HUMOR_LEADER_JOKES = [
+            "¡Vas como un cohete espacial, nadie te huele el alerón!",
+            "¡Menudo misil llevas hoy, estás dejando el plástico del carril derretido!"
+        ];
+
+        function getHumorPhraseForPosition(pos, totalCars, isPersonalBest) {
+            if (totalCars >= 2 && pos === totalCars) {
+                return HUMOR_LAST_PLACE_JOKES[Math.floor(Math.random() * HUMOR_LAST_PLACE_JOKES.length)];
+            }
+            if (totalCars >= 3 && pos >= totalCars - 2 && pos > 1) {
+                return HUMOR_BOTTOM_THREE_JOKES[Math.floor(Math.random() * HUMOR_BOTTOM_THREE_JOKES.length)];
+            }
+            if (pos === 1 && isPersonalBest && Math.random() < 0.45) {
+                return HUMOR_LEADER_JOKES[Math.floor(Math.random() * HUMOR_LEADER_JOKES.length)];
+            }
+            return '';
+        }
+
+        function getOrderedSpanishFemaleVoices() {
             if (!('speechSynthesis' in window)) return [];
             const allVoices = window.speechSynthesis.getVoices() || [];
-            const esES = allVoices.filter(v => v.lang.replace('_', '-').toLowerCase() === 'es-es');
-            const otherEs = allVoices.filter(v => v.lang.toLowerCase().startsWith('es') && v.lang.replace('_', '-').toLowerCase() !== 'es-es');
-            return [...esES, ...otherEs];
+            const esVoices = allVoices.filter(v => v.lang.toLowerCase().startsWith('es'));
+            const femaleFirst = esVoices.filter(v => !MALE_VOICE_REGEX.test(v.name));
+            const esESFemale = femaleFirst.filter(v => v.lang.replace('_', '-').toLowerCase() === 'es-es');
+            const otherEsFemale = femaleFirst.filter(v => v.lang.replace('_', '-').toLowerCase() !== 'es-es');
+            return [...esESFemale, ...otherEsFemale, ...esVoices];
         }
 
         function populateVoiceSelectors() {
-            const esVoices = getOrderedSpanishVoices();
-            const maleSel = document.getElementById('cfgMaleVoiceSelect');
-            const femaleSel = document.getElementById('cfgFemaleVoiceSelect');
+            const femVoices = getOrderedSpanishFemaleVoices();
+            const woman1Sel = document.getElementById('cfgFemaleLapVoiceSelect');
+            const woman2Sel = document.getElementById('cfgFemaleVoiceSelect');
 
-            if (maleSel) {
-                const prevMale = appState.preferredMaleVoiceURI || 'CLOUD_MALE_ES';
-                let mHtml = `<option value="CLOUD_MALE_ES">★ Locutor Hombre Español Real (Garantizado)</option>`;
-                mHtml += `<option value="AUTO">Automático del Sistema (Priorizar Hombre Español)</option>`;
-                esVoices.forEach(v => {
-                    const isTrueMale = MALE_VOICE_REGEX.test(v.name);
-                    const isFem = FEMALE_VOICE_REGEX.test(v.name);
-                    const tag = isTrueMale ? ' [HOMBRE REAL]' : (isFem ? ' [VOZ MUJER DEL SISTEMA]' : '');
-                    mHtml += `<option value="${v.voiceURI}">${v.name} (${v.lang})${tag}</option>`;
+            if (woman1Sel) {
+                const prev1 = appState.preferredFemaleLapVoiceURI || 'AUTO_WOMAN_1';
+                let html1 = `<option value="AUTO_WOMAN_1">★ Locutora Mujer 1 Automática (Vueltas, Móvil y Humor)</option>`;
+                femVoices.forEach((v, idx) => {
+                    html1 += `<option value="${v.voiceURI}">Mujer #${idx + 1}: ${v.name} (${v.lang})</option>`;
                 });
-                maleSel.innerHTML = mHtml;
-                if ([...maleSel.options].some(o => o.value === prevMale)) maleSel.value = prevMale;
+                woman1Sel.innerHTML = html1;
+                if ([...woman1Sel.options].some(o => o.value === prev1)) woman1Sel.value = prev1;
             }
 
-            if (femaleSel) {
-                const prevFem = appState.preferredFemaleVoiceURI || 'AUTO';
-                let fHtml = `<option value="AUTO">★ Automático (Mejor Voz de Mujer Española)</option>`;
-                esVoices.forEach(v => {
-                    const tag = FEMALE_VOICE_REGEX.test(v.name) ? ' [MUJER]' : (MALE_VOICE_REGEX.test(v.name) ? ' [HOMBRE]' : '');
-                    fHtml += `<option value="${v.voiceURI}">${v.name} (${v.lang})${tag}</option>`;
+            if (woman2Sel) {
+                const prev2 = appState.preferredFemaleVoiceURI || 'AUTO_WOMAN_2';
+                let html2 = `<option value="AUTO_WOMAN_2">★ Locutora Mujer 2 Automática (Sectores S1 y S2)</option>`;
+                femVoices.forEach((v, idx) => {
+                    html2 += `<option value="${v.voiceURI}">Mujer #${idx + 1}: ${v.name} (${v.lang})</option>`;
                 });
-                femaleSel.innerHTML = fHtml;
-                if ([...femaleSel.options].some(o => o.value === prevFem)) femaleSel.value = prevFem;
+                woman2Sel.innerHTML = html2;
+                if ([...woman2Sel.options].some(o => o.value === prev2)) woman2Sel.value = prev2;
             }
         }
 
         function saveSelectedVoices() {
-            const maleSel = document.getElementById('cfgMaleVoiceSelect');
-            const femaleSel = document.getElementById('cfgFemaleVoiceSelect');
-            if (maleSel) appState.preferredMaleVoiceURI = maleSel.value;
-            if (femaleSel) appState.preferredFemaleVoiceURI = femaleSel.value;
+            const w1 = document.getElementById('cfgFemaleLapVoiceSelect');
+            const w2 = document.getElementById('cfgFemaleVoiceSelect');
+            if (w1) appState.preferredFemaleLapVoiceURI = w1.value;
+            if (w2) appState.preferredFemaleVoiceURI = w2.value;
             saveEverythingToInternalDB(false);
         }
 
-        function resolveNativeSpanishMaleVoice() {
-            const esVoices = getOrderedSpanishVoices();
-            if (esVoices.length === 0) return { voice: null, isTrueMale: false };
+        function resolveTwoDistinctSpanishFemaleVoices() {
+            const femVoices = getOrderedSpanishFemaleVoices();
+            let voice1 = femVoices[0] || null;
+            let voice2 = femVoices.length > 1 ? femVoices[1] : (femVoices[0] || null);
 
-            if (appState.preferredMaleVoiceURI && appState.preferredMaleVoiceURI !== 'AUTO' && appState.preferredMaleVoiceURI !== 'CLOUD_MALE_ES') {
-                const manual = esVoices.find(v => v.voiceURI === appState.preferredMaleVoiceURI);
-                if (manual) return { voice: manual, isTrueMale: MALE_VOICE_REGEX.test(manual.name) };
+            if (appState.preferredFemaleLapVoiceURI && !appState.preferredFemaleLapVoiceURI.startsWith('AUTO')) {
+                const manual1 = femVoices.find(v => v.voiceURI === appState.preferredFemaleLapVoiceURI);
+                if (manual1) voice1 = manual1;
             }
 
-            const esESVoices = esVoices.filter(v => v.lang.replace('_', '-').toLowerCase() === 'es-es');
-            const explicitMaleEsES = esESVoices.find(v => MALE_VOICE_REGEX.test(v.name));
-            if (explicitMaleEsES) return { voice: explicitMaleEsES, isTrueMale: true };
-
-            const explicitMaleAny = esVoices.find(v => MALE_VOICE_REGEX.test(v.name));
-            if (explicitMaleAny) return { voice: explicitMaleAny, isTrueMale: true };
-
-            return { voice: esVoices[0], isTrueMale: false };
-        }
-
-        function resolveSpanishFemaleVoice() {
-            const esVoices = getOrderedSpanishVoices();
-            if (esVoices.length === 0) return { voice: null, isTrueFemale: false };
-
-            if (appState.preferredFemaleVoiceURI && appState.preferredFemaleVoiceURI !== 'AUTO') {
-                const manual = esVoices.find(v => v.voiceURI === appState.preferredFemaleVoiceURI);
-                if (manual) return { voice: manual, isTrueFemale: !MALE_VOICE_REGEX.test(manual.name) };
+            if (appState.preferredFemaleVoiceURI && !appState.preferredFemaleVoiceURI.startsWith('AUTO')) {
+                const manual2 = femVoices.find(v => v.voiceURI === appState.preferredFemaleVoiceURI);
+                if (manual2) voice2 = manual2;
+            } else if (voice1 && femVoices.length > 1) {
+                const different = femVoices.find(v => v.voiceURI !== voice1.voiceURI);
+                if (different) voice2 = different;
             }
 
-            const esESVoices = esVoices.filter(v => v.lang.replace('_', '-').toLowerCase() === 'es-es');
-            const explicitFemEsES = esESVoices.find(v => FEMALE_VOICE_REGEX.test(v.name));
-            if (explicitFemEsES) return { voice: explicitFemEsES, isTrueFemale: true };
-
-            const explicitFemAny = esVoices.find(v => FEMALE_VOICE_REGEX.test(v.name));
-            if (explicitFemAny) return { voice: explicitFemAny, isTrueFemale: true };
-
-            const nonMale = esVoices.find(v => !MALE_VOICE_REGEX.test(v.name));
-            if (nonMale) return { voice: nonMale, isTrueFemale: true };
-
-            return { voice: esVoices[0], isTrueFemale: false };
+            return { voice1, voice2 };
         }
 
+        // LOCUTORA MUJER 1: Canta las Vueltas, la Salida, los Récords, el Móvil y el Humor
         function speakSpotter(text, priority = false) {
             const el = document.getElementById('spotterMessage');
-            if (el) el.innerHTML = `<i class="fa-solid fa-mars mr-1.5 text-sky-400"></i>${text}`;
-            if (!appState.voiceEnabled) return;
-
-            const nativeCheck = resolveNativeSpanishMaleVoice();
-            const useCloudMale = (appState.preferredMaleVoiceURI === 'CLOUD_MALE_ES') || !nativeCheck.isTrueMale;
-
-            if (nativeCheck.isTrueMale && appState.preferredMaleVoiceURI !== 'CLOUD_MALE_ES' && ('speechSynthesis' in window)) {
-                try {
-                    window.speechSynthesis.cancel();
-                    const utter = new SpeechSynthesisUtterance(text);
-                    utter.voice = nativeCheck.voice;
-                    utter.lang = nativeCheck.voice.lang || 'es-ES';
-                    utter.pitch = 1.0;
-                    utter.rate = 1.08;
-                    utter.volume = 1.0;
-                    window.speechSynthesis.speak(utter);
-                    return;
-                } catch (e) {}
-            }
-
-            if (useCloudMale && navigator.onLine) {
-                try {
-                    if (activeMaleCloudAudio) {
-                        activeMaleCloudAudio.pause();
-                        activeMaleCloudAudio = null;
-                    }
-                    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-
-                    const encoded = encodeURIComponent(text);
-                    const maleStreamUrl = `https://api.streamelements.com/kappa/v2/speech?voice=Enrique&text=${encoded}`;
-                    const audio = new Audio(maleStreamUrl);
-                    audio.playbackRate = 1.08;
-                    activeMaleCloudAudio = audio;
-                    audio.play().catch(() => {
-                        fallbackSpeakNativeMale(text, nativeCheck);
-                    });
-                    return;
-                } catch (e) {}
-            }
-
-            fallbackSpeakNativeMale(text, nativeCheck);
-        }
-
-        function fallbackSpeakNativeMale(text, nativeCheck) {
-            if (!('speechSynthesis' in window)) return;
-            try {
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'es-ES';
-                if (nativeCheck && nativeCheck.voice) {
-                    utter.voice = nativeCheck.voice;
-                    utter.lang = nativeCheck.voice.lang || 'es-ES';
-                }
-                utter.pitch = (nativeCheck && nativeCheck.isTrueMale) ? 1.0 : 0.96;
-                utter.rate = 1.06;
-                window.speechSynthesis.speak(utter);
-            } catch (e) {}
-        }
-
-        function speakSectorAnalyst(text, priority = false) {
-            const el = document.getElementById('sectorAnalystMessage');
-            if (el) el.innerHTML = `<i class="fa-solid fa-venus mr-1.5 text-pink-400"></i>${text}`;
-            if (!appState.voiceEnabled || !appState.sectorAnalystEnabled || !('speechSynthesis' in window)) return;
+            if (el) el.innerHTML = `<i class="fa-solid fa-venus mr-1.5 text-amber-400"></i>${text}`;
+            if (!appState.voiceEnabled || !('speechSynthesis' in window)) return;
             try {
                 if (priority) window.speechSynthesis.cancel();
+                const { voice1 } = resolveTwoDistinctSpanishFemaleVoices();
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.lang = 'es-ES';
-                const { voice, isTrueFemale } = resolveSpanishFemaleVoice();
-                if (voice) {
-                    utter.voice = voice;
-                    utter.lang = voice.lang || 'es-ES';
+                if (voice1) {
+                    utter.voice = voice1;
+                    utter.lang = voice1.lang || 'es-ES';
                 }
-                utter.pitch = isTrueFemale ? 1.08 : 1.18;
-                utter.rate = 1.10;
+                // Mujer 1: Tono femenino natural, cálido y expresivo
+                utter.pitch = 1.02;
+                utter.rate = 1.08;
                 utter.volume = 1.0;
                 window.speechSynthesis.speak(utter);
             } catch (e) {}
         }
 
-        function testSpanishMaleLapVoice() {
-            speakSpotter("Carlos, vuelta 12, tiempo 3 con 42 segundos.", true);
+        // LOCUTORA MUJER 2: Canta los Sectores S1 y S2 con timbre más brillante y rápido para distinguirla de la Mujer 1
+        function speakSectorAnalyst(text, priority = false) {
+            const el = document.getElementById('sectorAnalystMessage');
+            if (el) el.innerHTML = `<i class="fa-solid fa-venus-double mr-1.5 text-pink-400"></i>${text}`;
+            if (!appState.voiceEnabled || !appState.sectorAnalystEnabled || !('speechSynthesis' in window)) return;
+            try {
+                if (priority) window.speechSynthesis.cancel();
+                const { voice1, voice2 } = resolveTwoDistinctSpanishFemaleVoices();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'es-ES';
+                if (voice2) {
+                    utter.voice = voice2;
+                    utter.lang = voice2.lang || 'es-ES';
+                }
+                // Si el dispositivo solo tiene 1 voz instalada, diferenciamos Mujer 2 con pitch 1.24 y cadencia rápida
+                const sameUnderlyingVoice = (voice1 && voice2 && voice1.voiceURI === voice2.voiceURI);
+                utter.pitch = sameUnderlyingVoice ? 1.24 : 1.18;
+                utter.rate = 1.16;
+                utter.volume = 1.0;
+                window.speechSynthesis.speak(utter);
+            } catch (e) {}
+        }
+
+        function testSpanishFemaleLapVoice() {
+            speakSpotter("Hola, soy la Locutora 1 de vueltas. Antonio, vuelta 8 en 3 con 45, vas último: ¡písale sin miedo que la luz hoy está pagada!", true);
         }
 
         function testSpanishFemaleSectorVoice() {
-            speakSectorAnalyst("Carlos, sector 1, 1 con 18 segundos.", true);
+            speakSectorAnalyst("Hola, soy la Locutora 2 de sectores. Carlos, sector 1 récord en 1 con 15 segundos.", true);
         }
 
         function toggleVoiceSpotter() {
@@ -1671,7 +1621,7 @@
                     ? '<i class="fa-solid fa-volume-high"></i> VOZ ON'
                     : '<i class="fa-solid fa-volume-xmark"></i> SILENCIO';
             }
-            if (appState.voiceEnabled) speakSpotter("Voz de hombre español activada para las vueltas.", true);
+            if (appState.voiceEnabled) speakSpotter("Dos voces de mujer española activadas con humor en carrera.", true);
         }
 
         function toggleSectorAnalystVoice() {
@@ -1684,12 +1634,12 @@
                     : 'px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-[10px] cursor-pointer';
             }
             if (appState.sectorAnalystEnabled) {
-                speakSectorAnalyst("Voz de mujer española activada para los sectores.", true);
+                speakSectorAnalyst("Locutora 2 de sectores activada.", true);
             }
         }
 
         // ============================================================================
-        // INICIALIZACIÓN DE CARRILES Y RENDERIZADO DE TARJETAS SIN ESPACIOS VACÍOS
+        // INICIALIZACIÓN DE CARRILES Y CUADROS REORGANIZADOS CON ESCALADO AUTOMÁTICO
         // ============================================================================
         function initAllLanesData() {
             for (let i = 1; i <= 10; i++) {
@@ -1774,13 +1724,15 @@
                 container.className = 'col-span-9 grid grid-cols-5 grid-rows-2 gap-1.5 h-full min-h-0 overflow-hidden';
             }
 
-            const isLarge = (n <= 2);
-            const isMed = (n === 4 || n === 6);
+            const isCompact = (n >= 8);
+            const lapsScaleClass = n <= 2 ? 'lane-stat-fluid-xl' : (n <= 6 ? 'lane-stat-fluid-lg' : 'lane-stat-fluid-md');
+            const timeScaleClass = n <= 2 ? 'lane-stat-fluid-lg' : (n <= 6 ? 'lane-stat-fluid-md' : 'text-sm');
 
             let html = '';
             for (let i = 1; i <= n; i++) {
                 const lane = appState.lanes[i];
                 const pal = LANE_PALETTE[i];
+                const tac = getPilotTacticalContext(i);
                 const optLap = getDriverOptimalLap(lane);
                 const meanLap = getDriverMeanLap(lane);
                 const scaleKmh = lane.lastLap > 0
@@ -1791,96 +1743,97 @@
                 if (sCount >= 2) {
                     sectorsRow = `
                         <div class="grid grid-cols-${sCount} gap-1.5 font-mono-num shrink-0">
-                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 flex justify-between items-center ${lane.sectorColors[1]}">
-                                <div>
-                                    <span class="text-[11px] font-black text-sky-300 block leading-none">SECTOR 1</span>
-                                    <span class="text-[10px] text-slate-400">Réc: ${lane.bestSectors[1] < Infinity ? lane.bestSectors[1].toFixed(2) + 's' : '--.--'}</span>
-                                </div>
-                                <span class="font-black ${isLarge ? 'text-xl' : 'text-sm'} text-white">${lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(2) + 's' : '--.--'}</span>
+                            <div class="bg-slate-950 px-2 py-1 rounded-xl border border-slate-700 flex items-center justify-between ${lane.sectorColors[1]}">
+                                <span class="text-[10px] font-black text-sky-300">S1 <span class="text-slate-400 font-normal">(${lane.bestSectors[1] < Infinity ? lane.bestSectors[1].toFixed(2) : '--'})</span></span>
+                                <span class="font-black ${isCompact ? 'text-xs' : 'text-sm'} text-white">${lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(2) + 's' : '--.--'}</span>
                             </div>
-                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 flex justify-between items-center ${lane.sectorColors[2]}">
-                                <div>
-                                    <span class="text-[11px] font-black text-amber-300 block leading-none">${sCount === 2 ? 'META' : 'SECTOR 2'}</span>
-                                    <span class="text-[10px] text-slate-400">Réc: ${lane.bestSectors[2] < Infinity ? lane.bestSectors[2].toFixed(2) + 's' : '--.--'}</span>
-                                </div>
-                                <span class="font-black ${isLarge ? 'text-xl' : 'text-sm'} text-white">${lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(2) + 's' : '--.--'}</span>
+                            <div class="bg-slate-950 px-2 py-1 rounded-xl border border-slate-700 flex items-center justify-between ${lane.sectorColors[2]}">
+                                <span class="text-[10px] font-black text-amber-300">${sCount === 2 ? 'META' : 'S2'} <span class="text-slate-400 font-normal">(${lane.bestSectors[2] < Infinity ? lane.bestSectors[2].toFixed(2) : '--'})</span></span>
+                                <span class="font-black ${isCompact ? 'text-xs' : 'text-sm'} text-white">${lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(2) + 's' : '--.--'}</span>
                             </div>
                             ${sCount === 3 ? `
-                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 flex justify-between items-center ${lane.sectorColors[3]}">
-                                <div>
-                                    <span class="text-[11px] font-black text-emerald-300 block leading-none">META / S3</span>
-                                    <span class="text-[10px] text-slate-400">Réc: ${lane.bestSectors[3] < Infinity ? lane.bestSectors[3].toFixed(2) + 's' : '--.--'}</span>
-                                </div>
-                                <span class="font-black ${isLarge ? 'text-xl' : 'text-sm'} text-white">${lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(2) + 's' : '--.--'}</span>
+                            <div class="bg-slate-950 px-2 py-1 rounded-xl border border-slate-700 flex items-center justify-between ${lane.sectorColors[3]}">
+                                <span class="text-[10px] font-black text-emerald-300">META <span class="text-slate-400 font-normal">(${lane.bestSectors[3] < Infinity ? lane.bestSectors[3].toFixed(2) : '--'})</span></span>
+                                <span class="font-black ${isCompact ? 'text-xs' : 'text-sm'} text-white">${lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(2) + 's' : '--.--'}</span>
                             </div>` : ''}
                         </div>
                     `;
                 }
 
-                const recentLapsPills = lane.history.length > 0
-                    ? lane.history.slice(-4).reverse().map((t, idx) => {
-                        const vNum = lane.history.length - idx;
-                        const isBest = Math.abs(t - lane.bestLap) < 0.001;
-                        return `<span class="px-2 py-0.5 rounded-lg text-[11px] font-mono-num font-black border ${isBest ? 'bg-emerald-500/30 border-emerald-400 text-emerald-200' : 'bg-slate-900 border-slate-700 text-slate-200'}">V${vNum}: ${t.toFixed(2)}s</span>`;
-                    }).join('')
-                    : `<span class="text-[11px] text-slate-400 font-mono">Esperando paso por sensores...</span>`;
+                const aheadTxt = tac.carAhead ? `🔼 ${tac.carAhead.name} (${tac.gapToAhead})` : '👑 LÍDER P1';
+                const behindTxt = tac.carBehind ? `🔽 ${tac.carBehind.name} (${tac.gapToBehind})` : '🛡️ COLA LIBRE';
 
                 html += `
-                <div id="laneCard-${i}" style="border-left-color: ${pal.hex};" class="glass-panel rounded-2xl ${isLarge ? 'p-3.5' : 'p-2.5'} border-2 border-slate-600 border-l-[12px] flex flex-col justify-between gap-1.5 h-full min-h-0 overflow-hidden">
+                <div id="laneCard-${i}" style="border-left-color: ${pal.hex};" class="glass-panel rounded-2xl p-2.5 border-2 border-slate-600 border-l-[12px] flex flex-col justify-between gap-1.5 h-full min-h-0 overflow-hidden">
                     
-                    <div class="flex justify-between items-center gap-2 border-b border-slate-700 pb-1.5 shrink-0">
+                    <!-- FILA 1: Identidad del Piloto, Posición Destacada y Botón +PASO -->
+                    <div class="flex justify-between items-center gap-1.5 border-b border-slate-700 pb-1 shrink-0">
                         <div class="flex items-center gap-2 min-w-0">
-                            <span style="background:${pal.hex}; color:#03060c;" class="px-2.5 py-1 rounded-xl font-mono-num font-black ${isLarge ? 'text-base' : 'text-xs'} shrink-0 shadow">
+                            <span style="background:${pal.hex}; color:#03060c;" class="px-2 py-0.5 rounded-lg font-mono-num font-black text-xs shrink-0 shadow">
                                 CH${i}
                             </span>
                             <div class="min-w-0">
                                 <input type="text" value="${lane.name}" onchange="updateDriverName(${i}, this.value)"
-                                       class="bg-transparent text-white font-black ${isLarge ? 'text-2xl w-48' : (isMed ? 'text-base w-32' : 'text-sm w-24')} uppercase truncate focus:outline-none focus:border-b-2 border-amber-400 block leading-tight"/>
+                                       class="bg-transparent text-white font-black ${isCompact ? 'text-xs w-20' : 'text-base w-32'} uppercase truncate focus:outline-none focus:border-b border-amber-400 block leading-tight"/>
                                 <span class="text-[10px] font-mono font-bold text-amber-300 uppercase truncate block">${lane.club}</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <span id="posBadge-${i}" class="px-2.5 py-1 ${isLarge ? 'text-sm' : 'text-xs'} font-mono font-black rounded-xl bg-slate-800 text-white border border-slate-500">
-                                ${i}&ordm; PUESTO
+                        <div class="flex items-center gap-1 shrink-0">
+                            <span id="posBadge-${i}" class="px-2 py-0.5 text-xs font-mono font-black rounded-lg bg-slate-800 text-white border border-slate-500">
+                                ${tac.pos}&ordm; PUESTO
                             </span>
-                            <button onclick="triggerNextCheckpoint(${i})" class="px-2.5 py-1 bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono font-black text-xs rounded-xl cursor-pointer shadow">
+                            <button onclick="triggerNextCheckpoint(${i})" class="px-2 py-0.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-mono font-black text-[11px] rounded-lg cursor-pointer shadow">
                                 +PASO
                             </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2 flex-1 min-h-0 text-center font-mono-num">
-                        <div class="bg-slate-950 p-2 rounded-xl border-2 border-sky-500/70 flex flex-col justify-between h-full">
-                            <div class="text-xs text-sky-300 font-black uppercase tracking-wider">VUELTAS</div>
-                            <div id="laps-${i}" class="${isLarge ? 'text-6xl' : (isMed ? 'text-4xl' : 'text-2xl')} font-black text-white leading-none my-auto">${lane.laps}</div>
-                            <div class="text-[11px] text-slate-300 font-bold border-t border-slate-800 pt-1">
-                                Media: <strong class="text-amber-300">${meanLap > 0 ? meanLap.toFixed(2) + 's' : '--.--'}</strong>
-                            </div>
+                    <!-- FILA 2 (CENTRAL AUTO-ESCALABLE): Izquierda VUELTAS Gigante (4 cols) + Derecha TIEMPOS (8 cols) -->
+                    <div class="grid grid-cols-12 gap-1.5 flex-1 min-h-0 items-stretch font-mono-num">
+                        <!-- Bloque Vueltas + Diferencia al Líder -->
+                        <div class="col-span-4 bg-slate-950 p-2 rounded-xl border-2 border-sky-500/70 flex flex-col justify-between text-center">
+                            <span class="text-[10px] text-sky-300 font-black uppercase tracking-wider">VUELTAS</span>
+                            <div id="laps-${i}" class="${lapsScaleClass} font-black text-white my-auto">${lane.laps}</div>
+                            <span id="gap-${i}" class="text-[10px] font-black text-amber-300 truncate border-t border-slate-800 pt-0.5">PREPARADO</span>
                         </div>
-                        <div class="bg-slate-950 p-2 rounded-xl border-2 border-amber-500/70 flex flex-col justify-between h-full">
-                            <div class="text-xs text-amber-300 font-black uppercase tracking-wider">ÚLTIMA VUELTA</div>
-                            <div id="lastLap-${i}" class="${isLarge ? 'text-4xl' : (isMed ? 'text-2xl' : 'text-base')} font-black text-white leading-none my-auto">${lane.lastLap > 0 ? lane.lastLap.toFixed(2) + 's' : '0.00s'}</div>
-                            <div class="text-[11px] text-slate-300 font-bold border-t border-slate-800 pt-1">
-                                Vel. Escala: <strong class="text-sky-300">${scaleKmh} km/h</strong>
+
+                        <!-- Bloque 2x2 de Tiempos Principales (Última, Mejor, Óptima, Media) -->
+                        <div class="col-span-8 grid grid-cols-2 grid-rows-2 gap-1.5">
+                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border-2 border-amber-500/70 flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] text-amber-300 font-black uppercase">ÚLTIMA V.</span>
+                                    <span class="text-[10px] text-sky-300 font-bold">${scaleKmh} km/h</span>
+                                </div>
+                                <div id="lastLap-${i}" class="${timeScaleClass} font-black text-white text-right my-auto">${lane.lastLap > 0 ? lane.lastLap.toFixed(2) + 's' : '0.00s'}</div>
                             </div>
-                        </div>
-                        <div class="bg-slate-950 p-2 rounded-xl border-2 border-emerald-500/70 flex flex-col justify-between h-full">
-                            <div class="text-xs text-emerald-300 font-black uppercase tracking-wider">MEJOR VUELTA</div>
-                            <div id="bestLap-${i}" class="${isLarge ? 'text-4xl' : (isMed ? 'text-2xl' : 'text-base')} font-black text-emerald-400 leading-none my-auto">${lane.bestLap < Infinity ? lane.bestLap.toFixed(2) + 's' : '--.--'}</div>
-                            <div class="text-[11px] text-slate-300 font-bold border-t border-slate-800 pt-1">
-                                Óptima: <strong class="text-purple-300">${optLap < Infinity ? optLap.toFixed(2) + 's' : '--.--'}</strong>
+
+                            <div class="bg-slate-950 px-2.5 py-1.5 rounded-xl border-2 border-emerald-500/70 flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] text-emerald-300 font-black uppercase">MEJOR V.</span>
+                                    <span class="text-[10px] text-slate-400 font-bold">RÉC</span>
+                                </div>
+                                <div id="bestLap-${i}" class="${timeScaleClass} font-black text-emerald-400 text-right my-auto">${lane.bestLap < Infinity ? lane.bestLap.toFixed(2) + 's' : '--.--'}</div>
+                            </div>
+
+                            <div class="bg-slate-950 px-2.5 py-1 rounded-xl border border-purple-500/60 flex items-center justify-between">
+                                <span class="text-[10px] text-purple-300 font-black uppercase">ÓPTIMA</span>
+                                <span class="text-xs md:text-sm font-black text-purple-200">${optLap < Infinity ? optLap.toFixed(2) + 's' : '--.--'}</span>
+                            </div>
+
+                            <div class="bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-700 flex items-center justify-between">
+                                <span class="text-[10px] text-slate-300 font-black uppercase">MEDIA</span>
+                                <span class="text-xs md:text-sm font-black text-amber-300">${meanLap > 0 ? meanLap.toFixed(2) + 's' : '--.--'}</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- FILA 3: Sectores S1, S2 y Meta -->
                     ${sectorsRow}
 
-                    <div class="flex flex-wrap justify-between items-center gap-2 bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-700 font-mono text-xs shrink-0">
-                        <span id="gap-${i}" class="font-black text-amber-300 truncate">PREPARADO EN PISTA</span>
-                        <div class="flex items-center gap-1 overflow-x-auto">
-                            ${recentLapsPills}
-                        </div>
-                        <span class="text-slate-300 font-bold shrink-0">ToF: <strong class="text-white">${lane.tofMm}mm</strong></span>
+                    <!-- FILA 4: Radar Táctico Directo (Quién está Delante y Quién está Detrás) -->
+                    <div class="grid grid-cols-2 gap-1.5 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-700 font-mono text-[10px] shrink-0">
+                        <div class="truncate text-rose-300 font-black">${aheadTxt}</div>
+                        <div class="truncate text-emerald-300 font-black text-right">${behindTxt}</div>
                     </div>
                 </div>
                 `;
@@ -2534,7 +2487,8 @@
             lane.totalRaceTime += lapSec;
             lane.history.push(lapSec);
 
-            if (lapSec < lane.bestLap) lane.bestLap = lapSec;
+            const isPersonalBest = (lapSec < lane.bestLap);
+            if (isPersonalBest) lane.bestLap = lapSec;
             if (lapSec < appState.overallBestLap) {
                 appState.overallBestLap = lapSec;
                 appState.overallBestDriver = lane.name;
@@ -2542,8 +2496,19 @@
                 if (recEl) recEl.textContent = `RÉCORD: ${lapSec.toFixed(2)}s (${lane.name})`;
             }
 
-            // VUELTAS: Cantadas por VOZ DE HOMBRE ESPAÑOL
-            speakSpotter(`${lane.name}, vuelta ${lane.laps}, tiempo ${lapSec.toFixed(2)} segundos.`);
+            const tac = getPilotTacticalContext(laneId);
+            const isBottomThree = (tac.totalCars >= 2 && tac.pos >= Math.max(2, tac.totalCars - 2));
+            let humorExtra = '';
+            // Poner sentido del humor sobre todo en los 3 últimos clasificados
+            if (isBottomThree || (tac.pos === 1 && isPersonalBest)) {
+                humorExtra = ' ' + getHumorPhraseForPosition(tac.pos, tac.totalCars, isPersonalBest);
+            }
+
+            const aheadShort = tac.carAhead ? `Delante ${tac.carAhead.name} ${tac.gapToAhead.toLowerCase()}.` : 'Vas líder en primera posición.';
+            const behindShort = tac.carBehind ? `Detrás ${tac.carBehind.name} ${tac.gapToBehind.toLowerCase()}.` : '';
+
+            // VUELTAS: Cantadas por la LOCUTORA MUJER 1 con posición, rivales y sentido del humor
+            speakSpotter(`${lane.name}, vuelta ${lane.laps}, ${lapSec.toFixed(2)} segundos. Posición ${tac.pos}. ${aheadShort} ${behindShort}${humorExtra}`);
             prependLiveLogRow(`V${lane.laps}`, laneId, lane.name, lapSec);
 
             renderMasterClock();
@@ -2563,13 +2528,15 @@
             const leader = activeList[0];
             activeList.forEach((lane, idx) => {
                 const pos = idx + 1;
+                const isLastThree = (activeList.length >= 3 && pos >= activeList.length - 2);
                 const badge = document.getElementById(`posBadge-${lane.id}`);
                 const gapEl = document.getElementById(`gap-${lane.id}`);
                 if (badge) {
-                    badge.innerHTML = `${pos}&ordm; PUESTO`;
+                    const funnyTag = (pos === activeList.length && activeList.length > 1) ? ' 🐢' : (isLastThree ? ' 🔥' : '');
+                    badge.innerHTML = `${pos}&ordm; PUESTO${funnyTag}`;
                     badge.className = pos === 1
-                        ? 'px-2.5 py-1 text-xs font-mono font-black rounded-xl pos-p1-gold'
-                        : (pos === 2 ? 'px-2.5 py-1 text-xs font-mono font-black rounded-xl pos-p2-silver' : 'px-2.5 py-1 text-xs font-mono font-black rounded-xl bg-slate-800 text-white border border-slate-500');
+                        ? 'px-2 py-0.5 text-xs font-mono font-black rounded-lg pos-p1-gold'
+                        : (pos === 2 ? 'px-2 py-0.5 text-xs font-mono font-black rounded-lg pos-p2-silver' : 'px-2 py-0.5 text-xs font-mono font-black rounded-lg bg-slate-800 text-white border border-slate-500');
                 }
                 if (gapEl) {
                     if (pos === 1) {
@@ -2745,14 +2712,13 @@
             }, 100);
         }
 
+        // SIEMPRE muestra HORAS:MINUTOS:SEGUNDOS.décima (HH:MM:SS.d) para soportar torneos de hasta 24 Horas
         function formatEnduranceTime(totalSecs) {
-            const hrs = Math.floor(totalSecs / 3600);
-            const mins = Math.floor((totalSecs % 3600) / 60);
-            const secs = (totalSecs % 60).toFixed(1);
-            if (hrs > 0) {
-                return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
-            }
-            return `${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
+            const safeSecs = Math.max(0, totalSecs);
+            const hrs = Math.floor(safeSecs / 3600);
+            const mins = Math.floor((safeSecs % 3600) / 60);
+            const secs = (safeSecs % 60).toFixed(1);
+            return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
         }
 
         function renderMasterClock() {
@@ -2763,11 +2729,11 @@
             if (appState.raceFormat === 'LAPS') {
                 const maxDone = Math.max(0, ...Object.values(appState.lanes).slice(0, appState.activeLanes).map(l => l.laps));
                 const targetTxt = appState.targetLaps === Infinity ? '∞ INFINITAS' : `${appState.targetLaps} VUELTAS`;
-                if (lbl) lbl.textContent = `META: ${targetTxt}`;
+                if (lbl) lbl.textContent = `META: ${targetTxt} (${formatEnduranceTime(appState.remainingSeconds)})`;
                 el.textContent = appState.targetLaps === Infinity ? `${maxDone} / ∞` : `${maxDone} / ${appState.targetLaps}V`;
             } else {
-                const is24h = appState.heatTotalSeconds >= 3600;
-                if (lbl) lbl.textContent = is24h ? 'TORNEO RESISTENCIA' : 'TIEMPO MANGA';
+                const isEndurance = appState.heatTotalSeconds >= 3600;
+                if (lbl) lbl.textContent = isEndurance ? 'TORNEO 24H (HH:MM:SS.d)' : 'CRONÓMETRO (HH:MM:SS.d)';
                 el.textContent = formatEnduranceTime(appState.remainingSeconds);
             }
         }
@@ -3126,12 +3092,37 @@ POSICIÓN: ${tac.pos}º de ${tac.totalCars}
         function togglePilotMobileAudio() {
             appState.pilotMobileVoiceUnlocked = !appState.pilotMobileVoiceUnlocked;
             const lbl = document.getElementById('pilotMobileVoiceLabel');
-            if (lbl) lbl.textContent = appState.pilotMobileVoiceUnlocked ? 'VOZ HOMBRE ACTIVA' : 'ACTIVAR VOZ';
-            if (appState.pilotMobileVoiceUnlocked) {
-                const lane = appState.lanes[appState.pilotOverlayActiveLane || 1];
-                const msg = `Voz de hombre español activada para ${lane ? lane.name : 'el piloto'}.`;
-                speakSpotter(msg, true);
+            const btn = document.getElementById('btnPilotMobileVoice');
+            if (lbl) lbl.textContent = appState.pilotMobileVoiceUnlocked ? 'VOZ MUJER ACTIVA' : 'ACTIVAR VOZ';
+            if (btn) {
+                btn.className = appState.pilotMobileVoiceUnlocked
+                    ? 'col-span-4 py-3 px-2 rounded-2xl font-black text-xs uppercase bg-emerald-500 text-slate-950 shadow-lg border-2 border-white cursor-pointer flex items-center justify-center gap-1.5'
+                    : 'col-span-4 py-3 px-2 rounded-2xl font-black text-xs uppercase bg-slate-800 text-white shadow-lg border-2 border-slate-500 cursor-pointer flex items-center justify-center gap-1.5';
             }
+            if (appState.pilotMobileVoiceUnlocked) {
+                speakFullMobileTacticalReportNow();
+            }
+        }
+
+        function speakFullMobileTacticalReportNow() {
+            const laneId = appState.pilotOverlayActiveLane || (parseInt(document.getElementById('mobileDriverSelect')?.value, 10) || 1);
+            const tac = getPilotTacticalContext(laneId);
+            const lane = tac.me;
+            if (!lane) return;
+
+            const aheadMsg = tac.carAhead
+                ? `Tienes delante a ${tac.carAhead.name} ${tac.gapToAhead.toLowerCase()}.`
+                : `Vas líder en primera posición.`;
+            const behindMsg = tac.carBehind
+                ? `Por detrás viene ${tac.carBehind.name} ${tac.gapToBehind.toLowerCase()}.`
+                : `Nadie te persigue por detrás.`;
+            const humorMsg = getHumorPhraseForPosition(tac.pos, tac.totalCars, false);
+            const lapTimeTxt = lane.lastLap > 0 ? `Última vuelta ${lane.lastLap.toFixed(2)} segundos.` : `Llevas ${lane.laps} vueltas.`;
+
+            const fullRadio = `${lane.name}, vas en posición ${tac.pos} de ${tac.totalCars}. ${lapTimeTxt} ${aheadMsg} ${behindMsg} ${humorMsg}`;
+            const radioEl = document.getElementById('pilotAppLastRadioMsg');
+            if (radioEl) radioEl.textContent = fullRadio;
+            speakSpotter(fullRadio, true);
         }
 
         function renderPilotMobileLiveOverlay() {
@@ -3157,7 +3148,12 @@ POSICIÓN: ${tac.pos}º de ${tac.totalCars}
             document.getElementById('pilotAppAheadName').textContent = ahead
                 ? `${tac.pos - 1}º · CH${ahead.id} ${ahead.name}`
                 : '¡VAS LÍDER EN 1ª POSICIÓN!';
+            document.getElementById('pilotAppAheadBest').textContent = ahead
+                ? `Mejor: ${ahead.bestLap < Infinity ? ahead.bestLap.toFixed(2) + 's' : '--'} | Última: ${ahead.lastLap > 0 ? ahead.lastLap.toFixed(2) + 's' : '--'}`
+                : 'Pista libre delante';
             document.getElementById('pilotAppAheadGap').textContent = tac.gapToAhead;
+            document.getElementById('pilotAppAheadPaceDiff').textContent = tac.paceVsAhead;
+
             document.getElementById('pilotAppOptimalTag').textContent = `V. Óptima: ${optLap < Infinity ? optLap.toFixed(2) + 's' : '--.--s'}`;
             document.getElementById('pilotAppLaps').textContent = lane.laps;
             document.getElementById('pilotAppLastLap').textContent = lane.lastLap > 0 ? lane.lastLap.toFixed(2) + 's' : '0.00s';
@@ -3169,8 +3165,36 @@ POSICIÓN: ${tac.pos}º de ${tac.totalCars}
             document.getElementById('pilotAppBehindName').textContent = behind
                 ? `${tac.pos + 1}º · CH${behind.id} ${behind.name}`
                 : 'SIN PERSEGUIDOR DETRÁS';
+            document.getElementById('pilotAppBehindBest').textContent = behind
+                ? `Mejor: ${behind.bestLap < Infinity ? behind.bestLap.toFixed(2) + 's' : '--'} | Última: ${behind.lastLap > 0 ? behind.lastLap.toFixed(2) + 's' : '--'}`
+                : 'Nadie por detrás';
             document.getElementById('pilotAppBehindGap').textContent = tac.gapToBehind;
+            document.getElementById('pilotAppBehindPaceDiff').textContent = tac.paceVsBehind;
             document.getElementById('pilotAppMeanLap').textContent = `Media: ${meanLap > 0 ? meanLap.toFixed(2) + 's' : '--.--s'}`;
+
+            const histBox = document.getElementById('pilotAppLapHistoryBox');
+            if (histBox) {
+                if (lane.history.length === 0) {
+                    histBox.innerHTML = `<div class="text-slate-400 italic py-4 text-center">Esperando paso por meta...</div>`;
+                } else {
+                    histBox.innerHTML = lane.history.slice().reverse().map((t, idx) => {
+                        const vNum = lane.history.length - idx;
+                        const isBest = Math.abs(t - lane.bestLap) < 0.001;
+                        return `
+                            <div class="flex justify-between items-center px-3 py-2 rounded-xl border ${isBest ? 'bg-emerald-950/70 border-emerald-400 text-white font-black' : 'bg-slate-950 border-slate-800 text-slate-200 font-bold'}">
+                                <span>VUELTA #${vNum} ${isBest ? '★ MEJOR VUELTA' : ''}</span>
+                                <span class="text-base">${t.toFixed(2)}s</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // En el móvil del piloto: cantar automáticamente cada nueva vuelta + quién está delante + quién detrás + humor
+            if (appState.pilotMobileVoiceUnlocked && lane.laps > appState.lastSpokenMobileLap && lane.lastLap > 0) {
+                appState.lastSpokenMobileLap = lane.laps;
+                speakFullMobileTacticalReportNow();
+            }
         }
 
         function downloadPilotTakeHomePass() {
@@ -3391,6 +3415,41 @@ POSICIÓN: ${tac.pos}º de ${tac.totalCars}
                 }
             }, 1400);
         }
+
+        function enterAppWithFullscreen() {
+            try {
+                const docEl = document.documentElement;
+                if (!document.fullscreenElement) {
+                    if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
+                    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+                }
+            } catch (e) {}
+            triggerSmoothFusionWithHomeScreen();
+        }
+
+        function toggleAppFullscreen() {
+            try {
+                const docEl = document.documentElement;
+                if (!document.fullscreenElement) {
+                    if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
+                    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                }
+            } catch (e) {}
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const lbl = document.getElementById('fullscreenBtnLabel');
+            const icn = document.getElementById('fullscreenBtnIcon');
+            if (document.fullscreenElement) {
+                if (lbl) lbl.textContent = 'SALIR PANTALLA COMPLETA';
+                if (icn) icn.className = 'fa-solid fa-compress';
+            } else {
+                if (lbl) lbl.textContent = 'PANTALLA COMPLETA';
+                if (icn) icn.className = 'fa-solid fa-expand';
+            }
+        });
 
         window.addEventListener('resize', evaluateScreenOrientationAndVideoIntro);
         window.addEventListener('orientationchange', evaluateScreenOrientationAndVideoIntro);
