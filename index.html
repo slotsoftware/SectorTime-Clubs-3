@@ -595,12 +595,18 @@
                         <span class="text-[9px] text-cyan-300 font-black uppercase">
                             <i class="fa-solid fa-check-double mr-1"></i>2. TRADUCTOR DE VUELTAS Y DIAGNÓSTICO:
                         </span>
-                        <button onclick="copyDiagnosticReport()" class="px-2 py-0.5 mac-btn-dark text-[9px] rounded cursor-pointer">
-                            Copiar Diagnóstico
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <label class="flex items-center gap-1 text-[9px] text-amber-300 cursor-pointer">
+                                <input type="checkbox" id="chkAllowBenchTest" class="accent-cyan-400 cursor-pointer">
+                                Permitir test en parado
+                            </label>
+                            <button onclick="copyDiagnosticReport()" class="px-2 py-0.5 mac-btn-dark text-[9px] rounded cursor-pointer">
+                                Copiar Diagnóstico
+                            </button>
+                        </div>
                     </div>
                     <div id="usbModalLiveFeed" class="h-32 overflow-y-auto text-[10px] text-cyan-300 space-y-1 font-mono">
-                        <div>[READY] Pulsa el botón 1 (WebUSB) o 2 (WebSerial) y pasa la mano por los sensores IR.</div>
+                        <div>[READY] Pulsa el botón 1 (WebUSB) o 2 (WebSerial) y da la SALIDA (Semáforo Verde).</div>
                     </div>
                 </div>
             </div>
@@ -609,7 +615,7 @@
                 <span class="text-slate-200 font-bold">PROBAR COMANDO COMO SI VINIERA DEL ARDUINO:</span>
                 <div class="flex items-center gap-1.5 flex-1 max-w-md">
                     <input id="modalTestSerialInput" type="text" value="S1,L1,1250,0" class="flex-1 rounded-lg px-2.5 py-1 text-cyan-300 font-bold"/>
-                    <button onclick="parseUniversalSerialLine(document.getElementById('modalTestSerialInput').value)" class="px-3 py-1 mac-btn-neon font-black rounded-lg cursor-pointer">
+                    <button onclick="parseUniversalSerialLine(document.getElementById('modalTestSerialInput').value, true)" class="px-3 py-1 mac-btn-neon font-black rounded-lg cursor-pointer">
                         Probar Trama
                     </button>
                 </div>
@@ -840,11 +846,16 @@
                                 <option value="15">15 min</option>
                                 <option value="20">20 min</option>
                                 <option value="30">30 min</option>
-                                <option value="60">60 min</option>
+                                <option value="60">1 Hora</option>
+                                <option value="120">2 Horas</option>
+                                <option value="240">4 Horas</option>
+                                <option value="360">6 Horas</option>
+                                <option value="720">12 Horas</option>
+                                <option value="1440">24 Horas</option>
                             </select>
                         </div>
                         <div id="quickLapsSelectorBox" class="flex items-center gap-1">
-                            <input id="headerTargetLapsInput" type="number" min="1" max="9999" value="25" onchange="applyQuickTargetLaps(this.value)" class="w-11 rounded py-0.5 text-xs font-black text-cyan-300 text-center"/>
+                            <input id="headerTargetLapsInput" type="number" min="1" max="99999" value="25" onchange="applyQuickTargetLaps(this.value)" class="w-12 rounded py-0.5 text-xs font-black text-cyan-300 text-center"/>
                             <span class="text-[9px] text-slate-300 font-bold">V.</span>
                         </div>
                     </div>
@@ -884,24 +895,24 @@
 
         <div class="col-span-4 flex flex-col gap-2">
             <div class="grid grid-cols-4 gap-1.5">
-                <button onclick="startF1Sequence()" class="py-2.5 px-2 mac-btn-neon font-mono font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-0.5">
+                <button onclick="startF1Sequence()" class="py-2.5 px-2 mac-btn-neon font-mono font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-0.5 transition-all">
                     <i class="fa-solid fa-traffic-light text-base"></i>
                     <span>1. SALIDA</span>
                 </button>
-                <button onclick="toggleTrackCall()" class="py-2.5 px-2 mac-btn-silver font-mono font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-0.5">
+                <button onclick="toggleTrackCall()" class="py-2.5 px-2 mac-btn-silver font-mono font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-0.5 transition-all">
                     <i class="fa-solid fa-pause text-base"></i>
                     <span>2. PAUSAR</span>
                 </button>
-                <button onclick="resetRaceSession()" class="py-2.5 px-2 mac-btn-dark font-mono font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-0.5">
-                    <i class="fa-solid fa-rotate-right text-base text-cyan-300"></i>
-                    <span>3. REINICIAR</span>
+                <button onclick="resetRaceSession()" class="py-2.5 px-2 mac-btn-dark font-mono font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-0.5 transition-all">
+                    <i class="fa-solid fa-rotate-right text-base text-rose-400"></i>
+                    <span>3. A CERO</span>
                 </button>
-                <button onclick="toggleAutoDemo()" id="btnSimRaceTop" class="py-2.5 px-2 bg-gradient-to-b from-sky-500/80 to-blue-700/90 text-white font-mono font-black text-xs rounded-xl border border-cyan-300/50 cursor-pointer flex flex-col items-center justify-center gap-0.5" title="Hace una carrera de prueba sola con voces">
+                <button onclick="toggleAutoDemo()" id="btnSimRaceTop" class="py-2.5 px-2 bg-gradient-to-b from-sky-500/80 to-blue-700/90 text-white font-mono font-black text-xs rounded-xl border border-cyan-300/50 cursor-pointer flex flex-col items-center justify-center gap-0.5 transition-all" title="Hace una carrera de prueba sola con voces">
                     <i class="fa-solid fa-play text-base text-cyan-200"></i>
                     <span>DEMO AUTO</span>
                 </button>
             </div>
-
+            
             <div class="grid grid-cols-4 gap-1.5">
                 <button onclick="finishAndOpenOfficialReport()" class="py-1.5 px-2 mac-btn-dark font-mono font-bold text-[10px] rounded-lg cursor-pointer flex items-center justify-center gap-1">
                     <i class="fa-solid fa-trophy text-cyan-300"></i> GANADOR
@@ -909,7 +920,7 @@
                 <button onclick="announceFullStandingsWithHumor()" class="py-1.5 px-2 mac-btn-dark font-mono font-bold text-[10px] rounded-lg cursor-pointer flex items-center justify-center gap-1">
                     <i class="fa-solid fa-bullhorn text-cyan-300"></i> NARRAR
                 </button>
-                <button onclick="toggleVoiceSpotter()" id="btnVoice" class="py-1.5 px-2 mac-btn-dark font-mono font-bold text-[10px] rounded-lg cursor-pointer flex items-center justify-center gap-1">
+                <button onclick="toggleVoiceSpotter()" id="btnVoice" class="py-1.5 px-2 mac-btn-dark font-mono font-bold text-[10px] rounded-lg cursor-pointer flex items-center justify-center gap-1 transition-all">
                     <span id="voiceIcon"><i class="fa-solid fa-volume-high mr-1 text-cyan-300"></i>VOZ ON</span>
                 </button>
                 <button onclick="toggleFullScreenMode()" id="btnFullscreen" class="py-1.5 px-2 mac-btn-dark font-mono font-bold text-[10px] rounded-lg cursor-pointer flex items-center justify-center gap-1">
@@ -925,7 +936,7 @@
     <nav class="glass-panel flex items-center justify-between gap-2 mb-2 shrink-0 px-3 py-2 rounded-2xl">
         <div class="flex items-center gap-2 overflow-x-auto">
             <button onclick="switchTab('live')" id="tabBtn-live" class="nav-pill-active px-3.5 py-2 rounded-xl text-xs font-mono font-black border transition cursor-pointer shrink-0 flex items-center gap-2">
-                <i class="fa-solid fa-flag-checkered text-sm"></i> 1. CARRERA EN VIVO
+                <i class="fa-solid fa-flag-checkered text-sm"></i> 1. PANTALLA DE CARRERA
             </button>
             <button onclick="switchTab('rotation')" id="tabBtn-rotation" class="px-3.5 py-2 rounded-xl text-xs font-mono font-semibold mac-btn-dark hover:text-white border transition cursor-pointer shrink-0 flex items-center gap-2">
                 <i class="fa-solid fa-users text-cyan-300 text-sm"></i> 2. PILOTOS Y CLUB
@@ -952,8 +963,11 @@
                 <span class="text-[10px] font-mono font-black text-slate-300 uppercase"><i class="fa-solid fa-hand-pointer mr-1 text-cyan-300"></i>PULSO MANUAL:</span>
                 <div id="quickSimButtons" class="flex items-center gap-1.5"></div>
             </div>
-            <button onclick="connectArduinoUSB()" class="px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-silver cursor-pointer flex items-center gap-1.5" title="Conectar o probar el cable USB del Arduino">
-                <i class="fa-brands fa-usb text-sky-600"></i> <span>CONECTAR USB</span>
+            <button id="btnOneClickUsbConnect" onclick="oneClickConnectArduino()" class="px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-silver cursor-pointer flex items-center gap-1.5" title="Conexión directa en 1 solo clic con el Arduino USB">
+                <i class="fa-brands fa-usb text-sky-600"></i> <span id="topUsbBtnLabel">CONECTAR USB</span>
+            </button>
+            <button onclick="openUsbDiagnosticModal()" class="px-2.5 py-2 rounded-xl text-xs font-mono font-bold mac-btn-dark cursor-pointer flex items-center" title="Abrir monitor Sniffer y laboratorio USB">
+                <i class="fa-solid fa-microscope text-cyan-300"></i>
             </button>
         </div>
     </nav>
@@ -1299,24 +1313,24 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono">
                 <div class="sm:col-span-2">
                     <label class="block text-cyan-300 font-bold mb-1">TÍTULO DE LA APLICACIÓN / NOMBRE DEL CAMPEONATO O CLUB</label>
-                    <input id="cfgAppTitle" type="text" value="KRONOS SLOT PRO // GRAN PREMIO CLUB" oninput="saveTrackConfig()" class="w-full rounded-xl px-3 py-2 text-white font-bold"/>
+                    <input id="cfgAppTitle" type="text" value="KRONOS SLOT PRO // GRAN PREMIO CLUB" oninput="saveTrackConfig()" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white"/>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">MODO DE COMPETICIÓN</label>
-                    <select id="cfgRaceModeSelect" onchange="setRaceFormat(this.value)" class="w-full rounded-xl px-3 py-2 text-white font-bold">
+                    <label class="block text-slate-400 mb-1">MODO DE COMPETICIÓN</label>
+                    <select id="cfgRaceModeSelect" onchange="setRaceFormat(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white">
                         <option value="TIME" selected>Por Tiempo (Al límite de reloj)</option>
                         <option value="LAPS">Por Vueltas (Meta a N vueltas)</option>
                         <option value="QUALY">Clasificación Pole (Mejor Vuelta)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">META DE VUELTAS (EN MODO VUELTAS)</label>
-                    <input id="cfgTargetLaps" type="number" step="5" min="1" value="25" onchange="saveTrackConfig()" class="w-full rounded-xl px-3 py-2 text-cyan-300 font-bold"/>
+                    <label class="block text-slate-400 mb-1">META DE VUELTAS (EN MODO VUELTAS)</label>
+                    <input id="cfgTargetLaps" type="number" step="5" min="1" value="25" onchange="saveTrackConfig()" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white"/>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">DURACIÓN DE MANGA (1 MIN A 1 HORA)</label>
+                    <label class="block text-slate-400 mb-1">DURACIÓN DE MANGA / RESISTENCIA (1M A 24H)</label>
                     <div class="flex gap-1.5">
-                        <select id="cfgHeatMinutesPreset" onchange="setConfigMinutesPreset(this.value)" class="rounded-xl px-2 py-2 text-cyan-300 font-bold w-1/2">
+                        <select id="cfgHeatMinutesPreset" onchange="setConfigMinutesPreset(this.value)" class="bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white w-1/2">
                             <option value="1">1 Minuto</option>
                             <option value="3">3 Minutos</option>
                             <option value="5" selected>5 Minutos</option>
@@ -1326,14 +1340,19 @@
                             <option value="30">30 Minutos</option>
                             <option value="45">45 Minutos</option>
                             <option value="60">1 Hora (60m)</option>
+                            <option value="120">2 Horas (120m)</option>
+                            <option value="180">3 Horas (180m)</option>
+                            <option value="360">6 Horas (360m)</option>
+                            <option value="720">12 Horas (720m)</option>
+                            <option value="1440">24 Horas (1440m)</option>
                         </select>
-                        <input id="cfgHeatMinutesCustom" type="number" min="1" max="120" value="5" onchange="setConfigMinutesPreset(this.value)" class="w-1/2 rounded-xl px-3 py-2 text-white font-bold"/>
+                        <input id="cfgHeatMinutesCustom" type="number" min="1" max="2880" value="5" onchange="setConfigMinutesPreset(this.value)" class="w-1/2 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white"/>
                     </div>
                     <input id="cfgHeatSeconds" type="hidden" value="300"/>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">NÚMERO DE CARRILES EN PISTA (1 A 10)</label>
-                    <select id="cfgLanesSelect" onchange="setSystemTopology(parseInt(this.value), null)" class="w-full rounded-xl px-3 py-2 text-white font-bold">
+                    <label class="block text-slate-400 mb-1">NÚMERO DE CARRILES EN PISTA (1 A 10)</label>
+                    <select id="cfgLanesSelect" onchange="setSystemTopology(parseInt(this.value), null)" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white">
                         <option value="1">1 Carril (Rally / Entreno Solitario)</option>
                         <option value="2" selected>2 Carriles (Casa / Test Bench)</option>
                         <option value="3">3 Carriles (Raid / Especial)</option>
@@ -1347,28 +1366,28 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">MODALIDAD DE SECTORES PCB / IR</label>
-                    <select id="cfgSectorsSelect" onchange="setSystemTopology(null, parseInt(this.value))" class="w-full rounded-xl px-3 py-2 text-white font-bold">
+                    <label class="block text-slate-400 mb-1">MODALIDAD DE SECTORES PCB / IR</label>
+                    <select id="cfgSectorsSelect" onchange="setSystemTopology(null, parseInt(this.value))" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white">
                         <option value="1">1 Sector (Solo Regleta de Meta)</option>
                         <option value="2">2 Sectores (Sensor S1 + Sensor Meta)</option>
                         <option value="3" selected>3 Sectores (Sensor S1 + S2 + Meta)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">CUERDA TOTAL DEL CIRCUITO (M)</label>
-                    <input id="cfgTrackLen" type="number" step="0.5" value="18.0" onchange="saveTrackConfig()" class="w-full rounded-xl px-3 py-2 text-white font-bold"/>
+                    <label class="block text-slate-400 mb-1">CUERDA TOTAL DEL CIRCUITO (M)</label>
+                    <input id="cfgTrackLen" type="number" step="0.5" value="18.0" onchange="saveTrackConfig()" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white"/>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">ESCALA DE VELOCIDAD</label>
-                    <select id="cfgScale" onchange="saveTrackConfig()" class="w-full rounded-xl px-3 py-2 text-white font-bold">
+                    <label class="block text-slate-400 mb-1">ESCALA DE VELOCIDAD</label>
+                    <select id="cfgScale" onchange="saveTrackConfig()" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white">
                         <option value="32" selected>Escala 1:32 (Ninco / Scaleauto / Slot.it)</option>
                         <option value="24">Escala 1:24 (Scaleauto / Plafit)</option>
                         <option value="43">Escala 1:43</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">FILTRO ANTI-REBOTE (SEG)</label>
-                    <input id="cfgMinLapSec" type="number" step="0.1" value="0.5" onchange="saveTrackConfig()" class="w-full rounded-xl px-3 py-2 text-white font-bold"/>
+                    <label class="block text-slate-400 mb-1">FILTRO ANTI-REBOTE (SEG)</label>
+                    <input id="cfgMinLapSec" type="number" step="0.1" value="0.5" onchange="saveTrackConfig()" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white"/>
                 </div>
             </div>
 
@@ -1377,15 +1396,15 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div>
                         <span class="text-[10px] text-slate-300">TRAMO S1 (%)</span>
-                        <input id="cfgPctS1" type="number" value="35" onchange="saveTrackConfig()" class="w-full rounded-lg px-2 py-1 text-white"/>
+                        <input id="cfgPctS1" type="number" value="35" onchange="saveTrackConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white"/>
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-300">TRAMO S2 (%)</span>
-                        <input id="cfgPctS2" type="number" value="35" onchange="saveTrackConfig()" class="w-full rounded-lg px-2 py-1 text-white"/>
+                        <input id="cfgPctS2" type="number" value="35" onchange="saveTrackConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white"/>
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-300">TRAMO S3 (%)</span>
-                        <input id="cfgPctS3" type="number" value="30" onchange="saveTrackConfig()" class="w-full rounded-lg px-2 py-1 text-white"/>
+                        <input id="cfgPctS3" type="number" value="30" onchange="saveTrackConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white"/>
                     </div>
                 </div>
             </div>
@@ -1408,7 +1427,7 @@
             </div>
 
             <div class="flex gap-2">
-                <input id="manualSerialInput" type="text" placeholder="Ej: L1,3540,22 o S1,L1,1280,0 o solo S1" class="flex-1 rounded-xl px-3 py-1.5 text-xs font-mono text-cyan-300"/>
+                <input id="manualSerialInput" type="text" placeholder="Ej: L1,3540,22 o S1,L1,1280,0 o solo S1" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-mono text-cyan-300"/>
                 <button onclick="injectManualSerial()" class="px-3 py-1.5 mac-btn-silver font-mono font-bold text-xs rounded-xl cursor-pointer">
                     Inyectar Trama
                 </button>
@@ -1557,6 +1576,9 @@
         </div>
     </section>
 
+    <!-- ========================================================================================
+         SCRIPTS: LÓGICA PRINCIPAL, WEBSERIAL, WEBSOCKETS MQTT Y TTS
+         ======================================================================================== -->
     <script>
         const IS_CLIENT_LOCKED_BUILD = false;
 
@@ -2637,11 +2659,25 @@
         function updateHeaderSummaryText() {
             const secDesc = appState.numSectors === 1 ? '1 SEC' : `${appState.numSectors} SEC`;
             const mins = Math.round(appState.heatTotalSeconds / 60);
+            const timeLabel = mins >= 60
+                ? `${(mins / 60).toFixed(mins % 60 === 0 ? 0 : 1)} HORAS`
+                : `${mins} MIN`;
             const modeDesc = appState.raceFormat === 'TIME'
-                ? `${mins} MIN`
+                ? timeLabel
                 : (appState.raceFormat === 'LAPS' ? `${appState.targetLaps} VUELTAS` : 'POLE');
             const summaryEl = document.getElementById('headerConfigSummary');
             if (summaryEl) summaryEl.textContent = `${appState.activeLanes} CH · ${secDesc} · ${modeDesc}`;
+        }
+
+        function formatEnduranceClock(totalSeconds) {
+            const safeSec = Math.max(0, totalSeconds);
+            const hours = Math.floor(safeSec / 3600);
+            const mins = Math.floor((safeSec % 3600) / 60);
+            const secs = (safeSec % 60).toFixed(1);
+            if (hours > 0 || appState.heatTotalSeconds >= 3600) {
+                return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
+            }
+            return `${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
         }
 
         function applyQuickTimeMinutes(minsVal) {
@@ -2721,7 +2757,7 @@
         function buildLaneLapHistoryHTML(laneId) {
             const lane = appState.lanes[laneId];
             if (!lane || !lane.history || lane.history.length === 0) {
-                return `<span class="text-[10px] font-mono text-slate-400 italic">Esperando paso por sensor IR / Láser...</span>`;
+                return `<span class="text-[10px] font-mono text-slate-500 italic">Esperando paso por sensor IR / Láser...</span>`;
             }
             let chips = '';
             for (let idx = lane.history.length - 1; idx >= 0; idx--) {
@@ -2730,11 +2766,11 @@
                 const isOverallPurple = Math.abs(t - appState.overallBestLap) < 0.0005;
                 const isPersonalBest = Math.abs(t - lane.bestLap) < 0.0005;
 
-                let chipStyle = 'bg-slate-900/90 text-slate-200 border-white/15';
+                let chipStyle = 'bg-slate-900/95 text-slate-200 border-white/15';
                 if (isOverallPurple) {
-                    chipStyle = 'sector-purple font-black';
+                    chipStyle = 'bg-purple-600/35 text-purple-200 border-purple-400 font-black shadow-[0_0_8px_rgba(168,85,247,0.45)]';
                 } else if (isPersonalBest) {
-                    chipStyle = 'sector-green font-black';
+                    chipStyle = 'bg-cyan-600/30 text-cyan-200 border-cyan-400 font-black';
                 }
 
                 chips += `
@@ -2808,7 +2844,7 @@
                 }
 
                 html += `
-                <div id="laneCard-${i}" style="border-left-color: ${pal.hex};" class="glass-panel rounded-2xl ${isUltraCompact ? 'p-2' : (isMedium ? 'p-2.5' : 'p-3.5')} border border-white/20 border-l-[8px] flex flex-col gap-1.5 h-full min-h-0 transition-all relative overflow-hidden">
+                <div id="laneCard-${i}" style="border-left-color: ${pal.hex};" class="glass-panel rounded-2xl ${isUltraCompact ? 'p-2' : (isMedium ? 'p-2.5' : 'p-3.5')} border-2 border-slate-700/80 border-l-[10px] flex flex-col gap-1.5 h-full min-h-0 transition-all relative overflow-hidden">
                     
                     <div class="flex justify-between items-center gap-2 border-b border-white/15 pb-1.5 shrink-0">
                         <div class="flex items-center gap-2 min-w-0">
@@ -2824,7 +2860,7 @@
                         </div>
 
                         <div class="flex items-center gap-1.5 shrink-0">
-                            <span id="posBadge-${i}" class="px-2.5 py-1 ${isUltraCompact ? 'text-[10px]' : 'text-xs'} font-mono font-black rounded-xl bg-slate-800 text-slate-200 border border-white/20 shrink-0 shadow">
+                            <span id="posBadge-${i}" class="px-2.5 py-1 ${isUltraCompact ? 'text-[10px]' : 'text-xs'} font-mono font-black rounded-xl bg-slate-800 text-slate-200 border border-slate-600 shrink-0 shadow">
                                 P${i}
                             </span>
                             <button onclick="triggerNextCheckpoint(${i})" id="btnStep-${i}" class="px-2.5 py-1 mac-btn-neon font-mono font-black ${isUltraCompact ? 'text-[9px]' : 'text-[10px]'} rounded-lg transition cursor-pointer shadow">
@@ -2834,9 +2870,9 @@
                     </div>
 
                     <div class="grid grid-cols-12 gap-2 shrink-0">
-                        <div class="col-span-3 bg-slate-950 p-2 rounded-xl border border-white/15 flex flex-col justify-between">
+                        <div class="col-span-3 bg-gradient-to-br from-sky-950 via-slate-950 to-slate-950 p-2 rounded-xl border-2 border-sky-500/50 flex flex-col justify-between shadow-inner">
                             <div class="flex justify-between items-center">
-                                <span class="text-[9px] font-mono font-black text-cyan-300 uppercase"><i class="fa-solid fa-flag-checkered mr-1"></i>VUELTAS</span>
+                                <span class="text-[9px] font-mono font-black text-sky-300 uppercase"><i class="fa-solid fa-flag-checkered mr-1"></i>VUELTAS</span>
                             </div>
                             <div id="laps-${i}" class="${isUltraCompact ? 'text-2xl' : (isMedium ? 'text-4xl' : 'text-5xl')} font-mono-num font-black text-white leading-none my-1">
                                 ${lane.laps}
@@ -2846,9 +2882,9 @@
                             </div>
                         </div>
 
-                        <div id="lastLapBox-${i}" class="col-span-5 bg-slate-950 p-2 rounded-xl border border-white/15 flex flex-col justify-between">
+                        <div id="lastLapBox-${i}" class="col-span-5 bg-gradient-to-br from-slate-900 to-slate-950 p-2 rounded-xl border-2 border-slate-700 flex flex-col justify-between shadow-inner transition-colors duration-300">
                             <div class="flex justify-between items-center text-[9px] font-mono">
-                                <span class="font-black text-slate-200 uppercase"><i class="fa-solid fa-stopwatch mr-1 text-cyan-300"></i>ÚLTIMA VUELTA</span>
+                                <span class="font-black text-cyan-300 uppercase"><i class="fa-solid fa-stopwatch mr-1"></i>ÚLTIMA VUELTA</span>
                                 <span id="deltaBadge-${i}" class="px-1.5 py-0.5 rounded font-black bg-slate-900 text-white border border-white/15">&Delta; 0.000s</span>
                             </div>
                             <div id="lastLap-${i}" class="${isUltraCompact ? 'text-xl' : (isMedium ? 'text-3xl' : 'text-5xl')} font-mono-num font-black text-white tracking-tight leading-none my-1">
@@ -2860,9 +2896,9 @@
                             </div>
                         </div>
 
-                        <div class="col-span-4 bg-slate-950 p-2 rounded-xl border border-cyan-400/35 flex flex-col justify-between">
+                        <div class="col-span-4 bg-gradient-to-br from-emerald-950 via-slate-950 to-slate-950 p-2 rounded-xl border-2 border-emerald-500/50 flex flex-col justify-between shadow-inner">
                             <div class="flex justify-between items-center">
-                                <span class="text-[9px] font-mono font-black text-cyan-300 uppercase"><i class="fa-solid fa-bolt mr-1"></i>MEJOR VUELTA</span>
+                                <span class="text-[9px] font-mono font-black text-emerald-300 uppercase"><i class="fa-solid fa-bolt mr-1"></i>MEJOR V.</span>
                                 ${!isUltraCompact ? `
                                 <button onclick="openQrForSpecificDriver(${i})" class="text-[8px] font-mono font-black px-1.5 py-0.5 mac-btn-silver rounded cursor-pointer" title="Ver QR de este piloto"><i class="fa-solid fa-qrcode mr-1"></i>QR</button>
                                 ` : ''}
@@ -2907,6 +2943,7 @@
 
         function renderQuickSimButtons() {
             const box = document.getElementById('quickSimButtons');
+            if (!box) return;
             let html = '';
             for (let i = 1; i <= appState.activeLanes; i++) {
                 const pal = LANE_PALETTE[i];
@@ -2921,6 +2958,7 @@
 
         function renderPurpleSectorsBox() {
             const box = document.getElementById('purpleSectorsSummary');
+            if (!box) return;
             const sCount = appState.numSectors;
             if (sCount === 1) {
                 box.className = 'grid grid-cols-1 gap-1.5 text-center font-mono-num text-[10px]';
@@ -3035,13 +3073,9 @@
                 return;
             }
 
-            if (appState.raceStatus === 'STANDBY') {
-                appState.raceStatus = 'RACING';
-                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA / SENSORES ACTIVOS', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
-                startMasterClock();
+            if (appState.raceStatus !== 'RACING') {
+                return;
             }
-
-            if (appState.raceStatus === 'TRACK_CALL') return;
 
             const sCount = appState.numSectors;
             const secTime = (timeMsFromHardware !== null && timeMsFromHardware > 0)
@@ -3193,7 +3227,8 @@
                 lane.bestLap = lapSec;
                 lapColor = 'sector-purple';
                 playTone(1318.5, 180, 'triangle', 0.22);
-                document.getElementById('overallPurpleLap').textContent = `LAP: ${lapSec.toFixed(3)}s (${lane.name})`;
+                const purpEl = document.getElementById('overallPurpleLap');
+                if (purpEl) purpEl.textContent = `LAP: ${lapSec.toFixed(3)}s (${lane.name})`;
             } else if (lapSec < lane.bestLap) {
                 lane.bestLap = lapSec;
                 lapColor = 'sector-green';
@@ -3222,13 +3257,18 @@
             const lapsEl = document.getElementById(`laps-${laneId}`);
             if (lapsEl) {
                 lapsEl.textContent = lane.laps;
-                document.getElementById(`lastLap-${laneId}`).textContent = `${lapSec.toFixed(3)}s`;
-                document.getElementById(`bestLap-${laneId}`).textContent = `${lane.bestLap.toFixed(3)}s`;
-                document.getElementById(`speed-${laneId}`).textContent = `${speedScaleKmh.toFixed(1)} km/h`;
-                document.getElementById(`deltaBadge-${laneId}`).innerHTML = `&Delta; ${deltaStr}`;
-                document.getElementById(`tofStatus-${laneId}`).textContent = `IR/ToF ${lane.tofMm}mm`;
-                document.getElementById(`optimalLapTag-${laneId}`).textContent =
-                    optLap < Infinity ? `Ópt: ${optLap.toFixed(3) + 's'}` : `Media: ${meanLap.toFixed(3) + 's'}`;
+                const lastLapEl = document.getElementById(`lastLap-${laneId}`);
+                if (lastLapEl) lastLapEl.textContent = `${lapSec.toFixed(3)}s`;
+                const bestLapEl = document.getElementById(`bestLap-${laneId}`);
+                if (bestLapEl) bestLapEl.textContent = `${lane.bestLap.toFixed(3)}s`;
+                const speedEl = document.getElementById(`speed-${laneId}`);
+                if (speedEl) speedEl.textContent = `${speedScaleKmh.toFixed(1)} km/h`;
+                const deltaEl = document.getElementById(`deltaBadge-${laneId}`);
+                if (deltaEl) deltaEl.innerHTML = `&Delta; ${deltaStr}`;
+                const tofEl = document.getElementById(`tofStatus-${laneId}`);
+                if (tofEl) tofEl.textContent = `IR/ToF ${lane.tofMm}mm`;
+                const optEl = document.getElementById(`optimalLapTag-${laneId}`);
+                if (optEl) optEl.textContent = optLap < Infinity ? `Ópt: ${optLap.toFixed(3) + 's'}` : `Media: ${meanLap.toFixed(3) + 's'}`;
 
                 const meanTag = document.getElementById(`meanLapTag-${laneId}`);
                 if (meanTag) meanTag.textContent = `Media: ${meanLap.toFixed(3)}s | Total: ${lane.history.length} V.`;
@@ -3237,7 +3277,7 @@
                 if (historyBox) historyBox.innerHTML = buildLaneLapHistoryHTML(laneId);
 
                 const lastBox = document.getElementById(`lastLapBox-${laneId}`);
-                lastBox.className = `col-span-5 p-2 rounded-xl border flex flex-col justify-between transition-all ${lapColor}`;
+                if (lastBox) lastBox.className = `col-span-5 p-2 rounded-xl border flex flex-col justify-between transition-all ${lapColor}`;
 
                 const btnStep = document.getElementById(`btnStep-${laneId}`);
                 if (btnStep) btnStep.innerHTML = `<i class="fa-solid fa-bolt mr-1"></i>${appState.numSectors === 1 ? 'META' : 'S1'}`;
@@ -3260,6 +3300,7 @@
                     appState.raceStatus = 'FINISHED';
                     clearInterval(appState.clockInterval);
                     if (appState.autoDemoTimer) toggleAutoDemo();
+                    closeHardwareDataBusOnRaceFinish();
                     playTone(1567.98, 550, 'triangle', 0.28);
                     updateRaceBadge(`<i class="fa-solid fa-flag-checkered mr-1"></i>VICTORIA: ${lane.name}`, 'bg-purple-500/20 text-purple-300 border-purple-500/40');
                     broadcastLiveTelemetryState();
@@ -3523,6 +3564,8 @@
         }
 
         function runFullSimulatedHardwareTest() {
+            const chk = document.getElementById('chkAllowBenchTest');
+            if (chk) chk.checked = true;
             logSerialConsole("=== INICIANDO AUTO-TEST DE TRAMAS S1 -> S2 -> META ===");
             const enc = new TextEncoder();
             const steps = [
@@ -3534,12 +3577,12 @@
             steps.forEach((frame, idx) => {
                 setTimeout(() => {
                     recordRawUsbChunk(enc.encode(frame));
-                    parseUniversalSerialLine(frame.trim());
+                    parseUniversalSerialLine(frame.trim(), true);
                 }, idx * 650);
             });
         }
 
-        function parseUniversalSerialLine(line) {
+        function parseUniversalSerialLine(line, forceBenchTest = false) {
             usbSnifferStats.totalLines++;
             logSerialConsole(`RX LÍNEA <- "${line}"`);
             const statBox = document.getElementById('usbModalPacketStats');
@@ -3558,6 +3601,23 @@
                 const laserEl = document.getElementById('usbModalLaserStatus');
                 if (laserEl) laserEl.textContent = clean.replace('INFO,', '');
                 return;
+            }
+
+            const allowBench = forceBenchTest || Boolean(document.getElementById('chkAllowBenchTest')?.checked);
+            if (appState.raceStatus !== 'RACING' && appState.raceStatus !== 'COUNTDOWN' && !allowBench) {
+                const laserEl = document.getElementById('usbModalLaserStatus');
+                if (laserEl) laserEl.textContent = `IGNORADO (ESPERANDO SEMÁFORO VERDE)`;
+                return;
+            }
+            if (allowBench && appState.raceStatus !== 'RACING' && appState.raceStatus !== 'COUNTDOWN') {
+                appState.raceStatus = 'RACING';
+                const now = performance.now();
+                for (let i = 1; i <= 10; i++) {
+                    appState.lanes[i].lastSectorPassTime = now;
+                    appState.lanes[i].lastLapPassTime = now;
+                }
+                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA (TEST)', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
+                startMasterClock();
             }
 
             const parts = clean.split(/[,:;]/);
@@ -3623,8 +3683,10 @@
 
         let activeUsbDevice = null;
         let activeSerialPort = null;
+        let activeSerialReader = null;
         let activeUsbEndpointOut = null;
         let usbReadLoopActive = false;
+        let serialConnectingInProgress = false;
 
         function toggleHardwareTestStrip() {
             const strip = document.getElementById('liveHardwareTestStrip');
@@ -3632,9 +3694,83 @@
             strip.classList.toggle('hidden');
         }
 
-        function connectArduinoUSB() {
+        function openUsbDiagnosticModal() {
             document.getElementById('usbAndroidHelperModal').classList.remove('hidden');
             checkBrowserUsbEnvironment();
+        }
+
+        async function oneClickConnectArduino() {
+            if (serialConnectingInProgress) return;
+            if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
+                openUsbDiagnosticModal();
+                return;
+            }
+            if ('serial' in navigator) {
+                await connectViaDesktopWebSerial();
+            } else if ('usb' in navigator) {
+                await connectViaAndroidWebUSB();
+            } else {
+                openUsbDiagnosticModal();
+            }
+        }
+
+        function connectArduinoUSB() {
+            oneClickConnectArduino();
+        }
+
+        async function sendBusCommandToArduino(cmdStr) {
+            const payload = new TextEncoder().encode(cmdStr.trim() + "\r\n");
+            try {
+                if (activeUsbDevice && activeUsbDevice.opened && activeUsbEndpointOut !== null) {
+                    await activeUsbDevice.transferOut(activeUsbEndpointOut, payload);
+                    logSerialConsole(`TX BUS -> ${cmdStr}`);
+                    return;
+                }
+                if (activeSerialPort && activeSerialPort.writable) {
+                    const writer = activeSerialPort.writable.getWriter();
+                    await writer.write(payload);
+                    writer.releaseLock();
+                    logSerialConsole(`TX BUS -> ${cmdStr}`);
+                }
+            } catch (e) {}
+        }
+
+        async function closeHardwareDataBusOnRaceFinish() {
+            logSerialConsole("🏁 Fin de carrera detectado: enviando orden de parada al bus y cerrando el puerto USB/Serial...");
+            await sendBusCommandToArduino("RACE_END");
+            usbReadLoopActive = false;
+
+            try {
+                if (activeSerialReader) {
+                    await activeSerialReader.cancel();
+                    activeSerialReader.releaseLock();
+                    activeSerialReader = null;
+                }
+            } catch (e) {}
+
+            try {
+                if (activeSerialPort) {
+                    await activeSerialPort.close();
+                    activeSerialPort = null;
+                }
+            } catch (e) {}
+
+            try {
+                if (activeUsbDevice && activeUsbDevice.opened) {
+                    await activeUsbDevice.close();
+                    activeUsbDevice = null;
+                }
+            } catch (e) {}
+
+            const usbTextEl = document.getElementById('usbText');
+            if (usbTextEl) usbTextEl.innerHTML = '<i class="fa-solid fa-plug-circle-xmark text-amber-300 mr-1"></i>PUERTO CERRADO (FIN MANGA)';
+            const topLbl = document.getElementById('topUsbBtnLabel');
+            if (topLbl) topLbl.textContent = 'CONECTAR USB';
+            const statusEl = document.getElementById('usbModalStatus');
+            if (statusEl) {
+                statusEl.textContent = 'PUERTO CERRADO (FIN CARRERA)';
+                statusEl.className = 'text-xs font-black text-amber-300 mt-0.5';
+            }
         }
 
         async function changeSerialBaudRate(newBaud) {
@@ -3750,29 +3886,54 @@
 
         async function connectViaDesktopWebSerial() {
             if (!('serial' in navigator)) {
-                logSerialConsole("WebSerial no disponible en este navegador. Pulsa el Botón 1 (WebUSB).");
-                return;
+                logSerialConsole("WebSerial no disponible en este navegador. Probando WebUSB...");
+                return await connectViaAndroidWebUSB();
             }
+            if (serialConnectingInProgress) return;
+            serialConnectingInProgress = true;
+
             try {
+                if (activeSerialReader) {
+                    try { await activeSerialReader.cancel(); activeSerialReader.releaseLock(); } catch (e) {}
+                    activeSerialReader = null;
+                }
+                if (activeSerialPort) {
+                    try { await activeSerialPort.close(); } catch (e) {}
+                    activeSerialPort = null;
+                }
+
                 const baud = usbSnifferStats.selectedBaudRate || 115200;
-                logSerialConsole(`Solicitando puerto mediante WebSerial a ${baud} baudios...`);
+                logSerialConsole(`Conectando en 1 clic mediante WebSerial a ${baud} baudios...`);
+
                 const port = await navigator.serial.requestPort();
-                await port.open({ baudRate: baud });
+                await port.open({ baudRate: baud, bufferSize: 4096 });
+                try {
+                    await port.setSignals({ dataTerminalReady: true, requestToSend: true });
+                } catch (sigErr) {}
+
                 activeSerialPort = port;
+                usbReadLoopActive = true;
+                serialConnectingInProgress = false;
 
                 document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>WEBSERIAL ACTIVO';
+                const topLbl = document.getElementById('topUsbBtnLabel');
+                if (topLbl) topLbl.textContent = 'USB CONECTADO';
                 document.getElementById('usbModalStatus').textContent = 'WEBSERIAL CONECTADO';
                 document.getElementById('usbModalStatus').className = 'text-xs font-black text-cyan-300 mt-0.5';
                 document.getElementById('usbModalChip').textContent = `SERIE ${baud} BAUD`;
-                logSerialConsole(`¡Puerto WebSerial abierto a ${baud} baudios! Esperando datos...`);
-                speakSpotter("Puerto serie conectado. Pasa el coche por el sensor.", true);
+                logSerialConsole(`¡Puerto WebSerial abierto a la primera (${baud} baudios)! El bus aceptará vueltas al ponerse el semáforo en VERDE.`);
+                speakSpotter("Arduino conectado a la primera. Da la salida para activar el bus de datos.", true);
 
-                const reader = port.readable.getReader();
+                if (appState.raceStatus === 'RACING') {
+                    await sendBusCommandToArduino("GREEN_ON");
+                }
+
+                activeSerialReader = port.readable.getReader();
                 const decoder = new TextDecoder();
                 let rxBuffer = '';
 
-                while (true) {
-                    const { value, done } = await reader.read();
+                while (usbReadLoopActive && port.readable) {
+                    const { value, done } = await activeSerialReader.read();
                     if (done) break;
                     if (value && value.byteLength > 0) {
                         recordRawUsbChunk(value);
@@ -3785,9 +3946,16 @@
                     }
                 }
             } catch (err) {
+                serialConnectingInProgress = false;
                 logSerialConsole(`WebSerial [${err.name}]: ${err.message}`);
                 document.getElementById('usbModalStatus').textContent = `ERROR: ${err.name}`;
                 document.getElementById('usbModalStatus').className = 'text-xs font-black text-rose-400 mt-0.5';
+            } finally {
+                serialConnectingInProgress = false;
+                if (activeSerialReader) {
+                    try { activeSerialReader.releaseLock(); } catch (e) {}
+                    activeSerialReader = null;
+                }
             }
         }
 
@@ -3891,9 +4059,15 @@
                 await applyWebUsbBaudRate(device, baud, dataInterfaceNumber);
 
                 document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>USB ACTIVO';
+                const topLbl = document.getElementById('topUsbBtnLabel');
+                if (topLbl) topLbl.textContent = 'USB CONECTADO';
                 document.getElementById('usbModalStatus').textContent = '¡ESCUCHANDO BYTES!';
                 document.getElementById('usbModalStatus').className = 'text-xs font-black text-cyan-300 mt-0.5';
-                speakSpotter("Escuchando puerto USB. Pasa el coche por los sensores.", true);
+                speakSpotter("Escuchando puerto USB. Da la salida para abrir el bus de carrera.", true);
+
+                if (appState.raceStatus === 'RACING') {
+                    await sendBusCommandToArduino("GREEN_ON");
+                }
 
                 usbReadLoopActive = true;
                 const decoder = new TextDecoder();
@@ -3929,7 +4103,7 @@
             if (input.value.trim()) {
                 const raw = input.value.trim();
                 recordRawUsbChunk(new TextEncoder().encode(raw + '\r\n'));
-                parseUniversalSerialLine(raw);
+                parseUniversalSerialLine(raw, true);
                 input.value = '';
             }
         }
@@ -4142,7 +4316,8 @@
                     appState.lanes[i].lastSectorPassTime = now;
                     appState.lanes[i].lastLapPassTime = now;
                 }
-                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
+                sendBusCommandToArduino("GREEN_ON");
+                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA (BUS ACTIVO)', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
                 broadcastLiveTelemetryState();
                 renderPilotMobileLiveOverlay();
                 speakSpotter("¡Verde, verde, verde!", true);
@@ -4158,6 +4333,7 @@
                 topBar.classList.add('track-call-active');
                 clearF1Lights();
                 for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('amber-on');
+                sendBusCommandToArduino("TRACK_CALL");
                 playTone(310, 450, 'sawtooth', 0.25);
                 updateRaceBadge('<i class="fa-solid fa-triangle-exclamation mr-1"></i>TRACK CALL (PAUSA)', 'bg-amber-500/20 text-amber-300 border-amber-500/40');
                 broadcastLiveTelemetryState();
@@ -4167,6 +4343,7 @@
                 topBar.classList.remove('track-call-active');
                 clearF1Lights();
                 for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('green-on');
+                sendBusCommandToArduino("GREEN_ON");
                 playTone(880, 250, 'sine', 0.2);
                 appState.raceStatus = 'RACING';
                 const now = performance.now();
@@ -4195,6 +4372,7 @@
                     appState.raceStatus = 'FINISHED';
                     clearInterval(appState.clockInterval);
                     if (appState.autoDemoTimer) toggleAutoDemo();
+                    closeHardwareDataBusOnRaceFinish();
                     updateRaceBadge('<i class="fa-solid fa-flag-checkered mr-1"></i>FINAL DE MANGA', 'bg-purple-500/20 text-purple-300 border-purple-500/40');
                     broadcastLiveTelemetryState();
                     renderPilotMobileLiveOverlay();
@@ -4215,12 +4393,19 @@
                     if (appState.lanes[i].laps > maxLaps) maxLaps = appState.lanes[i].laps;
                 }
                 if (labelEl) labelEl.textContent = 'VUELTAS LÍDER / META';
+                clockEl.className = 'text-3xl xl:text-4xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5';
                 clockEl.textContent = `${maxLaps} / ${appState.targetLaps}`;
             } else {
-                if (labelEl) labelEl.textContent = appState.raceFormat === 'QUALY' ? 'CRONO SUPER-POLE' : 'TIEMPO DE CARRERA';
-                const mins = Math.floor(appState.remainingSeconds / 60);
-                const secs = (appState.remainingSeconds % 60).toFixed(1);
-                clockEl.textContent = `${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
+                const isEndurance = appState.remainingSeconds >= 3600 || appState.heatTotalSeconds >= 3600;
+                if (labelEl) {
+                    labelEl.textContent = appState.raceFormat === 'QUALY'
+                        ? 'CRONO SUPER-POLE'
+                        : (isEndurance ? 'CRONO RESISTENCIA (HH:MM:SS)' : 'TIEMPO DE CARRERA');
+                }
+                clockEl.className = isEndurance
+                    ? 'text-2xl xl:text-3xl font-mono-num font-black text-cyan-300 tracking-tight leading-none mt-0.5'
+                    : 'text-3xl xl:text-4xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5';
+                clockEl.textContent = formatEnduranceClock(appState.remainingSeconds);
             }
         }
 
@@ -4291,7 +4476,8 @@
             const lane = appState.lanes[laneId];
             if (!lane) return;
 
-            document.getElementById('singleDriverChartTitle').innerHTML = `<i class="fa-solid fa-chart-column mr-1 text-cyan-300"></i>DISTRIBUCIÓN DE VUELTAS: CH${laneId} ${lane.name}`;
+            const titleEl = document.getElementById('singleDriverChartTitle');
+            if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-chart-column mr-1 text-cyan-300"></i>DISTRIBUCIÓN DE VUELTAS: CH${laneId} ${lane.name}`;
 
             const h = lane.history;
             let bins = [0, 0, 0, 0];
@@ -4818,9 +5004,7 @@ ${allLapsText}`;
                 if (appState.raceFormat === 'LAPS') {
                     clockMini.textContent = `META: ${me.laps}/${appState.targetLaps} V.`;
                 } else {
-                    const mins = Math.floor(appState.remainingSeconds / 60);
-                    const secs = (appState.remainingSeconds % 60).toFixed(1);
-                    clockMini.textContent = `RELOJ ${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
+                    clockMini.textContent = `RELOJ ${formatEnduranceClock(appState.remainingSeconds)}`;
                 }
             }
 
@@ -5273,6 +5457,7 @@ ${allLapsText}`;
             updateMobilePitWallView();
             renderPilotMobileLiveOverlay();
             document.getElementById('liveLogBody').innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-400 font-mono">Sesión reiniciada. Listo para salida F1...</td></tr>';
+            speakSpotter("Tiempos a cero. Parrilla reiniciada.", true);
         }
 
         function exportCSV() {
