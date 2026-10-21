@@ -504,26 +504,26 @@
                 <div class="flex flex-wrap gap-2 pt-1">
                     <button onclick="openStandaloneUnlockedWindow()" class="px-3.5 py-1.5 mac-btn-neon font-black text-xs rounded-xl shadow cursor-pointer flex items-center gap-1.5">
                         <i class="fa-solid fa-up-right-from-square"></i> ABRIR EN PESTAÑA LIBRE DESBLOQUEADA
-            <!-- Botones de Conexión y Ping -->
-            <div class="bg-slate-900/90 border-2 border-cyan-400/60 rounded-2xl p-3 space-y-2">
-                <div class="text-xs font-black text-cyan-300 uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-sm"></i>
-                    <span>¿QUÉ TENGO QUE PULSAR PARA CONECTAR EL ARDUINO Y CORRER? (SOLO 2 PASOS):</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                    <button onclick="oneClickConnectArduino()" class="py-3 px-3 mac-btn-neon font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-1 shadow-lg">
-                        <span class="text-[10px] bg-slate-950/60 px-2 py-0.5 rounded text-cyan-200">PASO A (SOLO 1 VEZ)</span>
-                        <span><i class="fa-brands fa-usb mr-1"></i>1. VINCULAR CABLE USB</span>
                     </button>
-                    <button onclick="runFullSimulatedHardwareTest()" class="py-3 px-3 mac-btn-dark font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-1">
-                        <span class="text-[10px] bg-slate-950/60 px-2 py-0.5 rounded text-slate-300">OPCIONAL (PRUEBA)</span>
-                        <span><i class="fa-solid fa-hand-sparkles mr-1 text-cyan-300"></i>2. PROBAR SENSORES S1-S2-M</span>
-                    </button>
-                    <button onclick="document.getElementById('usbAndroidHelperModal').classList.add('hidden'); startF1Sequence();" class="py-3 px-3 bg-gradient-to-b from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-white border border-emerald-300 font-black text-xs rounded-xl cursor-pointer flex flex-col items-center justify-center gap-1 shadow-lg">
-                        <span class="text-[10px] bg-slate-950/60 px-2 py-0.5 rounded text-emerald-200">PASO B (EMPEZAR)</span>
-                        <span><i class="fa-solid fa-traffic-light mr-1"></i>3. CERRAR Y DAR SALIDA F1</span>
+                    <button onclick="downloadStandaloneHtmlFile()" class="px-3.5 py-1.5 mac-btn-silver font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Descargar Archivo HTML Independiente
                     </button>
                 </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                <button onclick="connectViaAndroidWebUSB()" class="py-2.5 px-3 mac-btn-neon font-black text-[11px] rounded-xl cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-brands fa-usb text-sm"></i> 1. CONECTAR WEBUSB (TABLET/PC)
+                </button>
+                <button onclick="connectViaDesktopWebSerial()" class="py-2.5 px-3 mac-btn-silver font-black text-[11px] rounded-xl cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-plug-circle-bolt text-sm"></i> 2. CONECTAR WEBSERIAL (PC)
+                </button>
+                <button onclick="sendPingToArduino()" class="py-2.5 px-3 mac-btn-dark font-black text-[11px] rounded-xl cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-satellite-dish text-sm text-cyan-300"></i> 3. ENVIAR PING AL ARDUINO
+                </button>
+                <button onclick="runFullSimulatedHardwareTest()" class="py-2.5 px-3 mac-btn-dark font-black text-[11px] rounded-xl cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-vial-circle-check text-sm text-cyan-300"></i> 4. AUTO-TEST DE TRAMAS
+                </button>
             </div>
 
             <div class="bg-slate-950 p-3 rounded-2xl border border-white/15 space-y-2">
@@ -963,15 +963,15 @@
                 <span class="text-[10px] font-mono font-black text-slate-300 uppercase"><i class="fa-solid fa-hand-pointer mr-1 text-cyan-300"></i>PULSO MANUAL:</span>
                 <div id="quickSimButtons" class="flex items-center gap-1.5"></div>
             </div>
-            <div id="usbReadyIndicatorPill" onclick="openUsbDiagnosticModal()" class="px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-slate-300 border border-white/20 flex items-center gap-1.5 cursor-pointer transition-all" title="Haz clic aquí para ver los sensores en directo">
+            <div id="usbReadyIndicatorPill" onclick="openUsbDiagnosticModal()" class="px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-slate-300 border border-white/20 flex items-center gap-1.5 cursor-pointer transition-all" title="Estado en tiempo real del Arduino y del Bus de Carrera">
                 <span id="usbReadyDot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-                <span id="usbReadyText">PASO A: PULSA CONECTAR USB &rarr;</span>
+                <span id="usbReadyText">USB SIN CONECTAR</span>
             </div>
-            <button id="btnOneClickUsbConnect" onclick="oneClickConnectArduino()" class="px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-silver cursor-pointer flex items-center gap-1.5" title="Paso A: Pulsa aquí 1 sola vez para enlazar el cable USB del Arduino">
-                <i class="fa-brands fa-usb text-sky-600"></i> <span id="topUsbBtnLabel">PASO A: CONECTAR USB</span>
+            <button id="btnOneClickUsbConnect" onclick="oneClickConnectArduino()" class="px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-silver cursor-pointer flex items-center gap-1.5" title="Conexión directa en 1 solo clic con el Arduino USB">
+                <i class="fa-brands fa-usb text-sky-600"></i> <span id="topUsbBtnLabel">CONECTAR USB</span>
             </button>
-            <button onclick="openUsbDiagnosticModal()" class="px-2.5 py-2 rounded-xl text-xs font-mono font-bold mac-btn-dark cursor-pointer flex items-center gap-1" title="Ver ventana de datos USB y prueba de sensores">
-                <i class="fa-solid fa-microscope text-cyan-300"></i> <span class="hidden md:inline text-[10px]">VER DATOS USB</span>
+            <button onclick="openUsbDiagnosticModal()" class="px-2.5 py-2 rounded-xl text-xs font-mono font-bold mac-btn-dark cursor-pointer flex items-center" title="Abrir monitor Sniffer y laboratorio USB">
+                <i class="fa-solid fa-microscope text-cyan-300"></i>
             </button>
         </div>
     </nav>
@@ -1758,32 +1758,32 @@
             if (stateType === 'BOOTING') {
                 pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-amber-950/90 text-amber-300 border-2 border-amber-400 flex items-center gap-1.5 cursor-wait animate-pulse';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
-                txt.textContent = customMessage || '⏳ INICIANDO ARDUINO (2s)... ESPERA';
+                txt.textContent = customMessage || 'REINICIANDO ARDUINO (2s)... ESPERA';
                 if (topLbl) topLbl.textContent = 'INICIANDO...';
             } else if (stateType === 'READY_STANDBY') {
                 pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-emerald-950/90 text-emerald-300 border-2 border-emerald-400 shadow-[0_0_18px_rgba(34,197,94,0.4)] flex items-center gap-1.5 cursor-pointer';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
-                txt.textContent = customMessage || '✅ PASO A OK · AHORA PULSA "1. SALIDA" ARRIBA';
-                if (topLbl) topLbl.textContent = 'USB CONECTADO OK';
+                txt.textContent = customMessage || '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA';
+                if (topLbl) topLbl.textContent = 'USB ENLAZADO OK';
                 if (topBtn) topBtn.className = 'px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-neon cursor-pointer flex items-center gap-1.5';
             } else if (stateType === 'BUS_OPEN_RACING') {
                 pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-emerald-950/95 text-emerald-200 border-2 border-emerald-400 shadow-[0_0_22px_rgba(34,197,94,0.55)] flex items-center gap-1.5 cursor-pointer';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
-                txt.textContent = customMessage || '🟢 RECIBIENDO TIEMPOS EN VIVO (CARRERA ACTIVA)';
+                txt.textContent = customMessage || '🟢 BUS ABIERTO · CONTANDO VUELTAS';
             } else if (stateType === 'BUS_CLOSED_STANDBY') {
                 pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-cyan-300 border-2 border-cyan-400/70 flex items-center gap-1.5 cursor-pointer';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400';
-                txt.textContent = customMessage || '🏁 FIN CARRERA · PULSA "1. SALIDA" PARA OTRA MANGA';
-                if (topLbl) topLbl.textContent = 'USB SIGUE LISTO';
+                txt.textContent = customMessage || '🔒 FIN MANGA (BUS CERRADO · USB SIGUE LISTO)';
+                if (topLbl) topLbl.textContent = 'USB ENLAZADO OK';
             } else if (stateType === 'SENSOR_PING') {
                 pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-emerald-900 text-white border-2 border-white shadow-[0_0_25px_#22c55e] flex items-center gap-1.5 cursor-pointer';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-white';
-                txt.textContent = customMessage || '⚡ ¡DATO USB RECIBIDO OK! PULSA "1. SALIDA" PARA CORRER';
+                txt.textContent = customMessage || '⚡ ¡SENSOR DETECTADO OK! PULSA 1. SALIDA';
             } else {
                 pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-slate-300 border border-white/20 flex items-center gap-1.5 cursor-pointer';
                 dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
-                txt.textContent = customMessage || 'PASO A: PULSA CONECTAR USB →';
-                if (topLbl) topLbl.textContent = 'PASO A: CONECTAR USB';
+                txt.textContent = customMessage || 'USB SIN CONECTAR';
+                if (topLbl) topLbl.textContent = 'CONECTAR USB';
             }
         }
 
@@ -3105,10 +3105,10 @@
             const weight = sCount === 1 ? 1.0 : (sCount === 2 ? (lane.nextExpectedSector === 1 ? 0.48 : 0.52) : appState.sectorWeights[lane.nextExpectedSector - 1]);
             const simulatedSectorMs = Math.floor((3750 + Math.random() * 450) * weight);
             const simulatedTofMm = Math.floor(15 + Math.random() * 14);
-            registerSectorOrLapEvent(laneId, lane.nextExpectedSector, simulatedSectorMs, simulatedTofMm, true);
+            registerSectorOrLapEvent(laneId, lane.nextExpectedSector, simulatedSectorMs, simulatedTofMm);
         }
 
-        function registerSectorOrLapEvent(laneId, sectorIndex, timeMsFromHardware = null, tofMm = null, isSimulatedEvent = false) {
+        function registerSectorOrLapEvent(laneId, sectorIndex, timeMsFromHardware = null, tofMm = null) {
             if (laneId < 1 || laneId > 10) return;
             if (securityState.requireHardwareDongle && !securityState.dongleVerified) {
                 playTone(220, 300, 'sawtooth', 0.25);
@@ -3132,38 +3132,9 @@
             }
 
             const sCount = appState.numSectors;
-            const elapsedSinceLastPassSec = lane.lastSectorPassTime > 0 ? (now - lane.lastSectorPassTime) / 1000.0 : 0;
-            const elapsedSinceLapStartSec = lane.lastLapPassTime > 0 ? (now - lane.lastLapPassTime) / 1000.0 : 0;
-
-            // DETECCIÓN DE CRUCE DE SALIDA (VUELTA 0):
-            // Si los coches se colocan en la parrilla justo detrás de la línea de META, al ponerse el semáforo en verde
-            // cruzarán el sensor de META apenas 0.1s - 0.8s después de arrancar (sin haber pasado por S1/S2).
-            // Ese primer toque pone a cero el reloj de la Vuelta 1 y NO cuenta como una vuelta falsa.
-            const isFinishLineSensor = (sCount === 1 || sectorIndex >= sCount);
-            if (!isSimulatedEvent && lane.laps === 0 && !lane.startLineCleared && isFinishLineSensor && lane.currentLapSectors[1] === null && elapsedSinceLapStartSec < 1.1) {
-                lane.startLineCleared = true;
-                lane.lastSectorPassTime = now;
-                lane.lastLapPassTime = now;
-                lane.nextExpectedSector = 1;
-                playTone(587.33, 60, 'sine', 0.12);
-                const gapEl = document.getElementById(`gap-${laneId}`);
-                if (gapEl) gapEl.textContent = 'EN PISTA (V.1)';
-                return;
-            }
-
-            // CÁLCULO EXACTITUD DE LA PRIMERA VUELTA / PRIMER SECTOR:
-            // Cuando el Arduino envía millis() en el primer paso tras el semáforo verde, muchas veces arrastra el tiempo
-            // que el coche estuvo parado esperando en la parrilla. Por eso, en el primer paso tras el semáforo verde
-            // usamos siempre el cronómetro de alta precisión sincronizado al instante exacto de la Luz Verde.
-            const isVeryFirstPassAfterGreen = (lane.laps === 0 && lane.currentLapSectors[1] === null);
-            let secTime;
-            if (isSimulatedEvent && timeMsFromHardware !== null && timeMsFromHardware > 0) {
-                secTime = timeMsFromHardware / 1000.0;
-            } else if (!isVeryFirstPassAfterGreen && timeMsFromHardware !== null && timeMsFromHardware > 0 && timeMsFromHardware < 120000) {
-                secTime = timeMsFromHardware / 1000.0;
-            } else {
-                secTime = elapsedSinceLastPassSec > 0.05 ? elapsedSinceLastPassSec : 1.35;
-            }
+            const secTime = (timeMsFromHardware !== null && timeMsFromHardware > 0)
+                ? (timeMsFromHardware / 1000.0)
+                : (lane.lastSectorPassTime > 0 ? (now - lane.lastSectorPassTime) / 1000.0 : 1.35);
 
             lane.lastSectorPassTime = now;
             if (tofMm !== null) lane.tofMm = tofMm;
@@ -3177,13 +3148,7 @@
                     }
                     completeFullLap(laneId, sumLap);
                 } else {
-                    // Si estamos en modo 1 sector o el sensor intermedio no leyó, usamos el tiempo total real desde el inicio de la vuelta
-                    const realFullLapSec = isSimulatedEvent
-                        ? secTime
-                        : ((!isVeryFirstPassAfterGreen && timeMsFromHardware !== null && timeMsFromHardware > 0 && timeMsFromHardware < 120000)
-                            ? (timeMsFromHardware / 1000.0)
-                            : elapsedSinceLapStartSec);
-                    completeFullLap(laneId, realFullLapSec > 0 ? realFullLapSec : secTime);
+                    completeFullLap(laneId, secTime);
                 }
                 lane.nextExpectedSector = 1;
                 lane.currentLapSectors = { 1: null, 2: null, 3: null };
@@ -3531,12 +3496,6 @@
                 renderPilotMobileLiveOverlay();
                 speakSpotter("Simulación de carrera detenida.", true);
             } else {
-                // Si venimos de una carrera ya finalizada o con el reloj agotado, limpiamos contadores automáticamente
-                const anyDriverCompletedTarget = Object.values(appState.lanes).some(l => l.laps >= appState.targetLaps);
-                if (appState.raceStatus === 'FINISHED' || appState.remainingSeconds <= 0 || (appState.raceFormat === 'LAPS' && anyDriverCompletedTarget)) {
-                    prepareFreshCountersForNewRace();
-                }
-
                 appState.voiceEnabled = true;
                 appState.sectorAnalystEnabled = true;
                 const btnAnalyst = document.getElementById('btnAnalystToggle');
@@ -3550,7 +3509,6 @@
 
                 if (appState.raceStatus === 'STANDBY' || appState.raceStatus === 'FINISHED' || appState.raceStatus === 'TRACK_CALL') {
                     appState.raceStatus = 'RACING';
-                    appState.hardwareBusGateOpen = true;
                     const now = performance.now();
                     for (let i = 1; i <= 10; i++) {
                         appState.lanes[i].lastSectorPassTime = now;
@@ -3712,30 +3670,30 @@
                 return;
             }
 
-            // Mostrar siempre el destello visual en las lámparas de test cuando llega una trama del Arduino, aunque la carrera esté en Standby
-            const previewParts = clean.split(/[,:;]/);
-            if (previewParts[0] === 'S1' || clean.includes('SECTOR1')) flashSensorTestLamp('S1', 'SEÑAL S1 OK');
-            else if (previewParts[0] === 'S2' || clean.includes('SECTOR2')) flashSensorTestLamp('S2', 'SEÑAL S2 OK');
-            else if (previewParts[0] === 'M' || previewParts[0] === 'META' || previewParts[0] === 'S3' || previewParts[0].startsWith('L')) flashSensorTestLamp('META', 'SEÑAL META OK');
+            if (clean.startsWith('INFO,') || clean.includes('READY') || clean.includes('OK')) {
+                const laserEl = document.getElementById('usbModalLaserStatus');
+                if (laserEl) laserEl.textContent = clean.replace('INFO,', '');
+                appState.usbHardwareReady = true;
+                if (appState.raceStatus !== 'RACING') {
+                    setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
+                }
+                return;
+            }
 
             const allowBench = forceBenchTest || Boolean(document.getElementById('chkAllowBenchTest')?.checked);
             if (appState.raceStatus !== 'RACING' && appState.raceStatus !== 'COUNTDOWN' && !allowBench) {
                 const laserEl = document.getElementById('usbModalLaserStatus');
-                if (laserEl) laserEl.textContent = `SEÑAL RECIBIDA OK (${clean}) · PULSA "1. SALIDA"`;
+                if (laserEl) laserEl.textContent = `SENSOR OK (BUS CERRADO HASTA SEMÁFORO VERDE)`;
                 playTone(880, 60, 'sine', 0.12);
-                setUsbHardwareReadyBanner('SENSOR_PING', `⚡ ¡SENSOR DETECTADO (${clean})! AHORA PULSA "1. SALIDA"`);
+                setUsbHardwareReadyBanner('SENSOR_PING', '⚡ ¡SENSOR DETECTADO OK! PULSA 1. SALIDA');
                 setTimeout(() => {
                     if (appState.raceStatus !== 'RACING') {
-                        setUsbHardwareReadyBanner('READY_STANDBY', '✅ PASO A OK · AHORA PULSA "1. SALIDA" ARRIBA');
+                        setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
                     }
-                }, 2200);
+                }, 1800);
                 return;
             }
             if (allowBench && appState.raceStatus !== 'RACING' && appState.raceStatus !== 'COUNTDOWN') {
-                const anyDriverCompletedTarget = Object.values(appState.lanes).some(l => l.laps >= appState.targetLaps);
-                if (appState.raceStatus === 'FINISHED' || appState.remainingSeconds <= 0 || anyDriverCompletedTarget) {
-                    prepareFreshCountersForNewRace();
-                }
                 appState.raceStatus = 'RACING';
                 appState.hardwareBusGateOpen = true;
                 const now = performance.now();
@@ -4422,69 +4380,8 @@
             }
         }
 
-        // Limpia automáticamente todos los contadores cuando se inicia una nueva carrera después de haber terminado la anterior
-        function prepareFreshCountersForNewRace() {
-            clearInterval(appState.clockInterval);
-            appState.remainingSeconds = appState.heatTotalSeconds;
-            appState.elapsedSeconds = 0;
-            appState.overallBestLap = Infinity;
-            appState.overallBestDriver = '';
-            appState.overallBestSectors = { 1: Infinity, 2: Infinity, 3: Infinity };
-            appState.overallBestSectorDrivers = { 1: '', 2: '', 3: '' };
-            appState.announcedMilestones = {
-                min5: false,
-                min3: false,
-                min1: false,
-                sec10: false,
-                laps5: false,
-                lastLap: false
-            };
-
-            for (let i = 1; i <= 10; i++) {
-                const l = appState.lanes[i];
-                l.laps = 0;
-                l.lastLap = 0;
-                l.bestLap = Infinity;
-                l.history = [];
-                l.fuel = 100;
-                l.totalRaceTime = 0;
-                l.nextExpectedSector = 1;
-                l.startLineCleared = false;
-                l.currentLapSectors = { 1: null, 2: null, 3: null };
-                l.lastSectors = { 1: null, 2: null, 3: null };
-                l.bestSectors = { 1: Infinity, 2: Infinity, 3: Infinity };
-                l.sectorColors = { 1: '', 2: '', 3: '' };
-                l.sectorDeltas = { 1: null, 2: null, 3: null };
-            }
-
-            document.getElementById('postRaceReportModal')?.classList.add('hidden');
-            document.getElementById('topRaceBar')?.classList.remove('track-call-active');
-            const purpEl = document.getElementById('overallPurpleLap');
-            if (purpEl) purpEl.textContent = 'LAP: --.---s';
-
-            renderMasterClock();
-            renderLanesGrid();
-            renderPurpleSectorsBox();
-            renderSectorAnalysisTable();
-            renderConsistencyCards();
-            rebuildChartDatasets();
-            updateSingleDriverAnalytics();
-            const logBody = document.getElementById('liveLogBody');
-            if (logBody) {
-                logBody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-400 font-mono">Nueva manga preparada. ¡Atentos al semáforo!</td></tr>';
-            }
-        }
-
         function startF1Sequence() {
-            if (appState.raceStatus === 'RACING' || appState.raceStatus === 'COUNTDOWN') return;
-
-            // Si la carrera anterior había terminado (o el reloj estaba en 0, o alguien ya tenía las vueltas completadas),
-            // ponemos a cero los contadores automáticamente para que la nueva carrera nunca se corte al detectar un sector.
-            const anyDriverCompletedTarget = Object.values(appState.lanes).some(l => l.laps >= appState.targetLaps);
-            if (appState.raceStatus === 'FINISHED' || appState.remainingSeconds <= 0 || anyDriverCompletedTarget) {
-                prepareFreshCountersForNewRace();
-            }
-
+            if (appState.raceStatus === 'RACING') return;
             countdownTimeouts.forEach(t => clearTimeout(t));
             countdownTimeouts = [];
             clearF1Lights();
@@ -4493,7 +4390,7 @@
             updateRaceBadge('SECUENCIA F1', 'bg-rose-500/20 text-rose-300 border-rose-500/40');
             broadcastLiveTelemetryState();
             renderPilotMobileLiveOverlay();
-            speakSpotter(`Atención pilotos. Semáforo de salida en marcha.`, true);
+            speakSpotter(`Atención. Secuencia de salida iniciada.`, true);
 
             for (let i = 1; i <= 5; i++) {
                 const t = setTimeout(() => {
@@ -4514,8 +4411,6 @@
                 for (let i = 1; i <= 10; i++) {
                     appState.lanes[i].lastSectorPassTime = now;
                     appState.lanes[i].lastLapPassTime = now;
-                    appState.lanes[i].startLineCleared = false;
-                    appState.lanes[i].currentLapSectors = { 1: null, 2: null, 3: null };
                 }
                 sendBusCommandToArduino("GREEN_ON");
                 if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
@@ -5695,7 +5590,6 @@ ${allLapsText}`;
                 l.fuel = 100;
                 l.totalRaceTime = 0;
                 l.nextExpectedSector = 1;
-                l.startLineCleared = false;
                 l.currentLapSectors = { 1: null, 2: null, 3: null };
                 l.lastSectors = { 1: null, 2: null, 3: null };
                 l.bestSectors = { 1: Infinity, 2: Infinity, 3: Infinity };
