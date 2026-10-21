@@ -164,9 +164,9 @@
             transform: scale(1.06);
         }
         .f1-light.green-on {
-            background: radial-gradient(circle at 35% 35%, #a5f3fc 0%, #00e5ff 45%, #0284c7 100%);
-            border-color: #ffffff;
-            box-shadow: 0 0 26px #00e5ff, 0 0 12px #38bdf8, inset 0 0 8px #ffffff;
+            background: radial-gradient(circle at 35% 35%, #bbf7d0 0%, #22c55e 45%, #15803d 100%) !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 0 28px #22c55e, 0 0 14px #4ade80, inset 0 0 8px #ffffff !important;
             transform: scale(1.06);
         }
         .f1-light.amber-on {
@@ -963,6 +963,10 @@
                 <span class="text-[10px] font-mono font-black text-slate-300 uppercase"><i class="fa-solid fa-hand-pointer mr-1 text-cyan-300"></i>PULSO MANUAL:</span>
                 <div id="quickSimButtons" class="flex items-center gap-1.5"></div>
             </div>
+            <div id="usbReadyIndicatorPill" onclick="openUsbDiagnosticModal()" class="px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-slate-300 border border-white/20 flex items-center gap-1.5 cursor-pointer transition-all" title="Estado en tiempo real del Arduino y del Bus de Carrera">
+                <span id="usbReadyDot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                <span id="usbReadyText">USB SIN CONECTAR</span>
+            </div>
             <button id="btnOneClickUsbConnect" onclick="oneClickConnectArduino()" class="px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-silver cursor-pointer flex items-center gap-1.5" title="Conexión directa en 1 solo clic con el Arduino USB">
                 <i class="fa-brands fa-usb text-sky-600"></i> <span id="topUsbBtnLabel">CONECTAR USB</span>
             </button>
@@ -1727,11 +1731,61 @@
             lastSpokenMobileLap: -1,
             lastSpokenMobileS1: null,
             lastSpokenMobileS2: null,
-            lastSpokenMobileStatus: 'STANDBY'
+            lastSpokenMobileStatus: 'STANDBY',
+            hardwareBusGateOpen: false,
+            usbHardwareReady: false,
+            announcedMilestones: {
+                min5: false,
+                min3: false,
+                min1: false,
+                sec10: false,
+                laps5: false,
+                lastLap: false
+            }
         };
         safeSetStorage('kronos_room_id_v81', appState.liveSyncRoomId);
 
         const LOCAL_DB_STORAGE_KEY = 'kronos_local_club_database_v68';
+
+        function setUsbHardwareReadyBanner(stateType, customMessage = null) {
+            const pill = document.getElementById('usbReadyIndicatorPill');
+            const dot = document.getElementById('usbReadyDot');
+            const txt = document.getElementById('usbReadyText');
+            const topBtn = document.getElementById('btnOneClickUsbConnect');
+            const topLbl = document.getElementById('topUsbBtnLabel');
+            if (!pill || !dot || !txt) return;
+
+            if (stateType === 'BOOTING') {
+                pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-amber-950/90 text-amber-300 border-2 border-amber-400 flex items-center gap-1.5 cursor-wait animate-pulse';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+                txt.textContent = customMessage || 'REINICIANDO ARDUINO (2s)... ESPERA';
+                if (topLbl) topLbl.textContent = 'INICIANDO...';
+            } else if (stateType === 'READY_STANDBY') {
+                pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-emerald-950/90 text-emerald-300 border-2 border-emerald-400 shadow-[0_0_18px_rgba(34,197,94,0.4)] flex items-center gap-1.5 cursor-pointer';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+                txt.textContent = customMessage || '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA';
+                if (topLbl) topLbl.textContent = 'USB ENLAZADO OK';
+                if (topBtn) topBtn.className = 'px-3.5 py-2 rounded-xl text-xs font-mono font-black mac-btn-neon cursor-pointer flex items-center gap-1.5';
+            } else if (stateType === 'BUS_OPEN_RACING') {
+                pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-emerald-950/95 text-emerald-200 border-2 border-emerald-400 shadow-[0_0_22px_rgba(34,197,94,0.55)] flex items-center gap-1.5 cursor-pointer';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+                txt.textContent = customMessage || '🟢 BUS ABIERTO · CONTANDO VUELTAS';
+            } else if (stateType === 'BUS_CLOSED_STANDBY') {
+                pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-cyan-300 border-2 border-cyan-400/70 flex items-center gap-1.5 cursor-pointer';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400';
+                txt.textContent = customMessage || '🔒 FIN MANGA (BUS CERRADO · USB SIGUE LISTO)';
+                if (topLbl) topLbl.textContent = 'USB ENLAZADO OK';
+            } else if (stateType === 'SENSOR_PING') {
+                pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-emerald-900 text-white border-2 border-white shadow-[0_0_25px_#22c55e] flex items-center gap-1.5 cursor-pointer';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-white';
+                txt.textContent = customMessage || '⚡ ¡SENSOR DETECTADO OK! PULSA 1. SALIDA';
+            } else {
+                pill.className = 'px-3 py-2 rounded-xl text-[10px] font-mono font-black bg-slate-900 text-slate-300 border border-white/20 flex items-center gap-1.5 cursor-pointer';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
+                txt.textContent = customMessage || 'USB SIN CONECTAR';
+                if (topLbl) topLbl.textContent = 'CONECTAR USB';
+            }
+        }
 
         function speakOnPilotMobile(text, priority = false) {
             const radioEl = document.getElementById('pilotAppLastRadioMsg');
@@ -3296,6 +3350,25 @@
 
             if (appState.raceFormat === 'LAPS') {
                 renderMasterClock();
+                const leaderLaps = standings[0] ? standings[0].laps : lane.laps;
+                const lapsRemaining = appState.targetLaps - leaderLaps;
+
+                if (lapsRemaining === 5 && !appState.announcedMilestones.laps5 && appState.raceStatus === 'RACING') {
+                    appState.announcedMilestones.laps5 = true;
+                    playTone(880, 220, 'triangle', 0.25);
+                    updateRaceBadge('<i class="fa-solid fa-fire text-amber-300 mr-1"></i>¡ÚLTIMAS 5 VUELTAS!', 'bg-amber-500/20 text-amber-300 border-amber-400');
+                    const msg5 = `¡Atención a todos los pilotos! Entramos en las últimas 5 vueltas de carrera. Lidera ${standings[0].name}.`;
+                    speakSpotter(msg5, true);
+                    speakOnPilotMobile(msg5, true);
+                } else if (lapsRemaining === 1 && !appState.announcedMilestones.lastLap && appState.raceStatus === 'RACING') {
+                    appState.announcedMilestones.lastLap = true;
+                    playTone(1318.5, 350, 'triangle', 0.3);
+                    updateRaceBadge('<i class="fa-solid fa-bell text-rose-300 mr-1 animate-bounce"></i>¡ÚLTIMA VUELTA!', 'bg-rose-500/30 text-rose-200 border-rose-400');
+                    const msg1 = `¡Campana de última vuelta! ¡Última vuelta para todos los pilotos! ${standings[0].name} está a una sola vuelta de la victoria.`;
+                    speakSpotter(msg1, true);
+                    speakOnPilotMobile(msg1, true);
+                }
+
                 if (lane.laps >= appState.targetLaps && appState.raceStatus === 'RACING') {
                     appState.raceStatus = 'FINISHED';
                     clearInterval(appState.clockInterval);
@@ -3600,23 +3673,36 @@
             if (clean.startsWith('INFO,') || clean.includes('READY') || clean.includes('OK')) {
                 const laserEl = document.getElementById('usbModalLaserStatus');
                 if (laserEl) laserEl.textContent = clean.replace('INFO,', '');
+                appState.usbHardwareReady = true;
+                if (appState.raceStatus !== 'RACING') {
+                    setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
+                }
                 return;
             }
 
             const allowBench = forceBenchTest || Boolean(document.getElementById('chkAllowBenchTest')?.checked);
             if (appState.raceStatus !== 'RACING' && appState.raceStatus !== 'COUNTDOWN' && !allowBench) {
                 const laserEl = document.getElementById('usbModalLaserStatus');
-                if (laserEl) laserEl.textContent = `IGNORADO (ESPERANDO SEMÁFORO VERDE)`;
+                if (laserEl) laserEl.textContent = `SENSOR OK (BUS CERRADO HASTA SEMÁFORO VERDE)`;
+                playTone(880, 60, 'sine', 0.12);
+                setUsbHardwareReadyBanner('SENSOR_PING', '⚡ ¡SENSOR DETECTADO OK! PULSA 1. SALIDA');
+                setTimeout(() => {
+                    if (appState.raceStatus !== 'RACING') {
+                        setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
+                    }
+                }, 1800);
                 return;
             }
             if (allowBench && appState.raceStatus !== 'RACING' && appState.raceStatus !== 'COUNTDOWN') {
                 appState.raceStatus = 'RACING';
+                appState.hardwareBusGateOpen = true;
                 const now = performance.now();
                 for (let i = 1; i <= 10; i++) {
                     appState.lanes[i].lastSectorPassTime = now;
                     appState.lanes[i].lastLapPassTime = now;
                 }
-                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA (TEST)', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
+                updateRaceBadge('<i class="fa-solid fa-circle text-emerald-400 mr-1"></i>EN CARRERA (TEST)', 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40');
+                setUsbHardwareReadyBanner('BUS_OPEN_RACING');
                 startMasterClock();
             }
 
@@ -3702,7 +3788,12 @@
         async function oneClickConnectArduino() {
             if (serialConnectingInProgress) return;
             if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
-                openUsbDiagnosticModal();
+                playTone(1046.5, 100, 'sine', 0.18);
+                setUsbHardwareReadyBanner(
+                    appState.raceStatus === 'RACING' ? 'BUS_OPEN_RACING' : 'READY_STANDBY',
+                    appState.raceStatus === 'RACING' ? '🟢 BUS ABIERTO · CONTANDO VUELTAS' : '¡ARDUINO YA ESTÁ CONECTADO Y LISTO!'
+                );
+                speakSpotter("El Arduino ya está conectado y listo. Puedes pulsar el botón 1, Salida, cuando quieras.", true);
                 return;
             }
             if ('serial' in navigator) {
@@ -3715,7 +3806,7 @@
         }
 
         function connectArduinoUSB() {
-            oneClickConnectArduino();
+            openUsbDiagnosticModal();
         }
 
         async function sendBusCommandToArduino(cmdStr) {
@@ -3736,40 +3827,19 @@
         }
 
         async function closeHardwareDataBusOnRaceFinish() {
-            logSerialConsole("🏁 Fin de carrera detectado: enviando orden de parada al bus y cerrando el puerto USB/Serial...");
+            appState.hardwareBusGateOpen = false;
+            logSerialConsole("🏁 Fin de carrera: Bus de tiempos cerrado. El cable USB sigue enlazado para la próxima manga.");
             await sendBusCommandToArduino("RACE_END");
-            usbReadLoopActive = false;
 
-            try {
-                if (activeSerialReader) {
-                    await activeSerialReader.cancel();
-                    activeSerialReader.releaseLock();
-                    activeSerialReader = null;
+            if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
+                setUsbHardwareReadyBanner('BUS_CLOSED_STANDBY', '🔒 FIN MANGA (BUS CERRADO · USB SIGUE LISTO)');
+                const usbTextEl = document.getElementById('usbText');
+                if (usbTextEl) usbTextEl.innerHTML = '<i class="fa-solid fa-lock text-cyan-300 mr-1"></i>BUS CERRADO (USB LISTO)';
+                const statusEl = document.getElementById('usbModalStatus');
+                if (statusEl) {
+                    statusEl.textContent = 'BUS EN PAUSA (USB ENLAZADO OK)';
+                    statusEl.className = 'text-xs font-black text-cyan-300 mt-0.5';
                 }
-            } catch (e) {}
-
-            try {
-                if (activeSerialPort) {
-                    await activeSerialPort.close();
-                    activeSerialPort = null;
-                }
-            } catch (e) {}
-
-            try {
-                if (activeUsbDevice && activeUsbDevice.opened) {
-                    await activeUsbDevice.close();
-                    activeUsbDevice = null;
-                }
-            } catch (e) {}
-
-            const usbTextEl = document.getElementById('usbText');
-            if (usbTextEl) usbTextEl.innerHTML = '<i class="fa-solid fa-plug-circle-xmark text-amber-300 mr-1"></i>PUERTO CERRADO (FIN MANGA)';
-            const topLbl = document.getElementById('topUsbBtnLabel');
-            if (topLbl) topLbl.textContent = 'CONECTAR USB';
-            const statusEl = document.getElementById('usbModalStatus');
-            if (statusEl) {
-                statusEl.textContent = 'PUERTO CERRADO (FIN CARRERA)';
-                statusEl.className = 'text-xs font-black text-amber-300 mt-0.5';
             }
         }
 
@@ -3915,18 +3985,35 @@
                 usbReadLoopActive = true;
                 serialConnectingInProgress = false;
 
-                document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>WEBSERIAL ACTIVO';
-                const topLbl = document.getElementById('topUsbBtnLabel');
-                if (topLbl) topLbl.textContent = 'USB CONECTADO';
-                document.getElementById('usbModalStatus').textContent = 'WEBSERIAL CONECTADO';
-                document.getElementById('usbModalStatus').className = 'text-xs font-black text-cyan-300 mt-0.5';
+                setUsbHardwareReadyBanner('BOOTING', 'ESPERANDO REINICIO ARDUINO (2s)... NO PULSES NADA');
+                document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-spinner animate-spin text-amber-300 mr-1"></i>VERIFICANDO ARDUINO...';
+                document.getElementById('usbModalStatus').textContent = 'INICIANDO PLACA ARDUINO...';
+                document.getElementById('usbModalStatus').className = 'text-xs font-black text-amber-300 mt-0.5';
                 document.getElementById('usbModalChip').textContent = `SERIE ${baud} BAUD`;
-                logSerialConsole(`¡Puerto WebSerial abierto a la primera (${baud} baudios)! El bus aceptará vueltas al ponerse el semáforo en VERDE.`);
-                speakSpotter("Arduino conectado a la primera. Da la salida para activar el bus de datos.", true);
+                logSerialConsole(`Puerto abierto (${baud} baudios). Esperando 1.6s a que termine el auto-reset del Arduino UNO...`);
 
-                if (appState.raceStatus === 'RACING') {
-                    await sendBusCommandToArduino("GREEN_ON");
-                }
+                setTimeout(async () => {
+                    appState.usbHardwareReady = true;
+                    await sendBusCommandToArduino("PING_KRONOS");
+                    if (appState.raceStatus === 'RACING') {
+                        appState.hardwareBusGateOpen = true;
+                        await sendBusCommandToArduino("GREEN_ON");
+                        setUsbHardwareReadyBanner('BUS_OPEN_RACING');
+                    } else {
+                        setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
+                    }
+                    document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i>ARDUINO LISTO';
+                    document.getElementById('usbModalStatus').textContent = '¡ARDUINO LISTO PARA EMPEZAR!';
+                    document.getElementById('usbModalStatus').className = 'text-xs font-black text-emerald-400 mt-0.5';
+                    const verdict = document.getElementById('usbTestDiagnosticVerdict');
+                    if (verdict) {
+                        verdict.textContent = '✅ ¡TEST SUPERADO! Arduino listo. Ya puedes dar la Salida.';
+                        verdict.className = 'text-emerald-400 font-black';
+                    }
+                    playTone(880, 100, 'sine', 0.18);
+                    setTimeout(() => playTone(1318.5, 160, 'triangle', 0.22), 120);
+                    speakSpotter("Test de conexión completado. Arduino listo. Ya puedes empezar la carrera.", true);
+                }, 1650);
 
                 activeSerialReader = port.readable.getReader();
                 const decoder = new TextDecoder();
@@ -4058,16 +4145,24 @@
 
                 await applyWebUsbBaudRate(device, baud, dataInterfaceNumber);
 
-                document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>USB ACTIVO';
-                const topLbl = document.getElementById('topUsbBtnLabel');
-                if (topLbl) topLbl.textContent = 'USB CONECTADO';
-                document.getElementById('usbModalStatus').textContent = '¡ESCUCHANDO BYTES!';
-                document.getElementById('usbModalStatus').className = 'text-xs font-black text-cyan-300 mt-0.5';
-                speakSpotter("Escuchando puerto USB. Da la salida para abrir el bus de carrera.", true);
+                setUsbHardwareReadyBanner('BOOTING', 'VERIFICANDO ARDUINO WEBUSB (1.5s)...');
+                document.getElementById('usbText').innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i>USB LISTO';
+                document.getElementById('usbModalStatus').textContent = '¡ARDUINO LISTO PARA EMPEZAR!';
+                document.getElementById('usbModalStatus').className = 'text-xs font-black text-emerald-400 mt-0.5';
 
-                if (appState.raceStatus === 'RACING') {
-                    await sendBusCommandToArduino("GREEN_ON");
-                }
+                setTimeout(async () => {
+                    appState.usbHardwareReady = true;
+                    if (appState.raceStatus === 'RACING') {
+                        appState.hardwareBusGateOpen = true;
+                        await sendBusCommandToArduino("GREEN_ON");
+                        setUsbHardwareReadyBanner('BUS_OPEN_RACING');
+                    } else {
+                        setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
+                    }
+                    playTone(880, 100, 'sine', 0.18);
+                    setTimeout(() => playTone(1318.5, 160, 'triangle', 0.22), 120);
+                    speakSpotter("Test de conexión completado. Arduino listo. Ya puedes empezar la carrera.", true);
+                }, 1500);
 
                 usbReadLoopActive = true;
                 const decoder = new TextDecoder();
@@ -4311,16 +4406,20 @@
                 for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('green-on');
                 playTone(1046.5, 450, 'sawtooth', 0.25);
                 appState.raceStatus = 'RACING';
+                appState.hardwareBusGateOpen = true;
                 const now = performance.now();
                 for (let i = 1; i <= 10; i++) {
                     appState.lanes[i].lastSectorPassTime = now;
                     appState.lanes[i].lastLapPassTime = now;
                 }
                 sendBusCommandToArduino("GREEN_ON");
-                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA (BUS ACTIVO)', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
+                if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
+                    setUsbHardwareReadyBanner('BUS_OPEN_RACING', '🟢 SEMÁFORO VERDE · BUS RECIBIENDO VUELTAS');
+                }
+                updateRaceBadge('<i class="fa-solid fa-circle text-emerald-400 mr-1"></i>SEMAFORO VERDE · EN CARRERA', 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40');
                 broadcastLiveTelemetryState();
                 renderPilotMobileLiveOverlay();
-                speakSpotter("¡Verde, verde, verde!", true);
+                speakSpotter("¡Semáforo en verde! ¡Arranca la carrera!", true);
                 startMasterClock();
             }, randomDelay);
             countdownTimeouts.push(greenTimeout);
@@ -4330,10 +4429,14 @@
             const topBar = document.getElementById('topRaceBar');
             if (appState.raceStatus === 'RACING') {
                 appState.raceStatus = 'TRACK_CALL';
+                appState.hardwareBusGateOpen = false;
                 topBar.classList.add('track-call-active');
                 clearF1Lights();
                 for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('amber-on');
                 sendBusCommandToArduino("TRACK_CALL");
+                if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
+                    setUsbHardwareReadyBanner('BUS_CLOSED_STANDBY', '⏸️ PAUSA TRACK CALL (BUS EN ESPERA)');
+                }
                 playTone(310, 450, 'sawtooth', 0.25);
                 updateRaceBadge('<i class="fa-solid fa-triangle-exclamation mr-1"></i>TRACK CALL (PAUSA)', 'bg-amber-500/20 text-amber-300 border-amber-500/40');
                 broadcastLiveTelemetryState();
@@ -4344,14 +4447,18 @@
                 clearF1Lights();
                 for (let i = 1; i <= 5; i++) document.getElementById(`f1L${i}`).classList.add('green-on');
                 sendBusCommandToArduino("GREEN_ON");
+                if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
+                    setUsbHardwareReadyBanner('BUS_OPEN_RACING', '🟢 SEMÁFORO VERDE · BUS RECIBIENDO VUELTAS');
+                }
                 playTone(880, 250, 'sine', 0.2);
                 appState.raceStatus = 'RACING';
+                appState.hardwareBusGateOpen = true;
                 const now = performance.now();
                 for (let i = 1; i <= 10; i++) appState.lanes[i].lastSectorPassTime = now;
-                updateRaceBadge('<i class="fa-solid fa-circle text-cyan-400 mr-1"></i>EN CARRERA', 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40');
+                updateRaceBadge('<i class="fa-solid fa-circle text-emerald-400 mr-1"></i>EN CARRERA', 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40');
                 broadcastLiveTelemetryState();
                 renderPilotMobileLiveOverlay();
-                speakSpotter("Pista libre. Reanudamos carrera.", true);
+                speakSpotter("Semáforo verde. Reanudamos carrera.", true);
             }
         }
 
@@ -4368,6 +4475,36 @@
 
                 appState.remainingSeconds = Math.max(0, appState.remainingSeconds - 0.1);
                 renderMasterClock();
+
+                const rem = appState.remainingSeconds;
+                if (appState.heatTotalSeconds > 300 && rem <= 300.0 && rem > 299.0 && !appState.announcedMilestones.min5) {
+                    appState.announcedMilestones.min5 = true;
+                    playTone(784.0, 200, 'triangle', 0.22);
+                    const msg = "¡Atención a todos los pilotos! Entramos en los últimos 5 minutos de carrera.";
+                    speakSpotter(msg, true);
+                    speakOnPilotMobile(msg, true);
+                } else if (appState.heatTotalSeconds > 180 && rem <= 180.0 && rem > 179.0 && !appState.announcedMilestones.min3) {
+                    appState.announcedMilestones.min3 = true;
+                    playTone(880.0, 200, 'triangle', 0.22);
+                    const msg = "¡Aviso a todos los pilotos! Quedan los últimos 3 minutos de carrera.";
+                    speakSpotter(msg, true);
+                    speakOnPilotMobile(msg, true);
+                } else if (appState.heatTotalSeconds > 60 && rem <= 60.0 && rem > 59.0 && !appState.announcedMilestones.min1) {
+                    appState.announcedMilestones.min1 = true;
+                    playTone(1046.5, 280, 'triangle', 0.26);
+                    updateRaceBadge('<i class="fa-solid fa-clock text-amber-300 mr-1 animate-pulse"></i>¡ÚLTIMO MINUTO!', 'bg-amber-500/20 text-amber-300 border-amber-400');
+                    const msg = "¡Atención a todos los pilotos en pista! ¡Entramos en el último minuto de carrera!";
+                    speakSpotter(msg, true);
+                    speakOnPilotMobile(msg, true);
+                } else if (rem <= 10.0 && rem > 9.0 && !appState.announcedMilestones.sec10) {
+                    appState.announcedMilestones.sec10 = true;
+                    playTone(1318.5, 300, 'sawtooth', 0.28);
+                    updateRaceBadge('<i class="fa-solid fa-bell text-rose-300 mr-1 animate-bounce"></i>¡ÚLTIMOS 10 SEGUNDOS!', 'bg-rose-500/30 text-rose-200 border-rose-400');
+                    const msg = "¡Últimos diez segundos para la bandera a cuadros! ¡Aprieten a fondo!";
+                    speakSpotter(msg, true);
+                    speakOnPilotMobile(msg, true);
+                }
+
                 if (appState.remainingSeconds <= 0) {
                     appState.raceStatus = 'FINISHED';
                     clearInterval(appState.clockInterval);
@@ -5419,17 +5556,30 @@ ${allLapsText}`;
                 updateSimulationButtonsVisual(false);
             }
             appState.raceStatus = 'STANDBY';
+            appState.hardwareBusGateOpen = false;
             appState.remainingSeconds = appState.heatTotalSeconds;
             appState.elapsedSeconds = 0;
             appState.overallBestLap = Infinity;
             appState.overallBestDriver = '';
             appState.overallBestSectors = { 1: Infinity, 2: Infinity, 3: Infinity };
             appState.overallBestSectorDrivers = { 1: '', 2: '', 3: '' };
+            appState.announcedMilestones = {
+                min5: false,
+                min3: false,
+                min1: false,
+                sec10: false,
+                laps5: false,
+                lastLap: false
+            };
             renderMasterClock();
             clearF1Lights();
             document.getElementById('topRaceBar').classList.remove('track-call-active');
             document.getElementById('overallPurpleLap').textContent = 'LAP: --.---s';
             updateRaceBadge('PISTA LISTA', 'bg-slate-800/90 text-cyan-300 border-cyan-400/40');
+
+            if ((activeSerialPort && activeSerialPort.readable) || (activeUsbDevice && activeUsbDevice.opened)) {
+                setUsbHardwareReadyBanner('READY_STANDBY', '¡ARDUINO LISTO! YA PUEDES DAR 1. SALIDA');
+            }
 
             for (let i = 1; i <= 10; i++) {
                 const l = appState.lanes[i];
