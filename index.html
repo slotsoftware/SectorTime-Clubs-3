@@ -61,31 +61,37 @@
         .sector-green { color: #30d158 !important; }
         .sector-yellow { color: #ffd60a !important; }
 
-        /* Semáforo Gantry F1 (Pequeño) */
+        /* Semáforo Gantry F1 (Pequeño barra superior) */
         .f1-light {
             width: 24px; height: 24px; border-radius: 50%;
             background: #1c1c1e; border: 1px solid #3a3a3c; transition: all 0.1s ease;
         }
         .f1-light.red-on { background: var(--apple-red); border-color: #ff6961; box-shadow: 0 0 15px var(--apple-red); }
         .f1-light.green-on { background: var(--apple-green); border-color: #32d74b; box-shadow: 0 0 15px var(--apple-green); }
-        .f1-light.amber-on { background: var(--apple-yellow); border-color: #ffe620; box-shadow: 0 0 15px var(--apple-yellow); }
 
         /* Semáforo Gigante Central - Súper Realista y Texturizado */
         .f1-light-giant {
-            width: 120px; height: 120px; border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #3a3a3c, #000);
             border: 8px solid #111;
             box-shadow: 0 0 0 4px #2c2c2e, inset 0 8px 20px rgba(0,0,0,0.9);
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
+        /* Reflejo de cristal para darle volumen curvo */
         .f1-light-giant::after {
-            content: ''; position: absolute; top: 8%; left: 15%; width: 40%; height: 30%;
-            background: rgba(255,255,255,0.08); border-radius: 50%; transform: rotate(-30deg);
+            content: ''; position: absolute;
+            top: 8%; left: 15%; width: 40%; height: 30%;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%; transform: rotate(-30deg);
         }
         @media (min-width: 768px) {
             .f1-light-giant {
-                width: 180px; height: 180px; border: 12px solid #111;
+                width: 180px;
+                height: 180px;
+                border: 12px solid #111;
                 box-shadow: 0 0 0 6px #2c2c2e, inset 0 12px 30px rgba(0,0,0,0.9);
             }
         }
@@ -101,16 +107,10 @@
         }
 
         @keyframes trackCallPulse {
-            0%, 100% { border-color: rgba(255, 159, 10, 0.8); box-shadow: 0 0 30px rgba(255, 159, 10, 0.4); }
-            50% { border-color: rgba(255, 159, 10, 0.2); box-shadow: none; }
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 159, 10, 0.4); }
+            50% { box-shadow: none; }
         }
         .track-call-active { animation: trackCallPulse 0.8s infinite; }
-
-        /* Posiciones estilo Premium */
-        .pos-p1-gold { background: linear-gradient(135deg, #ffd60a 0%, #ff9f0a 100%) !important; color: #000 !important; }
-        .pos-p2-silver { background: linear-gradient(135deg, #e5e5ea 0%, #8e8e93 100%) !important; color: #000 !important; }
-        .pos-p3-bronze { background: linear-gradient(135deg, #ff9f0a 0%, #d0610e 100%) !important; color: #fff !important; }
-        .pos-last-lantern { background: rgba(255, 69, 58, 0.2) !important; color: var(--apple-red) !important; }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -135,8 +135,11 @@
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2 md:px-4 md:py-3">
 
-    <!-- BOTÓN TRACK CALL FLOTANTE Y RELOJ (Solo visible en Modo Carrera Minimalista) -->
-    <div id="floatingRaceUI" class="fixed top-6 right-6 z-50 hidden items-center gap-4 opacity-75 hover:opacity-100 transition-opacity bg-[var(--bg-panel)] backdrop-blur-xl p-3 rounded-full border border-white/10 shadow-2xl">
+    <!-- BOTÓN TRACK CALL FLOTANTE, INICIO Y RELOJ (Solo visible en Modo Carrera Minimalista) -->
+    <div id="floatingRaceUI" class="fixed top-6 right-6 z-50 hidden items-center gap-4 opacity-90 hover:opacity-100 transition-opacity bg-[var(--bg-panel)] backdrop-blur-xl p-3 rounded-full border border-white/10 shadow-2xl">
+        <button onclick="goHome()" class="px-6 py-4 bg-[var(--bg-element)] hover:bg-[#ff453a] hover:text-white text-white font-black text-xl rounded-full transition cursor-pointer shadow-lg" title="Abortar y volver al menú principal">
+            🏠 INICIO
+        </button>
         <div id="floatingMasterClock" class="font-mono-num font-black text-white px-3 text-3xl md:text-5xl tracking-widest">00:00</div>
         <button id="btnFloatingTrackCall" onclick="toggleTrackCall()" class="px-8 py-4 bg-[#ff9f0a] hover:bg-[#ffd60a] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(255,159,10,0.5)] transition cursor-pointer">
             ⚠️ TRACK CALL
@@ -183,7 +186,7 @@
         <!-- CENTRO: Título y Configuración Rápida -->
         <div class="flex flex-col items-center gap-3">
             <div class="flex items-center gap-3">
-                <h1 id="appMainTitle" onclick="promptCustomTitle()" class="text-xl md:text-2xl font-black tracking-tight text-white cursor-pointer hover:text-[#0a84ff] transition flex items-center gap-2">
+                <h1 id="appMainTitle" class="text-xl md:text-2xl font-black tracking-tight text-white cursor-pointer hover:text-[#0a84ff] transition flex items-center gap-2">
                     <span>GRAN PREMIO OFICIAL // KRONOS PRO</span>
                 </h1>
                 <span id="raceStateBadge" class="px-4 py-1.5 text-sm font-black rounded-full bg-[var(--bg-element)] text-[var(--text-muted)]">
@@ -197,9 +200,6 @@
                     <span class="text-sm text-[var(--text-muted)] font-black">DURACIÓN:</span>
                     <select id="headerTimePreset" onchange="applyQuickTimeMinutes(this.value)" class="bg-transparent text-lg font-black text-[#ff9f0a] focus:outline-none cursor-pointer">
                         <option value="3">3 MIN</option><option value="5" selected>5 MIN</option><option value="10">10 MIN</option><option value="15">15 MIN</option>
-                        <option value="20">20 MIN</option><option value="25">25 MIN</option><option value="30">30 MIN</option><option value="35">35 MIN</option>
-                        <option value="40">40 MIN</option><option value="45">45 MIN</option><option value="50">50 MIN</option><option value="55">55 MIN</option>
-                        <option value="60">60 MIN</option>
                     </select>
                     <div class="w-px h-5 bg-white/20 mx-1"></div>
                     <span class="text-sm text-[var(--text-muted)] font-black">VUELTAS:</span>
@@ -210,8 +210,7 @@
                 <div class="flex items-center gap-3 apple-box px-5 py-2.5">
                     <span class="text-sm text-[var(--text-muted)] font-black">CH:</span>
                     <select id="headerLanesSelect" onchange="setSystemTopology(parseInt(this.value), null)" class="bg-transparent text-lg font-black text-[#0a84ff] focus:outline-none cursor-pointer">
-                        <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
-                        <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                        <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option>
                     </select>
                     <div class="w-px h-5 bg-white/20 mx-1"></div>
                     <span class="text-sm text-[var(--text-muted)] font-black">SEC:</span>
@@ -232,7 +231,7 @@
                 </div>
                 <div class="text-right border-l border-white/10 pl-5">
                     <div id="masterClockLabel" class="text-base font-black text-[#ff9f0a] tracking-widest">CRONO MANGA</div>
-                    <div id="masterClock" class="text-5xl md:text-6xl font-mono-num font-black text-white tracking-tight leading-none">03:00.0</div>
+                    <div id="masterClock" class="text-5xl md:text-6xl font-mono-num font-black text-white tracking-tight leading-none">05:00.0</div>
                 </div>
             </div>
 
@@ -243,20 +242,11 @@
                 <button onclick="toggleAutoDemo()" id="btnAutoDemo" class="px-6 py-3.5 bg-[var(--bg-element)] hover:bg-[#bf5af2] hover:text-white text-[#e5b3ff] font-black text-lg rounded-full transition cursor-pointer">
                     🤖 AUTO-SIM
                 </button>
-                <button onclick="switchTab('mobile')" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[#0a84ff] text-[#0a84ff] hover:text-white font-black text-lg rounded-full transition cursor-pointer">
-                    📲 MÓVIL
-                </button>
-                <button onclick="announceFullStandingsWithHumor()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[#ff9f0a] text-[#ff9f0a] hover:text-black font-black text-lg rounded-full transition cursor-pointer">
-                    🎙️ PODIO
-                </button>
-                <button onclick="toggleVoiceSpotter()" id="btnVoice" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[var(--bg-hover)] text-white font-black text-lg rounded-full transition cursor-pointer">
-                    <span id="voiceIcon">🔊</span>
+                <button onclick="toggleFullScreenMode()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[#0a84ff] text-[#0a84ff] hover:text-white font-black text-lg rounded-full transition cursor-pointer" title="Pantalla Completa">
+                    ⛶
                 </button>
                 <button onclick="resetRaceSession()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[var(--bg-hover)] text-white font-black text-lg rounded-full transition cursor-pointer">
                     🔄
-                </button>
-                <button onclick="toggleFullScreenMode()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[#0a84ff] text-[#0a84ff] hover:text-white font-black text-lg rounded-full transition cursor-pointer" title="Pantalla Completa">
-                    ⛶
                 </button>
             </div>
         </div>
@@ -265,23 +255,14 @@
     <!-- NAVEGACIÓN DE PESTAÑAS (Estilo Apple Segmented Control) -->
     <nav class="flex items-center justify-between gap-4 mb-4 shrink-0 px-2">
         <div class="segmented-control p-2 gap-2 border border-white/10 overflow-x-auto">
-            <button onclick="switchTab('live')" id="tabBtn-live" class="px-6 py-3 rounded-full text-base font-black bg-[var(--bg-hover)] text-white shadow-md transition cursor-pointer shrink-0">
+            <button class="px-6 py-3 rounded-full text-base font-black bg-[var(--bg-hover)] text-white shadow-md transition cursor-pointer shrink-0">
                 🏁 PARRILLA EN VIVO
             </button>
-            <button onclick="switchTab('sectors')" id="tabBtn-sectors" class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
+            <button class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
                 🟣 MICRO-SECTORES F1
             </button>
-            <button onclick="switchTab('analytics')" id="tabBtn-analytics" class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
+            <button class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
                 📊 ESTADÍSTICAS
-            </button>
-            <button onclick="switchTab('rotation')" id="tabBtn-rotation" class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
-                👥 PILOTOS & CLUBS
-            </button>
-            <button onclick="switchTab('mobile')" id="tabBtn-mobile" class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
-                📲 TIEMPOS MÓVIL
-            </button>
-            <button onclick="switchTab('config')" id="tabBtn-config" class="px-6 py-3 rounded-full text-base font-black text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-element)] transition cursor-pointer shrink-0">
-                ⚙️ AJUSTES
             </button>
         </div>
     </nav>
@@ -298,21 +279,16 @@
             <!-- Radar GPS -->
             <div class="glass-panel p-5 flex flex-col justify-between shrink-0">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-black text-[#0a84ff]" id="mapTopologyLabel">TOPOLOGÍA</span>
-                    <span class="text-xs font-black text-[#bf5af2]" id="overallPurpleLap">LAP: --.---</span>
+                    <span class="text-xs font-black text-[#0a84ff]">TOPOLOGÍA</span>
+                    <span class="text-xs font-black text-[#bf5af2]">LAP: --.---</span>
                 </div>
                 <div class="apple-box p-3 mb-4">
                     <svg viewBox="0 0 320 135" class="w-full h-32">
-                        <path id="radarTrackAsphalt" d="M 60 98 L 250 98 C 295 98 295 34 250 34 L 180 34 C 155 34 145 62 120 62 L 60 62 C 25 62 25 98 60 98 Z" fill="none" stroke="#2c2c2e" stroke-width="22" stroke-linejoin="round"/>
+                        <path d="M 60 98 L 250 98 C 295 98 295 34 250 34 L 180 34 C 155 34 145 62 120 62 L 60 62 C 25 62 25 98 60 98 Z" fill="none" stroke="#2c2c2e" stroke-width="22" stroke-linejoin="round"/>
                         <path id="radarTrackPath" d="M 60 98 L 250 98 C 295 98 295 34 250 34 L 180 34 C 155 34 145 62 120 62 L 60 62 C 25 62 25 98 60 98 Z" fill="none" stroke="transparent" stroke-width="1"/>
-                        <g id="virtualTrackLanesGroup"></g>
-                        <g id="svgGateMeta"><line x1="165" y1="80" x2="165" y2="116" stroke="#30d158" stroke-width="4"/><text x="165" y="129" text-anchor="middle" fill="#30d158" font-size="10" font-weight="bold">META</text></g>
-                        <g id="svgGateS1"><line x1="240" y1="16" x2="240" y2="52" stroke="#bf5af2" stroke-width="4"/><text x="240" y="12" text-anchor="middle" fill="#e5b3ff" font-size="10" font-weight="bold">S1</text></g>
-                        <g id="svgGateS2"><line x1="90" y1="44" x2="90" y2="80" stroke="#ff9f0a" stroke-width="4"/><text x="90" y="40" text-anchor="middle" fill="#ffd60a" font-size="10" font-weight="bold">S2</text></g>
                         <g id="gpsCarsLayer"></g>
                     </svg>
                 </div>
-                <div id="purpleSectorsSummary" class="grid grid-cols-3 gap-2 text-center font-mono-num text-xs"></div>
             </div>
 
             <!-- Feed de Tiempos -->
@@ -327,40 +303,25 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-[var(--text-muted)] font-black shrink-0">
-                    <span id="spotterMessage" class="truncate text-[#0a84ff]">SPOTTER IA EN ESPERA...</span>
-                </div>
             </div>
         </div>
     </section>
-
-    <!-- (Las otras vistas se mantienen funcionales pero ocultas, código simplificado por espacio para enfocar en la principal) -->
-    <section id="view-sectors" class="hidden flex-1 min-h-0 flex flex-col glass-panel p-6 overflow-hidden">
-        <h2 class="text-lg font-black text-[#bf5af2] mb-4">🟣 MICRO-SECTORES F1 Y VUELTA ÓPTIMA</h2>
-        <div class="overflow-y-auto flex-1 min-h-0 apple-box p-2">
-            <table class="w-full text-left font-mono-num text-sm"><tbody id="sectorAnalysisTableBody" class="divide-y divide-white/5"></tbody></table>
-        </div>
-    </section>
-    <section id="view-analytics" class="hidden flex-1 min-h-0 glass-panel p-6"></section>
-    <section id="view-rotation" class="hidden flex-1 min-h-0 glass-panel p-6"></section>
-    <section id="view-mobile" class="hidden flex-1 min-h-0 glass-panel p-6"></section>
-    <section id="view-config" class="hidden flex-1 min-h-0 glass-panel p-6"></section>
 
     <script>
         let countdownTimeouts = [];
         let audioCtx = null;
 
         const LANE_PALETTE = {
-            1:  { hex: '#ff453a', border: 'border-l-[#ff453a]' },
-            2:  { hex: '#f5f5f7', border: 'border-l-[#f5f5f7]' },
-            3:  { hex: '#30d158', border: 'border-l-[#30d158]' },
-            4:  { hex: '#ff9f0a', border: 'border-l-[#ff9f0a]' },
-            5:  { hex: '#0a84ff', border: 'border-l-[#0a84ff]' },
-            6:  { hex: '#ffd60a', border: 'border-l-[#ffd60a]' },
-            7:  { hex: '#bf5af2', border: 'border-l-[#bf5af2]' },
-            8:  { hex: '#8e8e93', border: 'border-l-[#8e8e93]' },
-            9:  { hex: '#ff375f', border: 'border-l-[#ff375f]' },
-            10: { hex: '#64d2ff', border: 'border-l-[#64d2ff]' }
+            1:  { hex: '#ff453a' },
+            2:  { hex: '#f5f5f7' },
+            3:  { hex: '#30d158' },
+            4:  { hex: '#ff9f0a' },
+            5:  { hex: '#0a84ff' },
+            6:  { hex: '#ffd60a' },
+            7:  { hex: '#bf5af2' },
+            8:  { hex: '#8e8e93' },
+            9:  { hex: '#ff375f' },
+            10: { hex: '#64d2ff' }
         };
 
         const appState = {
@@ -372,9 +333,10 @@
         function initAllLanesData() {
             for (let i = 1; i <= 10; i++) {
                 appState.lanes[i] = {
-                    id: i, name: `PILOTO ${i}`, club: 'CLUB', laps: 0, lastLap: 0, bestLap: Infinity, history: [],
-                    nextExpectedSector: 1, currentLapSectors: { 1: null, 2: null, 3: null }, lastSectors: { 1: null, 2: null, 3: null },
-                    prevSectors: { 1: null, 2: null, 3: null }, bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity }, sectorColors: { 1: '', 2: '', 3: '' }, lastLapPassTime: 0
+                    id: i, name: `PILOTO ${i}`, laps: 0, lastLap: 0, bestLap: Infinity, history: [],
+                    lastSectors: { 1: null, 2: null, 3: null },
+                    prevSectors: { 1: null, 2: null, 3: null }, bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity }, 
+                    sectorColors: { 1: '', 2: '', 3: '' }, lastLapPassTime: 0
                 };
             }
         }
@@ -389,16 +351,20 @@
         function speakSpotter(text, priority = false) {
             if (!('speechSynthesis' in window)) return;
             if(priority) window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text); u.lang = 'es-ES'; u.rate = 1.15; u.pitch = 0.85; window.speechSynthesis.speak(u);
+            const u = new SpeechSynthesisUtterance(text); u.lang = 'es-ES'; u.rate = 1.1; u.pitch = 0.8; window.speechSynthesis.speak(u);
         }
 
         function setRaceFormat(format) { appState.raceFormat = format; renderMasterClock(); }
         function applyQuickTimeMinutes(m) { appState.heatTotalSeconds = m*60; appState.remainingSeconds = m*60; renderMasterClock(); }
         function applyQuickTargetLaps(l) { appState.targetLaps = l; renderMasterClock(); }
+        function setSessionType(t) {} 
 
         function setSystemTopology(newLanes, newSectors) {
             if (newLanes) appState.activeLanes = newLanes; if (newSectors) appState.numSectors = newSectors;
             renderLanesGrid(); renderRadarGPSCars();
+            document.getElementById('btnSec-1').className = `px-3 py-1 text-sm font-black rounded-full transition ${appState.numSectors === 1 ? 'bg-[#30d158] text-black shadow-md' : 'text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'}`;
+            document.getElementById('btnSec-2').className = `px-3 py-1 text-sm font-black rounded-full transition ${appState.numSectors === 2 ? 'bg-[#30d158] text-black shadow-md' : 'text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'}`;
+            document.getElementById('btnSec-3').className = `px-3 py-1 text-sm font-black rounded-full transition ${appState.numSectors === 3 ? 'bg-[#30d158] text-black shadow-md' : 'text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'}`;
         }
         
         function getDriverMeanLap(lane) {
@@ -413,15 +379,13 @@
             
             if (n === 1) container.className = 'col-span-12 md:col-span-9 grid grid-cols-1 gap-6 h-full min-h-0';
             else if (n === 2) container.className = 'col-span-12 md:col-span-9 grid grid-cols-2 gap-6 h-full min-h-0';
-            else if (n === 3) container.className = 'col-span-12 md:col-span-9 grid grid-cols-3 gap-5 h-full min-h-0';
-            else if (n === 4) container.className = 'col-span-12 md:col-span-9 grid grid-cols-2 grid-rows-2 gap-5 h-full min-h-0';
-            else if (n <= 6) container.className = 'col-span-12 md:col-span-9 grid grid-cols-3 grid-rows-2 gap-4 h-full min-h-0';
-            else if (n <= 8) container.className = 'col-span-12 md:col-span-9 grid grid-cols-4 grid-rows-2 gap-4 h-full min-h-0';
-            else container.className = 'col-span-12 md:col-span-9 grid grid-cols-5 grid-rows-2 gap-3 h-full min-h-0';
+            else if (n <= 4) container.className = 'col-span-12 md:col-span-9 grid grid-cols-2 grid-rows-2 gap-5 h-full min-h-0';
+            else container.className = 'col-span-12 md:col-span-9 grid grid-cols-3 grid-rows-2 gap-4 h-full min-h-0';
 
             let html = '';
             for (let i = 1; i <= n; i++) {
                 const lane = appState.lanes[i], pal = LANE_PALETTE[i];
+                
                 let historyHtml = '';
                 for (let j = lane.history.length - 1; j >= 0; j--) {
                     const t = lane.history[j];
@@ -433,7 +397,7 @@
                         else if (t > prev) trend = '<span class="text-[#ff453a] text-sm ml-2">▲</span>';
                         else trend = '<span class="text-[var(--text-muted)] text-sm ml-2">-</span>';
                     }
-                    historyHtml += `<div class="flex justify-between items-center text-xl md:text-2xl font-mono-num border-b border-white/10 py-3 shrink-0"><span class="text-[var(--text-muted)] font-bold">V${j + 1}</span><div class="flex items-center"><span class="${isBest ? 'text-[#30d158] font-black' : 'text-white font-black'}">${t.toFixed(3)}</span>${trend}</div></div>`;
+                    historyHtml += `<div class="flex justify-between items-center text-lg md:text-xl font-mono-num border-b border-white/10 py-2 shrink-0"><span class="text-[var(--text-muted)] font-bold">V${j + 1}</span><div class="flex items-center"><span class="${isBest ? 'text-[#30d158] font-black' : 'text-white font-semibold'}">${t.toFixed(3)}</span>${trend}</div></div>`;
                 }
 
                 let sectorsHtml = '';
@@ -457,11 +421,12 @@
                     const tr2 = getSecTrend(lane.lastSectors[2], lane.prevSectors[2]);
                     const tr3 = getSecTrend(lane.lastSectors[3], lane.prevSectors[3]);
 
-                    sectorsHtml = `<div class="grid grid-cols-${sCount} gap-2 mt-auto pt-4 border-t border-white/10 shrink-0">
-                        <div class="text-center bg-[var(--bg-element)] rounded-xl p-2"><div class="text-sm text-[var(--text-muted)] font-black">S1</div><div id="secVal-${i}-1" class="flex justify-center items-center text-2xl md:text-3xl font-mono-num font-black ${c1}">${s1Val}${tr1}</div></div>
-                        <div class="text-center bg-[var(--bg-element)] rounded-xl p-2"><div class="text-sm text-[var(--text-muted)] font-black">S2</div><div id="secVal-${i}-2" class="flex justify-center items-center text-2xl md:text-3xl font-mono-num font-black ${c2}">${s2Val}${tr2}</div></div>
-                        ${sCount === 3 ? `<div class="text-center bg-[var(--bg-element)] rounded-xl p-2"><div class="text-sm text-[var(--text-muted)] font-black">META</div><div id="secVal-${i}-3" class="flex justify-center items-center text-2xl md:text-3xl font-mono-num font-black ${c3}">${s3Val}${tr3}</div></div>` : ''}
-                    </div>`;
+                    sectorsHtml = `
+                        <div class="grid grid-cols-${sCount} gap-2 mt-auto pt-3 border-t border-white/10 shrink-0">
+                            <div class="text-center bg-[var(--bg-element)] rounded-lg p-2"><div class="text-xs text-[var(--text-muted)] font-bold">S1</div><div id="secVal-${i}-1" class="flex justify-center items-center text-xl md:text-2xl font-mono-num font-black ${c1}">${s1Val}${tr1}</div></div>
+                            <div class="text-center bg-[var(--bg-element)] rounded-lg p-2"><div class="text-xs text-[var(--text-muted)] font-bold">${sCount === 2 ? 'META' : 'S2'}</div><div id="secVal-${i}-2" class="flex justify-center items-center text-xl md:text-2xl font-mono-num font-black ${c2}">${s2Val}${tr2}</div></div>
+                            ${sCount === 3 ? `<div class="text-center bg-[var(--bg-element)] rounded-lg p-2"><div class="text-xs text-[var(--text-muted)] font-bold">META</div><div id="secVal-${i}-3" class="flex justify-center items-center text-xl md:text-2xl font-mono-num font-black ${c3}">${s3Val}${tr3}</div></div>` : ''}
+                        </div>`;
                 }
 
                 html += `
@@ -472,13 +437,13 @@
                             <input type="text" value="${lane.name}" class="bg-transparent text-white font-black text-3xl md:text-4xl tracking-tight truncate leading-none focus:outline-none"/>
                         </div>
                         <div class="text-right shrink-0 flex flex-col items-end">
-                            <div id="laps-${i}" class="text-[6rem] font-mono-num font-black text-white leading-none tracking-tighter">${lane.laps}</div>
-                            <div class="text-lg text-[#30d158] font-black mt-1 uppercase">VUELTAS</div>
+                            <div id="laps-${i}" class="text-7xl md:text-[5.5rem] font-mono-num font-black text-white leading-none tracking-tighter">${lane.laps}</div>
+                            <div class="text-lg text-[#30d158] font-black mt-2 uppercase">VUELTAS</div>
                         </div>
                     </div>
                     <div class="flex justify-between items-end mb-4 shrink-0 border-b border-white/10 pb-4">
-                        <div><div class="text-base text-[var(--text-muted)] font-black mb-1">VUELTA MEDIA</div><div id="meanLap-${i}" class="text-5xl font-mono-num font-black text-white leading-none tracking-tighter">${getDriverMeanLap(lane) > 0 ? getDriverMeanLap(lane).toFixed(3) : '0.000'}</div></div>
-                        <div class="text-right"><div class="text-base text-[var(--text-muted)] font-black mb-1">RÉCORD</div><div id="bestLap-${i}" class="text-5xl font-mono-num font-black text-[#30d158] leading-none tracking-tighter">${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}</div></div>
+                        <div><div class="text-base text-[var(--text-muted)] font-black mb-1">VUELTA MEDIA</div><div id="meanLap-${i}" class="text-4xl md:text-5xl font-mono-num font-black text-white leading-none tracking-tighter">${getDriverMeanLap(lane) > 0 ? getDriverMeanLap(lane).toFixed(3) : '0.000'}</div></div>
+                        <div class="text-right"><div class="text-base text-[var(--text-muted)] font-black mb-1">RÉCORD</div><div id="bestLap-${i}" class="text-4xl md:text-5xl font-mono-num font-black text-[#30d158] leading-none tracking-tighter">${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}</div></div>
                     </div>
                     <div class="flex-1 min-h-0 overflow-y-auto pr-3 flex flex-col" id="lapHistory-${i}">${historyHtml}</div>
                     ${sectorsHtml}
@@ -491,9 +456,9 @@
             const lane = appState.lanes[laneId];
             if (appState.raceStatus === 'COUNTDOWN') { speakSpotter(`Salida falsa carril ${laneId}`); lane.laps = Math.max(-1, lane.laps - 1); return renderLanesGrid(); }
             if (appState.raceStatus === 'STANDBY') { appState.raceStatus = 'RACING'; document.body.classList.add('race-mode-active'); startMasterClock(); }
-            if (appState.raceStatus === 'TRACK_CALL') return;
+            if (appState.raceStatus === 'TRACK_CALL') return; // Bloquear lectura en pausa
 
-            const lapSec = 3.5 + Math.random();
+            const lapSec = 3.5 + Math.random(); // Simulación
             lane.laps++; lane.lastLap = lapSec; lane.history.push(lapSec); lane.lastLapPassTime = performance.now();
             
             if (lapSec < appState.overallBestLap) { appState.overallBestLap = lapSec; lane.bestLap = lapSec; playTone(1318.5, 180, 'triangle', 0.22); }
@@ -501,9 +466,8 @@
             
             for(let s=1; s<=appState.numSectors; s++) {
                 lane.prevSectors[s] = lane.lastSectors[s];
-                // Generar variaciones de micro-sectores para ver las flechas dinámicas
                 const baseSec = lapSec / appState.numSectors;
-                lane.lastSectors[s] = baseSec + (Math.random() * 0.04 - 0.02);
+                lane.lastSectors[s] = baseSec + (Math.random() * 0.04 - 0.02); // Simulación sectores
                 
                 if(lane.lastSectors[s] < lane.bestSectors[s]) {
                     lane.bestSectors[s] = lane.lastSectors[s];
@@ -523,7 +487,7 @@
                 if(el) {
                     const tr = (!lane.prevSectors[s]) ? '' : (lane.lastSectors[s] < lane.prevSectors[s] ? '<span class="text-[#30d158] text-lg ml-1">▼</span>' : '<span class="text-[#ff453a] text-lg ml-1">▲</span>');
                     el.innerHTML = `${lane.lastSectors[s].toFixed(3)}${tr}`;
-                    el.className = `flex justify-center items-center text-2xl md:text-3xl font-mono-num font-black ${lane.sectorColors[s] === 'sector-purple' ? 'text-[#bf5af2]' : lane.sectorColors[s] === 'sector-green' ? 'text-[#30d158]' : 'text-white'}`;
+                    el.className = `flex justify-center items-center text-xl md:text-2xl font-mono-num font-black ${lane.sectorColors[s] === 'sector-purple' ? 'text-[#bf5af2]' : lane.sectorColors[s] === 'sector-green' ? 'text-[#30d158]' : 'text-white'}`;
                 }
             }
 
@@ -540,7 +504,7 @@
                         else if (t > prev) trend = '<span class="text-[#ff453a] text-sm ml-2">▲</span>';
                         else trend = '<span class="text-[var(--text-muted)] text-sm ml-2">-</span>';
                     }
-                    historyHtml += `<div class="flex justify-between items-center text-xl md:text-2xl font-mono-num border-b border-white/10 py-3 shrink-0"><span class="text-[var(--text-muted)] font-bold">V${j + 1}</span><div class="flex items-center"><span class="${isBest ? 'text-[#30d158] font-black' : 'text-white font-black'}">${t.toFixed(3)}</span>${trend}</div></div>`;
+                    historyHtml += `<div class="flex justify-between items-center text-lg md:text-xl font-mono-num border-b border-white/10 py-2 shrink-0"><span class="text-[var(--text-muted)] font-bold">V${j + 1}</span><div class="flex items-center"><span class="${isBest ? 'text-[#30d158] font-black' : 'text-white font-semibold'}">${t.toFixed(3)}</span>${trend}</div></div>`;
                 }
                 historyContainer.innerHTML = historyHtml;
             }
@@ -578,16 +542,21 @@
             for (let i = 1; i <= 5; i++) {
                 countdownTimeouts.push(setTimeout(() => { 
                     document.getElementById(`giantL${i}`).classList.add('red-on');
-                    const countDownNum = 6 - i; centerText.textContent = String(countDownNum);
-                    centerText.style.transform = 'scale(1.15)'; setTimeout(() => centerText.style.transform = 'scale(1)', 150);
-                    speakSpotter(numWords[countDownNum], true); playTone(440, 130, 'square', 0.2); 
+                    const countDownNum = 6 - i; // Cuenta inversa real (5, 4, 3, 2, 1)
+                    centerText.textContent = String(countDownNum);
+                    centerText.style.transform = 'scale(1.15)'; 
+                    setTimeout(() => centerText.style.transform = 'scale(1)', 150);
+                    speakSpotter(numWords[countDownNum], true); 
+                    playTone(440, 130, 'square', 0.2); 
                 }, i * 1000));
             }
 
             countdownTimeouts.push(setTimeout(() => {
                 for (let i=1; i<=5; i++) { document.getElementById(`giantL${i}`).classList.remove('red-on'); document.getElementById(`giantL${i}`).classList.add('green-on'); }
                 centerText.style.fontSize = window.innerWidth < 768 ? '80px' : '150px'; 
-                centerText.textContent = '¡SALIDA!'; centerText.style.transform = 'scale(1.1)'; setTimeout(() => centerText.style.transform = 'scale(1)', 150);
+                centerText.textContent = '¡SALIDA!'; 
+                centerText.style.transform = 'scale(1.1)'; 
+                setTimeout(() => centerText.style.transform = 'scale(1)', 150);
                 speakSpotter("¡Semáforo en verde, comienza la carrera!", true); playTone(1046.5, 450, 'sawtooth', 0.25);
                 appState.raceStatus = 'RACING'; startMasterClock();
                 if (appState.pendingAutoSim) { appState.autoDemoTimer = setInterval(() => triggerNextCheckpoint(1 + Math.floor(Math.random() * appState.activeLanes)), 500); appState.pendingAutoSim = false; }
@@ -599,9 +568,6 @@
             const btnFloat = document.getElementById('btnFloatingTrackCall');
             if (appState.raceStatus === 'RACING') { 
                 appState.raceStatus = 'TRACK_CALL'; 
-                // NOTA: NO quitamos la clase 'race-mode-active' para mantener la pantalla inmersiva y minimalista
-                document.getElementById('topRaceBar').classList.add('track-call-active'); 
-                
                 if (btnFloat) {
                     btnFloat.innerHTML = '🟢 REANUDAR';
                     btnFloat.className = 'px-8 py-4 bg-[#30d158] hover:bg-[#32d74b] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(48,209,88,0.5)] transition cursor-pointer animate-pulse';
@@ -609,9 +575,7 @@
                 speakSpotter("Track Call. Carrera pausada."); 
             } 
             else if (appState.raceStatus === 'TRACK_CALL') { 
-                document.getElementById('topRaceBar').classList.remove('track-call-active'); 
                 appState.raceStatus = 'RACING'; 
-                
                 if (btnFloat) {
                     btnFloat.innerHTML = '⚠️ TRACK CALL';
                     btnFloat.className = 'px-8 py-4 bg-[#ff9f0a] hover:bg-[#ffd60a] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(255,159,10,0.5)] transition cursor-pointer';
@@ -623,13 +587,13 @@
         function startMasterClock() {
             if (appState.clockInterval) clearInterval(appState.clockInterval);
             appState.clockInterval = setInterval(() => {
-                if (appState.raceStatus !== 'RACING') return;
+                if (appState.raceStatus !== 'RACING') return; // Si hay Track Call, el tiempo se detiene
                 if (appState.raceFormat === 'TIME') appState.remainingSeconds = Math.max(0, appState.remainingSeconds - 0.1);
                 renderMasterClock();
                 if (appState.raceFormat === 'TIME' && appState.remainingSeconds <= 0) { 
                     appState.raceStatus = 'FINISHED'; clearInterval(appState.clockInterval); 
                     if(appState.autoDemoTimer) clearInterval(appState.autoDemoTimer); 
-                    document.body.classList.remove('race-mode-active'); // Volver a menús al terminar
+                    document.body.classList.remove('race-mode-active'); 
                     speakSpotter("Final del tiempo. Carrera terminada.");
                 }
             }, 100);
@@ -668,8 +632,39 @@
             }
         }
 
+        function goHome() {
+            // Detenemos la carrera y limpiamos temporizadores
+            appState.raceStatus = 'STANDBY';
+            clearInterval(appState.clockInterval);
+            if (appState.autoDemoTimer) { 
+                clearInterval(appState.autoDemoTimer); 
+                appState.autoDemoTimer = null; 
+                appState.pendingAutoSim = false; 
+            }
+            countdownTimeouts.forEach(t => clearTimeout(t)); 
+            countdownTimeouts = [];
+            
+            // Quitamos el modo minimalista y ocultamos el semáforo por si estaba en pantalla
+            document.body.classList.remove('race-mode-active');
+            const overlay = document.getElementById('centerF1Overlay');
+            if(overlay) {
+                overlay.classList.remove('flex');
+                overlay.classList.add('hidden');
+            }
+            
+            // Restablecer el botón de Track Call si estaba pausado
+            const btnFloat = document.getElementById('btnFloatingTrackCall');
+            if (btnFloat) {
+                btnFloat.innerHTML = '⚠️ TRACK CALL';
+                btnFloat.className = 'px-8 py-4 bg-[#ff9f0a] hover:bg-[#ffd60a] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(255,159,10,0.5)] transition cursor-pointer';
+            }
+
+            speakSpotter("Volviendo a la página principal.");
+        }
+        
+        function resetRaceSession() { location.reload(); }
+
         window.onload = function() { initAllLanesData(); setSystemTopology(2, 3); setRaceFormat('TIME'); animateRadarGPS(); };
-        function switchTab(t) {} function promptCustomTitle() {} function setSessionType(t) {} function announceFullStandingsWithHumor() {} function resetRaceSession() { location.reload(); }
     </script>
 </body>
 </html>
