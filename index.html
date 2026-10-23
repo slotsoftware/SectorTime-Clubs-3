@@ -255,6 +255,9 @@
                 <button onclick="resetRaceSession()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[var(--bg-hover)] text-white font-black text-lg rounded-full transition cursor-pointer">
                     🔄
                 </button>
+                <button onclick="toggleFullScreenMode()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[#0a84ff] text-[#0a84ff] hover:text-white font-black text-lg rounded-full transition cursor-pointer" title="Pantalla Completa">
+                    ⛶
+                </button>
             </div>
         </div>
     </header>
@@ -655,6 +658,14 @@
                 const c = document.getElementById(`gpsCar-${i}`); if(c) { c.setAttribute('cx', cx); c.setAttribute('cy', cy); }
             }
             requestAnimationFrame(animateRadarGPS);
+        }
+
+        function toggleFullScreenMode() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
         }
 
         window.onload = function() { initAllLanesData(); setSystemTopology(2, 3); setRaceFormat('TIME'); animateRadarGPS(); };
