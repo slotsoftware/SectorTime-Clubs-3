@@ -6,31 +6,42 @@
     <title>KRONOS SLOT PRO OS v7.0 // Multi-Language Race Director</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg-black: #1c1c1e;
-            --bg-panel: rgba(44, 44, 46, 0.75); 
-            --bg-element: rgba(99, 99, 102, 0.4);
-            --bg-hover: rgba(120, 120, 125, 0.8);
-            --text-main: #ffffff;
-            --text-muted: #98989d;
-            --apple-blue: #0a84ff;
-            --apple-green: #30d158;
-            --apple-red: #ff453a;
-            --apple-orange: #ff9f0a;
-            --apple-yellow: #ffd60a;
-            --apple-purple: #bf5af2;
+            /* Paleta Apple Space Gray, Silver & Neon Accents */
+            --bg-canvas: #0b0c10;
+            --bg-titanium: rgba(28, 30, 36, 0.78);
+            --bg-silver-card: linear-gradient(145deg, rgba(46, 49, 58, 0.72) 0%, rgba(24, 26, 32, 0.88) 100%);
+            --bg-pill: rgba(255, 255, 255, 0.06);
+            --bg-pill-hover: rgba(255, 255, 255, 0.12);
+            --border-silver: rgba(226, 232, 240, 0.14);
+            --border-highlight: rgba(255, 255, 255, 0.24);
+            
+            --text-silver: #f8fafc;
+            --text-titanium: #94a3b8;
+            --text-muted: #64748b;
+
+            --neon-blue: #0a84ff;
+            --neon-cyan: #5ac8fa;
+            --neon-green: #30d158;
+            --neon-red: #ff453a;
+            --neon-amber: #ff9f0a;
+            --neon-purple: #bf5af2;
         }
 
         body {
-            background-color: var(--bg-black);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-canvas);
+            background-image: 
+                radial-gradient(circle at 12% 15%, rgba(10, 132, 255, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 88% 12%, rgba(48, 209, 88, 0.08) 0%, transparent 35%),
+                radial-gradient(circle at 50% 90%, rgba(148, 163, 184, 0.06) 0%, transparent 50%);
+            color: var(--text-silver);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             overflow-x: hidden;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            text-transform: uppercase; 
+            letter-spacing: -0.015em;
         }
 
         .font-mono-num {
@@ -38,82 +49,139 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .glass-panel {
-            background: var(--bg-panel);
-            backdrop-filter: saturate(180%) blur(24px);
-            -webkit-backdrop-filter: saturate(180%) blur(24px);
+        .mac-window {
+            background: var(--bg-silver-card);
+            backdrop-filter: saturate(190%) blur(28px);
+            -webkit-backdrop-filter: saturate(190%) blur(28px);
+            border: 1px solid var(--border-silver);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.16);
+            border-radius: 22px;
+        }
+
+        .mac-group-box {
+            background: rgba(15, 17, 23, 0.55);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
         }
 
-        .apple-box {
-            background: rgba(28, 28, 30, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+        .mac-control-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .mac-control-pill:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.22);
         }
 
-        .sector-purple { color: #bf5af2 !important; }
-        .sector-green { color: #30d158 !important; }
+        .apple-segmented {
+            background: rgba(10, 12, 16, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 3px;
+            display: inline-flex;
+            gap: 3px;
+        }
+
+        .btn-neon-blue {
+            background: linear-gradient(180deg, #2294ff 0%, #0070e0 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        .btn-neon-blue:hover {
+            background: linear-gradient(180deg, #3da0ff 0%, #0a84ff 100%);
+            box-shadow: 0 0 28px rgba(10, 132, 255, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-neon-green {
+            background: linear-gradient(180deg, #34d85e 0%, #1ea842 100%);
+            color: #041f0b;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 22px rgba(48, 209, 88, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+        .btn-neon-green:hover {
+            background: linear-gradient(180deg, #4ce373 0%, #28bd4f 100%);
+            box-shadow: 0 0 30px rgba(48, 209, 88, 0.75);
+        }
+
+        .btn-neon-red {
+            background: linear-gradient(180deg, #ff5b52 0%, #d92b21 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 0 20px rgba(255, 69, 58, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-silver {
+            background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%);
+            color: var(--text-silver);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+        .btn-silver:hover {
+            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.09) 100%);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .group-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--text-titanium);
+            text-transform: uppercase;
+        }
+
+        .sector-purple { color: #d982ff !important; text-shadow: 0 0 12px rgba(191, 90, 242, 0.55); }
+        .sector-green { color: #30d158 !important; text-shadow: 0 0 12px rgba(48, 209, 88, 0.55); }
         .sector-yellow { color: #ffd60a !important; }
 
         .f1-light {
-            width: 24px; height: 24px; border-radius: 50%;
-            background: #1c1c1e; border: 1px solid #3a3a3c; transition: all 0.1s ease;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #121318; border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+            transition: all 0.12s ease;
         }
-        .f1-light.red-on { background: var(--apple-red); border-color: #ff6961; box-shadow: 0 0 15px var(--apple-red); }
-        .f1-light.green-on { background: var(--apple-green); border-color: #32d74b; box-shadow: 0 0 15px var(--apple-green); }
+        .f1-light.red-on { background: var(--neon-red); border-color: #ff8a84; box-shadow: 0 0 16px var(--neon-red), inset 0 0 6px #fff; }
+        .f1-light.green-on { background: var(--neon-green); border-color: #82f79d; box-shadow: 0 0 16px var(--neon-green), inset 0 0 6px #fff; }
 
         .f1-light-giant {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #3a3a3c, #000);
-            border: 8px solid #111;
-            box-shadow: 0 0 0 4px #2c2c2e, inset 0 8px 20px rgba(0,0,0,0.9);
+            width: 110px; height: 110px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #2a2d35, #090a0d);
+            border: 6px solid #181a20;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.1), inset 0 8px 20px rgba(0,0,0,0.9);
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
-        .f1-light-giant::after {
-            content: ''; position: absolute;
-            top: 8%; left: 15%; width: 40%; height: 30%;
-            background: rgba(255,255,255,0.08);
-            border-radius: 50%; transform: rotate(-30deg);
-        }
         @media (min-width: 768px) {
-            .f1-light-giant {
-                width: 180px;
-                height: 180px;
-                border: 12px solid #111;
-                box-shadow: 0 0 0 6px #2c2c2e, inset 0 12px 30px rgba(0,0,0,0.9);
-            }
+            .f1-light-giant { width: 165px; height: 165px; border-width: 10px; }
         }
         .f1-light-giant.red-on { 
-            background: radial-gradient(circle at 40% 40%, #ff6961, #990000); 
-            border-color: #330000; 
-            box-shadow: 0 0 0 4px #2c2c2e, 0 0 120px 30px rgba(255,69,58,0.7), inset 0 0 60px #ff453a; 
+            background: radial-gradient(circle at 40% 40%, #ff7b73, #b30000); 
+            border-color: #450a0a; 
+            box-shadow: 0 0 90px 25px rgba(255,69,58,0.75), inset 0 0 40px #ff453a; 
         }
         .f1-light-giant.green-on { 
-            background: radial-gradient(circle at 40% 40%, #32d74b, #005500); 
-            border-color: #003300; 
-            box-shadow: 0 0 0 4px #2c2c2e, 0 0 120px 30px rgba(48,209,88,0.7), inset 0 0 60px #30d158; 
+            background: radial-gradient(circle at 40% 40%, #68f789, #00661a); 
+            border-color: #052e16; 
+            box-shadow: 0 0 90px 25px rgba(48,209,88,0.75), inset 0 0 40px #30d158; 
         }
 
         @keyframes trackCallPulse {
-            0%, 100% { box-shadow: 0 0 50px rgba(48, 209, 88, 0.8); }
-            50% { box-shadow: 0 0 10px rgba(48, 209, 88, 0.3); }
+            0%, 100% { box-shadow: 0 0 35px rgba(48, 209, 88, 0.85); }
+            50% { box-shadow: 0 0 10px rgba(48, 209, 88, 0.25); }
         }
-        .track-call-active-btn { animation: trackCallPulse 1s infinite; }
+        .track-call-active-btn { animation: trackCallPulse 1.2s infinite; }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #48484a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #636366; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
 
-        .segmented-control { background: rgba(28, 28, 30, 0.8); border-radius: 99px; padding: 4px; display: inline-flex; }
-
-        body.race-mode-active #topRaceBar,
-        body.race-mode-active nav,
+        body.race-mode-active #topSystemBar,
+        body.race-mode-active #controlDeckBar,
         body.race-mode-active .hide-in-race {
             display: none !important;
         }
@@ -124,28 +192,29 @@
             display: flex !important;
         }
         
-        .arrow-up { color: var(--apple-red); }
-        .arrow-down { color: var(--apple-green); }
+        .arrow-up { color: var(--neon-red); }
+        .arrow-down { color: var(--neon-green); }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2 md:px-4 md:py-3">
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2.5 md:px-5 md:py-3.5 gap-3">
 
-    <!-- FLOATING RACE UI -->
-    <div id="floatingRaceUI" class="fixed top-6 right-6 z-50 hidden items-center gap-4 opacity-75 hover:opacity-100 transition-opacity bg-[var(--bg-panel)] backdrop-blur-xl p-3 rounded-full border border-white/10 shadow-2xl">
-        <button onclick="goHome()" data-i18n="home" class="px-6 py-4 bg-[var(--bg-element)] hover:bg-[#ff453a] hover:text-white text-white font-black text-xl rounded-full transition cursor-pointer shadow-lg">
+    <!-- FLOATING HUD EN MODO CARRERA ACTIVA -->
+    <div id="floatingRaceUI" class="fixed top-4 right-5 z-50 hidden items-center gap-3 bg-[#12141a]/90 backdrop-blur-2xl px-4 py-2.5 rounded-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+        <button onclick="goHome()" data-i18n="home" class="px-4 py-2.5 btn-silver hover:bg-[#ff453a] hover:border-[#ff453a] text-white font-bold text-sm rounded-xl transition cursor-pointer">
             🏠 INICIO
         </button>
-        <div id="floatingMasterClock" class="font-mono-num font-black text-white px-3 text-3xl md:text-5xl tracking-widest">00:00</div>
-        <button id="btnFloatingTrackCall" onclick="toggleTrackCall()" data-i18n="track_call" class="px-8 py-4 bg-[#ff9f0a] hover:bg-[#ffd60a] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(255,159,10,0.5)] transition cursor-pointer">
+        <div class="h-7 w-[1px] bg-white/15"></div>
+        <div id="floatingMasterClock" class="font-mono-num font-black text-[#5ac8fa] px-2 text-2xl md:text-4xl tracking-tight drop-shadow-[0_0_12px_rgba(10,132,255,0.5)]">05:00.0</div>
+        <div class="h-7 w-[1px] bg-white/15"></div>
+        <button id="btnFloatingTrackCall" onclick="toggleTrackCall()" data-i18n="track_call" class="px-5 py-2.5 btn-neon-red font-extrabold text-sm rounded-xl transition cursor-pointer">
             ⚠️ TRACK CALL
         </button>
     </div>
 
-    <!-- OVERLAY SEMÁFORO -->
-    <div id="centerF1Overlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl hidden flex-col items-center justify-center overflow-hidden">
-        <div class="text-[140px] md:text-[300px] font-black text-white mb-12 tracking-tighter uppercase transition-transform duration-100 italic" id="centerF1Text" style="line-height: 1; text-shadow: 0 10px 40px rgba(255,255,255,0.4), 0 0 100px rgba(255,255,255,0.2);"></div>
-        <div class="flex gap-6 md:gap-10 p-8 md:p-14 bg-gradient-to-b from-[#3a3a3c] to-[#1c1c1e] border-4 border-[#111] rounded-[120px] shadow-[0_40px_100px_rgba(0,0,0,1)] relative z-10">
-            <div class="absolute inset-0 bg-black/10 rounded-[120px]" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.3) 10px, rgba(0,0,0,0.3) 20px);"></div>
+    <!-- OVERLAY SEMÁFORO DE SALIDA F1 -->
+    <div id="centerF1Overlay" class="fixed inset-0 z-50 bg-[#07080c]/95 backdrop-blur-3xl hidden flex-col items-center justify-center overflow-hidden">
+        <div class="text-[120px] md:text-[250px] font-black text-white mb-10 tracking-tighter uppercase transition-transform duration-100" id="centerF1Text" style="line-height: 1; text-shadow: 0 0 60px rgba(10,132,255,0.6);"></div>
+        <div class="flex gap-5 md:gap-8 p-7 md:p-12 mac-window rounded-[80px] border-2 border-white/20 relative z-10">
             <div class="f1-light-giant z-10" id="giantL1"></div>
             <div class="f1-light-giant z-10" id="giantL2"></div>
             <div class="f1-light-giant z-10" id="giantL3"></div>
@@ -154,108 +223,171 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR -->
-    <header id="topRaceBar" class="glass-panel px-5 py-4 mb-4 flex flex-wrap items-center justify-between gap-4 shrink-0 transition-all">
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2">
-                <button id="btnSession-PRACTICE" data-i18n="practice" class="px-6 py-3 text-lg md:text-xl font-black rounded-full bg-[#30d158] text-black shadow-lg transition cursor-pointer">ENTRENOS LIBRES</button>
-                <button id="btnSession-CLUB" data-i18n="club" class="px-6 py-3 text-lg md:text-xl font-black rounded-full bg-[var(--bg-element)] text-[var(--text-muted)] hover:text-white transition cursor-pointer">CARRERA CLUB</button>
+    <!-- =====================================================================
+         NIVEL 1: BARRA DE SISTEMA MACOS
+         ===================================================================== -->
+    <header id="topSystemBar" class="mac-window px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0 z-30">
+        
+        <div class="flex items-center gap-3.5">
+            <div class="flex items-center gap-1.5 px-1">
+                <span class="w-3 h-3 rounded-full bg-[#ff453a] shadow-[0_0_8px_#ff453a]"></span>
+                <span class="w-3 h-3 rounded-full bg-[#ffd60a] shadow-[0_0_8px_#ffd60a]"></span>
+                <span class="w-3 h-3 rounded-full bg-[#30d158] shadow-[0_0_8px_#30d158]"></span>
             </div>
-            
-            <div class="segmented-control gap-1 shadow-md border border-white/10 p-1.5 w-max">
-                <button onclick="setRaceFormat('TIME')" id="btnMode-TIME" data-i18n="time_mode" class="px-6 py-2 text-lg md:text-xl font-black rounded-full bg-[#0a84ff] text-white shadow-sm cursor-pointer transition">⏱️ TIEMPO</button>
-                <button onclick="setRaceFormat('LAPS')" id="btnMode-LAPS" data-i18n="laps_mode" class="px-6 py-2 text-lg md:text-xl font-black rounded-full text-[var(--text-muted)] hover:text-white cursor-pointer transition">🏁 VUELTAS</button>
+            <div class="h-5 w-[1px] bg-white/15"></div>
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-[#0a84ff] to-[#5ac8fa] flex items-center justify-center font-black text-xs text-black shadow-[0_0_15px_rgba(10,132,255,0.5)]">K7</div>
+                <div>
+                    <h1 id="appMainTitle" data-i18n="title" class="text-sm md:text-base font-extrabold tracking-tight text-white leading-none">
+                        KRONOS PRO OS
+                    </h1>
+                    <span class="text-[10px] font-semibold text-[#94a3b8] tracking-widest block mt-0.5">RACE DIRECTOR STUDIO</span>
+                </div>
             </div>
+            <span id="raceStateBadge" data-i18n="standby" class="px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#0a84ff]/15 text-[#5ac8fa] border border-[#0a84ff]/40 shadow-[0_0_12px_rgba(10,132,255,0.2)]">
+                ESPERA
+            </span>
         </div>
 
-        <div class="flex flex-col items-center gap-3">
-            <div class="flex items-center gap-3">
-                <h1 id="appMainTitle" data-i18n="title" class="text-xl md:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                    GRAN PREMIO OFICIAL // KRONOS PRO
-                </h1>
-                <span id="raceStateBadge" data-i18n="standby" class="px-4 py-1.5 text-sm font-black rounded-full bg-[var(--bg-element)] text-[var(--text-muted)]">
-                    ESPERA
-                </span>
+        <nav class="apple-segmented overflow-x-auto max-w-full">
+            <button onclick="switchModuleTab('LIVE')" id="tab-LIVE" data-i18n="live_grid" class="px-4 py-1.5 rounded-[9px] text-xs font-bold btn-neon-blue transition cursor-pointer shrink-0">
+                🏁 PARRILLA EN VIVO
+            </button>
+            <button onclick="switchModuleTab('TELEMETRY')" id="tab-TELEMETRY" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                📊 TELEMETRÍA <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#5ac8fa]">PRO</span>
+            </button>
+            <button onclick="switchModuleTab('CHAMPIONSHIP')" id="tab-CHAMPIONSHIP" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                🏆 CAMPEONATO <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#94a3b8]">SOON</span>
+            </button>
+            <button onclick="switchModuleTab('GARAGE')" id="tab-GARAGE" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                🏎️ BOXES / COCHES <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#94a3b8]">SOON</span>
+            </button>
+            <button onclick="switchModuleTab('HARDWARE')" id="tab-HARDWARE" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
+                🔌 SENSORES / USB <span class="text-[9px] px-1.5 py-0.2 bg-[#30d158]/20 rounded text-[#30d158]">IO</span>
+            </button>
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <div class="relative mac-control-pill px-3 py-1.5 flex items-center" id="customLangDropdown">
+                <button type="button" onclick="toggleLangMenu(event)" class="flex items-center gap-2 text-xs font-bold text-white focus:outline-none cursor-pointer">
+                    <span id="currentLangFlag" class="w-5 h-3.5 flex items-center justify-center rounded-[3px] overflow-hidden border border-white/25"></span>
+                    <span id="currentLangLabel">Español (ES)</span>
+                    <span class="text-[10px] text-[#94a3b8]">▼</span>
+                </button>
+                <div id="langMenuPopup" class="hidden absolute top-full right-0 mt-2 w-48 mac-window p-1.5 z-50 flex-col gap-1 border border-white/20 shadow-2xl"></div>
             </div>
 
-            <div class="flex items-center justify-center flex-wrap gap-2">
-                <!-- IDIOMA CON BANDERAS SVG -->
-                <div class="relative apple-box px-3 py-2 flex items-center" id="customLangDropdown">
-                    <button type="button" onclick="toggleLangMenu(event)" class="flex items-center gap-2.5 text-lg font-black text-white focus:outline-none cursor-pointer">
-                        <span id="currentLangFlag" class="w-7 h-5 flex items-center justify-center rounded-[4px] overflow-hidden shadow-sm border border-white/20"></span>
-                        <span id="currentLangLabel">Español (ES)</span>
-                        <span class="text-xs text-[var(--text-muted)] ml-1">▼</span>
-                    </button>
-                    <div id="langMenuPopup" class="hidden absolute top-full left-0 mt-2 w-56 glass-panel p-2 z-50 flex-col gap-1 border border-white/15 shadow-2xl">
-                        <!-- Opciones generadas dinámicamente con SVG -->
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 apple-box px-3 py-2.5">
-                    <span class="text-sm text-[var(--text-muted)] font-black">CH:</span>
-                    <select id="headerLanesSelect" onchange="setSystemTopology(parseInt(this.value), null)" class="bg-transparent text-lg font-black text-[#0a84ff] focus:outline-none cursor-pointer">
-                        <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option>
-                        <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                        <option value="9">9</option><option value="10">10</option>
-                    </select>
-                </div>
-
-                <!-- VOZ (SOLO HOMBRE / MUJER POR IDIOMA) -->
-                <div class="flex items-center gap-2 apple-box px-3 py-2.5">
-                    <span class="text-sm text-[var(--text-muted)] font-black" data-i18n="voice_label">VOZ:</span>
-                    <select id="headerVoiceSelect" onchange="updateVoiceLabels()" class="bg-[#2c2c2e] text-lg font-black text-[#bf5af2] rounded-xl px-2 py-0.5 focus:outline-none cursor-pointer">
-                        <option value="MALE" id="optVoiceMale">👨 HOMBRE</option>
-                        <option value="FEMALE" id="optVoiceFemale">👩 MUJER</option>
-                    </select>
-                    <button onclick="testVoice()" data-i18n="test_btn" class="ml-1 px-3 py-1 bg-[var(--bg-element)] hover:bg-[#bf5af2] hover:text-white rounded-full text-sm font-black transition cursor-pointer">
-                        🔊 PROBAR
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col items-end gap-3">
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-1.5" id="f1Gantry">
-                    <div class="f1-light" id="f1L1"></div><div class="f1-light" id="f1L2"></div><div class="f1-light" id="f1L3"></div><div class="f1-light" id="f1L4"></div><div class="f1-light" id="f1L5"></div>
-                </div>
-                <div class="text-right border-l border-white/10 pl-5">
-                    <div id="masterClockLabel" data-i18n="track_time" class="text-base font-black text-[#ff9f0a] tracking-widest">CRONO MANGA</div>
-                    <div id="masterClock" class="text-5xl md:text-6xl font-mono-num font-black text-white tracking-tight leading-none">05:00.0</div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <button onclick="startF1Sequence()" data-i18n="f1_start" class="px-6 py-3.5 bg-[#30d158] hover:bg-[#32d74b] active:scale-95 text-black font-black text-lg rounded-full shadow-lg transition cursor-pointer">
-                    🚦 SALIDA F1
-                </button>
-                <button onclick="toggleAutoDemo()" id="btnAutoDemo" data-i18n="auto_sim" class="px-6 py-3.5 bg-[var(--bg-element)] hover:bg-[#bf5af2] hover:text-white text-[#e5b3ff] font-black text-lg rounded-full transition cursor-pointer">
-                    🤖 AUTO-SIM
-                </button>
-                <button onclick="toggleFullScreenMode()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[#0a84ff] text-[#0a84ff] hover:text-white font-black text-lg rounded-full transition cursor-pointer" title="Pantalla Completa">
-                    ⛶
-                </button>
-                <button onclick="resetRaceSession()" class="px-5 py-3.5 bg-[var(--bg-element)] hover:bg-[var(--bg-hover)] text-white font-black text-lg rounded-full transition cursor-pointer" title="Reiniciar">
-                    🔄
+            <div class="flex items-center gap-1.5 mac-control-pill px-2.5 py-1">
+                <span class="text-[10px] text-[#94a3b8] font-extrabold" data-i18n="voice_label">VOZ:</span>
+                <select id="headerVoiceSelect" onchange="onVoiceSelectionChange()" class="bg-transparent text-xs font-bold text-[#5ac8fa] focus:outline-none cursor-pointer max-w-[165px] truncate">
+                    <option value="AUTO_MALE" class="bg-[#161820] text-white">👨 HOMBRE</option>
+                    <option value="AUTO_FEMALE" class="bg-[#161820] text-white">👩 MUJER</option>
+                </select>
+                <button onclick="testVoice()" data-i18n="test_btn" class="px-2 py-0.5 bg-[#0a84ff]/20 hover:bg-[#0a84ff] text-[#5ac8fa] hover:text-white border border-[#0a84ff]/40 rounded-md text-[10px] font-extrabold transition cursor-pointer">
+                    🔊 TEST
                 </button>
             </div>
+
+            <button onclick="toggleFullScreenMode()" class="p-2 mac-control-pill text-[#5ac8fa] hover:text-white text-xs font-bold cursor-pointer" title="Pantalla Completa">
+                ⛶
+            </button>
+            <button onclick="resetRaceSession()" class="p-2 mac-control-pill text-[#ff453a] hover:bg-[#ff453a]/20 text-xs font-bold cursor-pointer" title="Reiniciar Sesión">
+                🔄
+            </button>
         </div>
     </header>
 
-    <nav class="flex items-center justify-between gap-4 mb-4 shrink-0 px-2">
-        <div class="segmented-control p-2 gap-2 border border-white/10 overflow-x-auto">
-            <button data-i18n="live_grid" class="px-6 py-3 rounded-full text-base font-black bg-[var(--bg-hover)] text-white shadow-md transition cursor-pointer shrink-0">
-                🏁 PARRILLA EN VIVO
+    <!-- =====================================================================
+         NIVEL 2: DOCK DE CONTROL DE DIRECCIÓN DE CARRERA
+         ===================================================================== -->
+    <section id="controlDeckBar" class="mac-window px-4 py-3 flex flex-wrap items-center justify-between gap-4 shrink-0 z-20">
+        
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="mac-group-box px-3 py-2 flex flex-col gap-1">
+                <span class="group-label">1. TIPO DE SESIÓN</span>
+                <div class="apple-segmented">
+                    <button onclick="setSessionType('PRACTICE')" id="btnSession-PRACTICE" data-i18n="practice" class="px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer">ENTRENOS LIBRES</button>
+                    <button onclick="setSessionType('CLUB')" id="btnSession-CLUB" data-i18n="club" class="px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer">CARRERA CLUB</button>
+                </div>
+            </div>
+
+            <div class="mac-group-box px-3 py-2 flex flex-col gap-1">
+                <span class="group-label">2. MODO DE CARRERA</span>
+                <div class="apple-segmented">
+                    <button onclick="setRaceFormat('TIME')" id="btnMode-TIME" data-i18n="time_mode" class="px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-blue cursor-pointer transition">⏱️ TIEMPO</button>
+                    <button onclick="setRaceFormat('LAPS')" id="btnMode-LAPS" data-i18n="laps_mode" class="px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white cursor-pointer transition">🏁 VUELTAS</button>
+                </div>
+            </div>
+
+            <div class="mac-group-box px-3.5 py-2 flex flex-col gap-1">
+                <span class="group-label">3. TOPOLOGÍA DE PISTA</span>
+                <div class="flex items-center gap-3 py-0.5">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#94a3b8]">CARRILES:</span>
+                        <select id="headerLanesSelect" onchange="setSystemTopology(parseInt(this.value), null)" class="bg-[#0a84ff]/15 border border-[#0a84ff]/40 rounded-lg px-2 py-0.5 text-xs font-black text-[#5ac8fa] focus:outline-none cursor-pointer">
+                            <option value="1" class="bg-[#12141a]">1</option><option value="2" selected class="bg-[#12141a]">2</option><option value="3" class="bg-[#12141a]">3</option><option value="4" class="bg-[#12141a]">4</option>
+                            <option value="5" class="bg-[#12141a]">5</option><option value="6" class="bg-[#12141a]">6</option><option value="7" class="bg-[#12141a]">7</option><option value="8" class="bg-[#12141a]">8</option>
+                            <option value="9" class="bg-[#12141a]">9</option><option value="10" class="bg-[#12141a]">10</option>
+                        </select>
+                    </div>
+                    <div class="h-4 w-[1px] bg-white/10"></div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#94a3b8]">SECTORES:</span>
+                        <select id="headerSectorsSelect" onchange="setSystemTopology(null, parseInt(this.value))" class="bg-white/5 border border-white/15 rounded-lg px-2 py-0.5 text-xs font-black text-white focus:outline-none cursor-pointer">
+                            <option value="1" class="bg-[#12141a]">1 (META)</option>
+                            <option value="2" class="bg-[#12141a]">2 SECTORES</option>
+                            <option value="3" selected class="bg-[#12141a]">3 SECTORES</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mac-group-box px-4 py-2 flex items-center gap-5 border border-white/10">
+            <div class="flex flex-col items-center gap-1.5">
+                <span class="group-label">SEMÁFORO FIA</span>
+                <div class="flex items-center gap-1.5 bg-black/50 px-3 py-1.5 rounded-full border border-white/10" id="f1Gantry">
+                    <div class="f1-light" id="f1L1"></div>
+                    <div class="f1-light" id="f1L2"></div>
+                    <div class="f1-light" id="f1L3"></div>
+                    <div class="f1-light" id="f1L4"></div>
+                    <div class="f1-light" id="f1L5"></div>
+                </div>
+            </div>
+            <div class="h-9 w-[1px] bg-white/10"></div>
+            <div class="text-right">
+                <div id="masterClockLabel" data-i18n="track_time" class="group-label text-[#5ac8fa]">CRONO MANGA</div>
+                <div id="masterClock" class="text-3xl md:text-4xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">05:00.0</div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+            <button onclick="startF1Sequence()" data-i18n="f1_start" class="px-5 py-3 btn-neon-green font-black text-xs md:text-sm rounded-xl tracking-wide transition active:scale-95 cursor-pointer flex items-center gap-2">
+                🚦 SALIDA F1
+            </button>
+            <button onclick="toggleAutoDemo()" id="btnAutoDemo" data-i18n="auto_sim" class="px-4 py-3 btn-silver hover:border-[#5ac8fa] text-[#e2e8f0] font-bold text-xs md:text-sm rounded-xl transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+                🤖 AUTO-SIM
             </button>
         </div>
-    </nav>
-
-    <section id="view-live" class="flex-1 min-h-0 grid grid-cols-12 gap-5 overflow-hidden">
-        <div id="lanesGridContainer" class="col-span-12 grid gap-3 md:gap-4 h-full min-h-0 transition-all duration-300"></div>
     </section>
 
+    <!-- =====================================================================
+         NIVEL 3: ÁREA DE TRABAJO PRINCIPAL
+         ===================================================================== -->
+    <main id="view-live" class="flex-1 min-h-0 grid grid-cols-12 gap-3.5 overflow-hidden">
+        <div id="lanesGridContainer" class="col-span-12 grid gap-3.5 h-full min-h-0 transition-all duration-300"></div>
+
+        <div id="futureModulePlaceholder" class="col-span-12 hidden mac-window p-8 flex-col items-center justify-center text-center h-full">
+            <div class="w-16 h-16 rounded-2xl btn-neon-blue flex items-center justify-center text-3xl mb-4 shadow-2xl" id="moduleIcon">📊</div>
+            <h2 class="text-2xl font-black text-white tracking-tight mb-2" id="moduleTitle">MÓDULO DE EXPANSIÓN KRONOS OS</h2>
+            <p class="text-sm text-[#94a3b8] max-w-md mb-6" id="moduleDesc">Espacio reservado en la arquitectura de Kronos Pro OS para futuras actualizaciones de telemetría, gestión de campeonatos y lectura de hardware externo.</p>
+            <button onclick="switchModuleTab('LIVE')" class="px-5 py-2.5 btn-neon-green font-extrabold text-xs rounded-xl cursor-pointer">
+                VOLVER A PARRILLA EN VIVO
+            </button>
+        </div>
+    </main>
+
     <script>
-        // BANDERAS OFICIALES EN SVG (Garantiza visualización en Windows, Mac, iOS y Android)
         const LANG_META = {
             es: {
                 label: "Español (ES)",
@@ -287,200 +419,204 @@
             }
         };
 
-        // DICCIONARIO MULTI-IDIOMA MEJORADO (Puntuación para entonación perfecta + Voces Hombre/Mujer)
+        // DICCIONARIO NATURAL Y FLUIDO (Sin pausas lentas)
         const i18n = {
             es: {
                 practice: "ENTRENOS LIBRES", club: "CARRERA CLUB", time_mode: "⏱️ TIEMPO", laps_mode: "🏁 VUELTAS",
-                title: "GRAN PREMIO OFICIAL // KRONOS PRO", standby: "ESPERA", voice_label: "VOZ:", test_btn: "🔊 PROBAR",
+                title: "KRONOS PRO OS", standby: "ESPERA", voice_label: "VOZ:", test_btn: "🔊 TEST",
                 voice_male: "👨 HOMBRE", voice_female: "👩 MUJER",
                 track_time: "CRONO MANGA", f1_start: "🚦 SALIDA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 PARRILLA EN VIVO",
                 home: "🏠 INICIO", track_call: "⚠️ TRACK CALL", resume: "🟢 REANUDAR", lane: "CARRIL", laps: "VUELTAS",
                 mean_lap: "VUELTA MEDIA", record: "RÉCORD", finish_line: "META",
-                tts_test: "Prueba de sonido... Sistema Kronos, preparado.", 
-                tts_false_start: "¡Atención! Salida falsa en el carril...",
-                tts_pause: "Pausa... Pista cerrada.", 
-                tts_resume: "Pista libre. ¡Adelante!", 
-                tts_victory: "¡Victoria! Para...",
-                tts_end: "¡Tiempo agotado!... La carrera, ha terminado.", 
-                tts_go: "¡Semáforo en verde! ¡Arranca la carrera!",
-                nums: ["", "¡Uno!", "¡Dos!", "¡Tres!", "¡Cuatro!", "¡Cinco!"]
+                tts_test: "Prueba de audio del sistema Kronos. Todo listo en pista.", 
+                tts_false_start: "Atención, salida falsa en el carril",
+                tts_pause: "Atención pilotos, carrera en pausa. Pista cerrada.", 
+                tts_resume: "Pista libre, se reanuda la carrera.", 
+                tts_victory: "Final de carrera. Victoria para",
+                tts_end: "Tiempo finalizado. La sesión ha terminado.", 
+                tts_go: "Semáforo en verde, comienza la carrera.",
+                nums: ["", "Uno", "Dos", "Tres", "Cuatro", "Cinco"]
             },
             ca: {
                 practice: "ENTRENAMENTS LLIURES", club: "CURSA CLUB", time_mode: "⏱️ TEMPS", laps_mode: "🏁 VOLTES",
-                title: "GRAN PREMI OFICIAL // KRONOS PRO", standby: "ESPERA", voice_label: "VEU:", test_btn: "🔊 PROVAR",
+                title: "KRONOS PRO OS", standby: "ESPERA", voice_label: "VEU:", test_btn: "🔊 PROVAR",
                 voice_male: "👨 HOME", voice_female: "👩 DONA",
                 track_time: "CRONO MÀNIGA", f1_start: "🚦 SORTIDA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRAELLA EN VIU",
                 home: "🏠 INICI", track_call: "⚠️ PISTA TANCADA", resume: "🟢 REPRENDRE", lane: "CARRIL", laps: "VOLTES",
                 mean_lap: "VOLTA MITJANA", record: "RÈCORD", finish_line: "META",
-                tts_test: "Prova de so... Sistema Kronos, preparat.", 
-                tts_false_start: "Atenció! Sortida falsa al carril...",
-                tts_pause: "Pausa... Pista tancada.", 
-                tts_resume: "Pista lliure. Endavant!", 
-                tts_victory: "Victòria! Per a...",
-                tts_end: "Temps esgotat!... La cursa, ha acabat.", 
-                tts_go: "Semàfor verd! Comença la cursa!",
-                nums: ["", "Un!", "Dos!", "Tres!", "Quatre!", "Cinc!"]
+                tts_test: "Prova d'àudio del sistema Kronos. Tot a punt a la pista.", 
+                tts_false_start: "Atenció, sortida falsa al carril",
+                tts_pause: "Atenció pilots, cursa en pausa. Pista tancada.", 
+                tts_resume: "Pista lliure, es reprèn la cursa.", 
+                tts_victory: "Final de la cursa. Victòria per a",
+                tts_end: "Temps esgotat. La sessió ha acabat.", 
+                tts_go: "Semàfor verd, comença la cursa.",
+                nums: ["", "Un", "Dos", "Tres", "Quatre", "Cinc"]
             },
             eu: {
                 practice: "ENTRENAMENDU LIBREAK", club: "KLUBA LASTERKETA", time_mode: "⏱️ DENBORA", laps_mode: "🏁 ITZULIAK",
-                title: "SARI NAGUSI OFIZIALA // KRONOS PRO", standby: "ITXARON", voice_label: "AHOTSA:", test_btn: "🔊 PROBATU",
+                title: "KRONOS PRO OS", standby: "ITXARON", voice_label: "AHOTSA:", test_btn: "🔊 PROBATU",
                 voice_male: "👨 GIZONA", voice_female: "👩 EMAKUMEA",
                 track_time: "MAHUKA DENBORA", f1_start: "🚦 F1 IRTEERA", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 ZUZENEKO SARETA",
                 home: "🏠 HASIERA", track_call: "⚠️ PISTA ITXITA", resume: "🟢 BERREKIN", lane: "ERREIA", laps: "ITZULIAK",
                 mean_lap: "BATEZ BESTEKOA", record: "ERREKORRA", finish_line: "HELBURUA",
-                tts_test: "Soinu proba... Kronos sistema, prest.", 
-                tts_false_start: "Kontuz! Irteera faltsua erreian...",
-                tts_pause: "Pausatu... Pista itxita.", 
-                tts_resume: "Pista librea. Aurrera!", 
-                tts_victory: "Garaipena! Haientzat...",
-                tts_end: "Denbora amaitu da!... Lasterketa, amaituta.", 
-                tts_go: "Argi berdea! Hasi lasterketa!",
-                nums: ["", "Bat!", "Bi!", "Hiru!", "Lau!", "Bost!"]
+                tts_test: "Kronos sistemaren soinu proba. Dena prest pistan.", 
+                tts_false_start: "Adi, irteera faltsua erreian",
+                tts_pause: "Lasterketa geldituta. Pista itxita dago.", 
+                tts_resume: "Pista libre dago, jarraitu lasterketarekin.", 
+                tts_victory: "Lasterketa amaitu da. Garaipena honakoarentzat:",
+                tts_end: "Denbora amaitu da. Lasterketa bukatu da.", 
+                tts_go: "Argi berdea, hasi da lasterketarekin.",
+                nums: ["", "Bat", "Bi", "Hiru", "Lau", "Bost"]
             },
             en: {
                 practice: "FREE PRACTICE", club: "CLUB RACE", time_mode: "⏱️ TIME", laps_mode: "🏁 LAPS",
-                title: "OFFICIAL GRAND PRIX // KRONOS PRO", standby: "STANDBY", voice_label: "VOICE:", test_btn: "🔊 TEST",
+                title: "KRONOS PRO OS", standby: "STANDBY", voice_label: "VOICE:", test_btn: "🔊 TEST",
                 voice_male: "👨 MALE", voice_female: "👩 FEMALE",
                 track_time: "HEAT TIME", f1_start: "🚦 F1 START", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 LIVE GRID",
                 home: "🏠 HOME", track_call: "⚠️ TRACK CALL", resume: "🟢 RESUME", lane: "LANE", laps: "LAPS",
                 mean_lap: "MEAN LAP", record: "RECORD", finish_line: "FINISH",
-                tts_test: "Sound test... Kronos system, ready.", 
-                tts_false_start: "Warning! False start on lane...",
-                tts_pause: "Pause... Track closed.", 
-                tts_resume: "Track clear. Go ahead!", 
-                tts_victory: "Victory! For...",
-                tts_end: "Time is up!... The race, has finished.", 
-                tts_go: "Green light! The race begins!",
-                nums: ["", "One!", "Two!", "Three!", "Four!", "Five!"]
+                tts_test: "Kronos timing system audio check. Track is ready.", 
+                tts_false_start: "Warning, false start on lane",
+                tts_pause: "Track call. Race paused, track is closed.", 
+                tts_resume: "Track is clear, green flag.", 
+                tts_victory: "Chequered flag. Victory goes to",
+                tts_end: "Time has expired. The session is complete.", 
+                tts_go: "Green light, away we go.",
+                nums: ["", "One", "Two", "Three", "Four", "Five"]
             },
             fr: {
                 practice: "ESSAIS LIBRES", club: "COURSE CLUB", time_mode: "⏱️ TEMPS", laps_mode: "🏁 TOURS",
-                title: "GRAND PRIX OFFICIEL // KRONOS PRO", standby: "ATTENTE", voice_label: "VOIX:", test_btn: "🔊 TESTER",
+                title: "KRONOS PRO OS", standby: "ATTENTE", voice_label: "VOIX:", test_btn: "🔊 TEST",
                 voice_male: "👨 HOMME", voice_female: "👩 FEMME",
                 track_time: "CHRONO MANCHE", f1_start: "🚦 DÉPART F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRILLE DIRECT",
                 home: "🏠 ACCUEIL", track_call: "⚠️ DRAPEAU JAUNE", resume: "🟢 REPRENDRE", lane: "VOIE", laps: "TOURS",
                 mean_lap: "TOUR MOYEN", record: "RECORD", finish_line: "ARRIVÉE",
-                tts_test: "Test de son... Système Kronos, prêt.", 
-                tts_false_start: "Attention ! Faux départ sur la voie...",
-                tts_pause: "Pause... Piste fermée.", 
-                tts_resume: "Piste libre. En avant !", 
-                tts_victory: "Victoire ! Pour...",
-                tts_end: "Temps écoulé !... La course, est terminée.", 
-                tts_go: "Feu vert ! La course commence !",
-                nums: ["", "Un!", "Deux!", "Trois!", "Quatre!", "Cinq!"]
+                tts_test: "Test audio du système Kronos. La piste est prête.", 
+                tts_false_start: "Attention, faux départ sur la voie",
+                tts_pause: "Course suspendue, la piste est fermée.", 
+                tts_resume: "Piste libre, reprise de la course.", 
+                tts_victory: "Fin de la course. Victoire pour",
+                tts_end: "Temps écoulé, la séance est terminée.", 
+                tts_go: "Feu vert, départ de la course.",
+                nums: ["", "Un", "Deux", "Trois", "Quatre", "Cinq"]
             },
             de: {
                 practice: "FREIES TRAINING", club: "CLUBRENNEN", time_mode: "⏱️ ZEIT", laps_mode: "🏁 RUNDEN",
-                title: "OFFIZIELLER GRAND PRIX // KRONOS", standby: "BEREIT", voice_label: "STIMME:", test_btn: "🔊 TESTEN",
+                title: "KRONOS PRO OS", standby: "BEREIT", voice_label: "STIMME:", test_btn: "🔊 TEST",
                 voice_male: "👨 MANN", voice_female: "👩 FRAU",
                 track_time: "LAUFZEIT", f1_start: "🚦 F1 START", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 LIVE GRID",
                 home: "🏠 START", track_call: "⚠️ STRECKENSTOPP", resume: "🟢 WEITER", lane: "SPUR", laps: "RUNDEN",
                 mean_lap: "DURCHSCHNITT", record: "REKORD", finish_line: "ZIEL",
-                tts_test: "Soundtest... Kronos-System, bereit.", 
-                tts_false_start: "Achtung! Frühstart auf Spur...",
-                tts_pause: "Pause... Strecke gesperrt.", 
-                tts_resume: "Strecke frei. Los geht's!", 
-                tts_victory: "Sieg! Für...",
-                tts_end: "Zeit abgelaufen!... Das Rennen, ist beendet.", 
-                tts_go: "Grünes Licht! Das Rennen beginnt!",
-                nums: ["", "Eins!", "Zwei!", "Drei!", "Vier!", "Fünf!"]
+                tts_test: "Audiotest des Kronos-Systems. Die Strecke ist bereit.", 
+                tts_false_start: "Achtung, Frühstart auf Spur",
+                tts_pause: "Rennen unterbrochen, die Strecke ist gesperrt.", 
+                tts_resume: "Strecke frei, das Rennen geht weiter.", 
+                tts_victory: "Rennende. Der Sieg geht an",
+                tts_end: "Die Zeit ist abgelaufen. Das Rennen ist beendet.", 
+                tts_go: "Grünes Licht, das Rennen ist freigegeben.",
+                nums: ["", "Eins", "Zwei", "Drei", "Vier", "Fünf"]
             },
             it: {
                 practice: "PROVE LIBERE", club: "GARA CLUB", time_mode: "⏱️ TEMPO", laps_mode: "🏁 GIRI",
-                title: "GRAN PREMIO UFFICIALE // KRONOS", standby: "ATTESA", voice_label: "VOCE:", test_btn: "🔊 PROVA",
+                title: "KRONOS PRO OS", standby: "ATTESA", voice_label: "VOCE:", test_btn: "🔊 PROVA",
                 voice_male: "👨 UOMO", voice_female: "👩 DONNA",
                 track_time: "TEMPO MANCHE", f1_start: "🚦 PARTENZA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRIGLIA LIVE",
                 home: "🏠 INIZIO", track_call: "⚠️ BANDIERA GIALLA", resume: "🟢 RIPRENDI", lane: "CORSIA", laps: "GIRI",
                 mean_lap: "GIRO MEDIO", record: "RECORD", finish_line: "TRAGUARDO",
-                tts_test: "Prova audio... Cabina di regia Kronos, pronta.", 
-                tts_false_start: "Attenzione! Falsa partenza in corsia",
-                tts_pause: "Safety Car in pista... Gara sospesa.", 
-                tts_resume: "Bandiera verde! Pista libera, riparte la gara!", 
-                tts_victory: "Bandiera a scacchi! Vittoria spettacolare per",
-                tts_end: "Bandiera a scacchi! Tempo scaduto, gara terminata!", 
-                tts_go: "Semaforo verde! Via, via, via! Si parte!",
-                nums: ["", "Uno!", "Due!", "Tre!", "Quattro!", "Cinque!"]
+                tts_test: "Prova audio del sistema Kronos. Pista pronta.", 
+                tts_false_start: "Attenzione, falsa partenza in corsia",
+                tts_pause: "Gara sospesa, pista chiusa.", 
+                tts_resume: "Bandiera verde, pista libera.", 
+                tts_victory: "Bandiera a scacchi. Vittoria per",
+                tts_end: "Tempo scaduto, la sessione è terminata.", 
+                tts_go: "Semaforo verde, inizia la gara.",
+                nums: ["", "Uno", "Due", "Tre", "Quattro", "Cinque"]
             }
         };
 
-        // FRASES PROFESIONALES DE NARRACIÓN F1 EN VIVO (7 IDIOMAS NATIVOS)
+        function fmtSec(sec) {
+            const str = sec.toFixed(2);
+            return currentLang === 'en' ? str : str.replace('.', ',');
+        }
+
         const F1_COMMENTARY = {
             es: {
-                lights_seq: "¡Atención a la parrilla! ¡Se apagan los semáforos y... arrancan!",
-                purple_lap: (name, sec) => `¡Vuelta rápida absoluta para ${name}! ¡Récord de pista con ${sec.toFixed(2)} segundos!`,
-                personal_best: (name, sec) => `Mejora personal para ${name}, parando el crono en ${sec.toFixed(2)}.`,
-                new_leader: (name, lane) => `¡Cambio de líder! ¡${name} toma la cabeza de carrera por el carril ${lane}!`,
-                battle: (leader, chaser, diff) => `¡Batalla al límite! ¡${chaser} presiona a ${leader} a solo ${diff} décimas!`,
-                lap_milestone: (name, laps) => `${name} lidera la prueba completando la vuelta ${laps}.`,
-                last_lap: (name) => `¡Última vuelta para el líder ${name}! ¡Entramos en el giro definitivo!`,
-                one_min: "¡Atención pilotos! ¡Último minuto de carrera!",
-                thirty_sec: "¡Últimos treinta segundos! ¡Final de infarto en pista!"
+                lights_seq: "Atención a la parrilla, preparados para la salida.",
+                purple_lap: (name, sec) => `Vuelta rápida para ${name}, con ${fmtSec(sec)} segundos.`,
+                personal_best: (name, sec) => `Mejor marca para ${name}, con ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Cambio de líder. ${name} primero por el carril ${lane}.`,
+                battle: (leader, chaser, diff) => `Pelea en cabeza, ${chaser} a ${diff} décimas de ${leader}.`,
+                lap_milestone: (name, laps) => `${name} lidera en la vuelta ${laps}.`,
+                last_lap: (name) => `Última vuelta para el líder ${name}.`,
+                one_min: "Atención pilotos, queda un minuto.",
+                thirty_sec: "Últimos treinta segundos."
             },
             ca: {
-                lights_seq: "Atenció a la graella! S'apaguen els semàfors i... arrenquen!",
-                purple_lap: (name, sec) => `Volta ràpida absoluta per a ${name}! Rècord de pista amb ${sec.toFixed(2)} segons!`,
-                personal_best: (name, sec) => `Millora personal per a ${name}, aturant el crono en ${sec.toFixed(2)}.`,
-                new_leader: (name, lane) => `Canvi de líder! ${name} es posa al capdavant pel carril ${lane}!`,
-                battle: (leader, chaser, diff) => `Batalla al límit! ${chaser} pressiona a ${leader} a només ${diff} dècimes!`,
-                lap_milestone: (name, laps) => `${name} lidera la cursa completant la volta ${laps}.`,
-                last_lap: (name) => `Última volta per al líder ${name}! Entrem en el gir definitiu!`,
-                one_min: "Atenció pilots! Últim minut de cursa!",
-                thirty_sec: "Últims trenta segons! Final d'infart a la pista!"
+                lights_seq: "Atenció a la graella, preparats per a la sortida.",
+                purple_lap: (name, sec) => `Volta ràpida per a ${name}, amb ${fmtSec(sec)} segons.`,
+                personal_best: (name, sec) => `Millor marca per a ${name}, amb ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Canvi de líder. ${name} primer pel carril ${lane}.`,
+                battle: (leader, chaser, diff) => `Lluita al capdavant, ${chaser} a ${diff} dècimes de ${leader}.`,
+                lap_milestone: (name, laps) => `${name} lidera a la volta ${laps}.`,
+                last_lap: (name) => `Última volta per al líder ${name}.`,
+                one_min: "Atenció pilots, queda un minut.",
+                thirty_sec: "Últims trenta segons."
             },
             eu: {
-                lights_seq: "Adi irteerako saretari! Semaforoak itzali dira eta... abian dira!",
-                purple_lap: (name, sec) => `Itzuli azkarrena ${name} gidariarentzat! Pistako errekorra ${sec.toFixed(2)} segundorekin!`,
-                personal_best: (name, sec) => `Marka pertsonala hobetu du ${name} gidariak, ${sec.toFixed(2)} segundotan.`,
-                new_leader: (name, lane) => `Lider aldaketa! ${name} jarri da lasterketa buruan ${lane} erreitik!`,
-                battle: (leader, chaser, diff) => `Lehia estua pistan! ${chaser} ${leader} estutzen ari da!`,
-                lap_milestone: (name, laps) => `${name} lasterketa buruan da, ${laps}. itzulia osatuta.`,
-                last_lap: (name) => `Azken itzulia ${name} liderrarentzat! Azken txanpan gaude!`,
-                one_min: "Adi gidariak! Lasterketako azken minutua!",
-                thirty_sec: "Azken hogeita hamar segundoak! Amaiera zirraragarria!"
+                lights_seq: "Adi irteerako saretari, dena prest hasteko.",
+                purple_lap: (name, sec) => `Itzuli azkarrena ${name} gidariarentzat, ${fmtSec(sec)} segundorekin.`,
+                personal_best: (name, sec) => `Marka pertsonala ${name} gidariarentzat, ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Lider aldaketa. ${name} lehenengo ${lane} erreitik.`,
+                battle: (leader, chaser, diff) => `Lehia estua, ${chaser} ${leader} gidariandik gertu.`,
+                lap_milestone: (name, laps) => `${name} buruan da ${laps}. itzulian.`,
+                last_lap: (name) => `Azken itzulia ${name} liderrarentzat.`,
+                one_min: "Minutu bat falta da amaitzeko.",
+                thirty_sec: "Azken hogeita hamar segundoak."
             },
             en: {
-                lights_seq: "Eyes on the gantry! Five red lights... and it's lights out and away we go!",
-                purple_lap: (name, sec) => `Purple lap for ${name}! Fastest lap of the race with a ${sec.toFixed(2)}!`,
-                personal_best: (name, sec) => `Green sector and personal best for ${name}, clocking a ${sec.toFixed(2)}.`,
-                new_leader: (name, lane) => `Overtake for the lead! ${name} takes P1 on lane ${lane}!`,
-                battle: (leader, chaser, diff) => `Wheel to wheel battle! ${chaser} is right on the gearbox of ${leader}!`,
-                lap_milestone: (name, laps) => `${name} leads the Grand Prix, completing lap ${laps}.`,
-                last_lap: (name) => `Final lap for leader ${name}! One more tour of the circuit!`,
-                one_min: "Attention drivers! One minute remaining on the clock!",
-                thirty_sec: "Final thirty seconds! Everything on the line!"
+                lights_seq: "Cars on the grid, standing by for the start.",
+                purple_lap: (name, sec) => `Fastest lap for ${name}, with ${fmtSec(sec)} seconds.`,
+                personal_best: (name, sec) => `Personal best for ${name}, clocking ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Lead change. ${name} takes first place on lane ${lane}.`,
+                battle: (leader, chaser, diff) => `Battle at the front, ${chaser} is within ${diff} tenths of ${leader}.`,
+                lap_milestone: (name, laps) => `${name} leads on lap ${laps}.`,
+                last_lap: (name) => `Final lap for leader ${name}.`,
+                one_min: "One minute remaining.",
+                thirty_sec: "Thirty seconds remaining."
             },
             fr: {
-                lights_seq: "Attention sur la grille ! Extinction des feux et... rendez-vous au premier virage !",
-                purple_lap: (name, sec) => `Meilleur tour en course pour ${name} ! Record absolu en ${sec.toFixed(2)} secondes !`,
-                personal_best: (name, sec) => `Record personnel pour ${name}, avec un chrono de ${sec.toFixed(2)}.`,
-                new_leader: (name, lane) => `Changement de leader ! ${name} prend la tête sur la voie ${lane} !`,
-                battle: (leader, chaser, diff) => `Duel roue dans roue ! ${chaser} met la pression sur ${leader} !`,
-                lap_milestone: (name, laps) => `${name} mène la course et boucle le tour numéro ${laps}.`,
-                last_lap: (name) => `Dernier tour pour le leader ${name} ! La victoire se joue maintenant !`,
-                one_min: "Attention pilotes ! Dernière minute de course !",
-                thirty_sec: "Trente dernières secondes ! Un final haletant en piste !"
+                lights_seq: "Attention sur la grille, prêt pour le départ.",
+                purple_lap: (name, sec) => `Meilleur tour pour ${name}, en ${fmtSec(sec)} secondes.`,
+                personal_best: (name, sec) => `Meilleur temps pour ${name}, en ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Changement de leader. ${name} prend la tête sur la voie ${lane}.`,
+                battle: (leader, chaser, diff) => `Duel en tête, ${chaser} est à ${diff} dixièmes de ${leader}.`,
+                lap_milestone: (name, laps) => `${name} mène au tour ${laps}.`,
+                last_lap: (name) => `Dernier tour pour ${name}.`,
+                one_min: "Il reste une minute.",
+                thirty_sec: "Dernières trente secondes."
             },
             de: {
-                lights_seq: "Blick auf die Startampel! Die Lichter gehen aus und... das Rennen ist freigegeben!",
-                purple_lap: (name, sec) => `Absolute Bestzeit für ${name}! Neuer Streckenrekord mit ${sec.toFixed(2)} Sekunden!`,
-                personal_best: (name, sec) => `Persönliche Bestzeit für ${name} mit einer ${sec.toFixed(2)}.`,
-                new_leader: (name, lane) => `Führungswechsel! ${name} übernimmt Platz eins auf Spur ${lane}!`,
-                battle: (leader, chaser, diff) => `Rad-an-Rad-Duell! ${chaser} macht extremen Druck auf ${leader}!`,
-                lap_milestone: (name, laps) => `${name} führt das Feld an und beendet Runde ${laps}.`,
-                last_lap: (name) => `Letzte Runde für Spitzenreiter ${name}! Das große Finale!`,
-                one_min: "Achtung Fahrer! Noch eine Minute auf der Uhr!",
-                thirty_sec: "Die letzten dreißig Sekunden! Hochspannung auf der Strecke!"
+                lights_seq: "Startaufstellung bereit, wir warten auf das Startsignal.",
+                purple_lap: (name, sec) => `Schnellste Runde für ${name} mit ${fmtSec(sec)} Sekunden.`,
+                personal_best: (name, sec) => `Bestzeit für ${name} mit ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Führungswechsel. ${name} auf Spur ${lane}.`,
+                battle: (leader, chaser, diff) => `Duell an der Spitze, ${chaser} nah an ${leader}.`,
+                lap_milestone: (name, laps) => `${name} führt in Runde ${laps}.`,
+                last_lap: (name) => `Letzte Runde für ${name}.`,
+                one_min: "Noch eine Minute.",
+                thirty_sec: "Letzte dreißig Sekunden."
             },
             it: {
-                lights_seq: "Occhi sul semaforo! Si spengono le luci rosse... Via, via, via! Si parte!",
-                purple_lap: (name, sec) => `Giro veloce fucsia per ${name}! Record assoluto della pista in ${sec.toFixed(2)} secondi!`,
-                personal_best: (name, sec) => `Miglior giro personale per ${name}, fermando il cronometro a ${sec.toFixed(2)}.`,
-                new_leader: (name, lane) => `Sorpasso in testa! ${name} prende il comando sulla corsia ${lane}!`,
-                battle: (leader, chaser, diff) => `Battaglia ruota a ruota! ${chaser} è negli scarichi di ${leader}!`,
-                lap_milestone: (name, laps) => `${name} comanda il Gran Premio completando il giro ${laps}.`,
-                last_lap: (name) => `Ultimo giro per il leader ${name}! Inizia la tornata finale!`,
-                one_min: "Attenzione piloti! Ultimo minuto di gara!",
-                thirty_sec: "Ultimi trenta secondi! Finale al cardiopalma in pista!"
+                lights_seq: "Vetture schierate in griglia, pronti per la partenza.",
+                purple_lap: (name, sec) => `Giro veloce per ${name}, in ${fmtSec(sec)} secondi.`,
+                personal_best: (name, sec) => `Miglior tempo per ${name}, in ${fmtSec(sec)}.`,
+                new_leader: (name, lane) => `Cambio al vertice. ${name} in testa sulla corsia ${lane}.`,
+                battle: (leader, chaser, diff) => `Duello in testa, ${chaser} a ${diff} decimi da ${leader}.`,
+                lap_milestone: (name, laps) => `${name} guida la gara al giro ${laps}.`,
+                last_lap: (name) => `Ultimo giro per ${name}.`,
+                one_min: "Un minuto al termine.",
+                thirty_sec: "Ultimi trenta secondi."
             }
         };
 
@@ -492,24 +628,81 @@
         let audioCtx = null;
 
         const LANE_PALETTE = {
-            1: { hex: '#ff453a' }, 2: { hex: '#f5f5f7' }, 3: { hex: '#30d158' }, 4: { hex: '#ff9f0a' }, 5: { hex: '#0a84ff' },
-            6: { hex: '#ffd60a' }, 7: { hex: '#bf5af2' }, 8: { hex: '#8e8e93' }, 9: { hex: '#ff375f' }, 10: { hex: '#64d2ff' }
+            1: { hex: '#ff453a', name: 'Crimson Red' },
+            2: { hex: '#0a84ff', name: 'Neon Blue' },
+            3: { hex: '#30d158', name: 'Emerald Green' },
+            4: { hex: '#e2e8f0', name: 'Pure Silver' },
+            5: { hex: '#5ac8fa', name: 'Cyber Cyan' },
+            6: { hex: '#bf5af2', name: 'Electric Purple' },
+            7: { hex: '#ff9f0a', name: 'Solar Amber' },
+            8: { hex: '#94a3b8', name: 'Space Titanium' },
+            9: { hex: '#ff375f', name: 'Laser Rose' },
+            10: { hex: '#64d2ff', name: 'Ice Blue' }
         };
 
         const appState = {
-            raceStatus: 'STANDBY', raceFormat: 'TIME', targetLaps: 25, activeLanes: 2, numSectors: 3,
+            raceStatus: 'STANDBY', sessionType: 'PRACTICE', raceFormat: 'TIME', targetLaps: 25, activeLanes: 2, numSectors: 3,
             heatTotalSeconds: 300, remainingSeconds: 300, overallBestLap: Infinity, overallBestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
             autoDemoTimer: null, pendingAutoSim: false, clockInterval: null, lanes: {},
             currentLeaderId: null, announcedOneMin: false, announcedThirtySec: false, announcedLastLap: false, lastCommentaryTime: 0
         };
 
+        function switchModuleTab(tabId) {
+            const tabs = ['LIVE', 'TELEMETRY', 'CHAMPIONSHIP', 'GARAGE', 'HARDWARE'];
+            tabs.forEach(id => {
+                const btn = document.getElementById(`tab-${id}`);
+                if (!btn) return;
+                if (id === tabId) {
+                    btn.className = 'px-4 py-1.5 rounded-[9px] text-xs font-bold btn-neon-blue transition cursor-pointer shrink-0 flex items-center gap-1.5';
+                } else {
+                    btn.className = 'px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5';
+                }
+            });
+
+            const grid = document.getElementById('lanesGridContainer');
+            const placeholder = document.getElementById('futureModulePlaceholder');
+            if (tabId === 'LIVE') {
+                placeholder.classList.add('hidden');
+                placeholder.classList.remove('flex');
+                grid.classList.remove('hidden');
+            } else {
+                grid.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                placeholder.classList.add('flex');
+                const meta = {
+                    TELEMETRY: { icon: '📊', title: 'TELEMETRÍA AVANZADA & GRÁFICAS', desc: 'Comparativa de ritmo por piloto, curvas de degradación y consistencia por sector.' },
+                    CHAMPIONSHIP: { icon: '🏆', title: 'GESTOR DE CAMPEONATOS & MANGAS', desc: 'Rotación automática de carriles y clasificación general por puntos.' },
+                    GARAGE: { icon: '🏎️', title: 'BOXES, COCHES & PILOTOS', desc: 'Base de datos de pilotos, configuración de motores e historial de récords.' },
+                    HARDWARE: { icon: '🔌', title: 'CONECTIVIDAD DS / ARDUINO / PUERTO SERIE', desc: 'Enlace directo por WebSerial API con puentes ópticos y sensores de carril.' }
+                }[tabId];
+                if (meta) {
+                    document.getElementById('moduleIcon').textContent = meta.icon;
+                    document.getElementById('moduleTitle').textContent = meta.title;
+                    document.getElementById('moduleDesc').textContent = meta.desc;
+                }
+            }
+        }
+
+        function setSessionType(type) {
+            appState.sessionType = type;
+            const btnPrac = document.getElementById('btnSession-PRACTICE');
+            const btnClub = document.getElementById('btnSession-CLUB');
+            if (type === 'PRACTICE') {
+                btnPrac.className = 'px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer';
+                btnClub.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer';
+            } else {
+                btnClub.className = 'px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer';
+                btnPrac.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer';
+            }
+        }
+
         function initLangDropdown() {
             const popup = document.getElementById('langMenuPopup');
             if (!popup) return;
             popup.innerHTML = Object.keys(LANG_META).map(code => `
-                <button type="button" onclick="changeLanguage('${code}')" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer w-full">
-                    <span class="w-7 h-5 flex items-center justify-center rounded-[4px] overflow-hidden shadow-sm border border-white/20 shrink-0">${LANG_META[code].svg}</span>
-                    <span class="text-sm font-black text-white truncate">${LANG_META[code].label}</span>
+                <button type="button" onclick="changeLanguage('${code}')" class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-white/10 text-left transition cursor-pointer w-full">
+                    <span class="w-5 h-3.5 flex items-center justify-center rounded-[3px] overflow-hidden border border-white/20 shrink-0">${LANG_META[code].svg}</span>
+                    <span class="text-xs font-bold text-white truncate">${LANG_META[code].label}</span>
                 </button>
             `).join('');
 
@@ -587,293 +780,198 @@
         }
 
         // ==========================================
-        // SISTEMA DE VOCES NATIVAS REALES (HOMBRE Y MUJER POR IDIOMA)
+        // MOTOR DE VOZ NATIVO Y PROFESIONAL (SIN ACOPLAMIENTOS NI LENTITUD)
         // ==========================================
         let cachedVoices = [];
         let activeAudioObj = null;
-        const neuralAudioCache = {};
+        let speechUnlocked = false;
+        const speechQueue = [];
+        let isSpeakingQueue = false;
 
-        // Perfiles de locutores nativos por cada idioma (Hombre y Mujer)
-        const NATIVE_SPEAKER_PROFILES = {
-            es: {
-                locale: 'es-ES',
-                langName: 'Spanish (Spain)',
-                MALE: { label: 'Álvaro', geminiVoice: 'Orus', keywords: ['alvaro', 'álvaro', 'pablo', 'jorge', 'raul', 'raúl', 'diego', 'carlos', 'enrique', 'male', 'hombre'] },
-                FEMALE: { label: 'Elvira', geminiVoice: 'Aoede', keywords: ['elvira', 'helena', 'laura', 'monica', 'mónica', 'lucia', 'lucía', 'paloma', 'marisol', 'female', 'mujer', 'google español'] }
-            },
-            ca: {
-                locale: 'ca-ES',
-                langName: 'Catalan (Catalonia)',
-                MALE: { label: 'Enric', geminiVoice: 'Orus', keywords: ['enric', 'jordi', 'pau', 'marc', 'male', 'home'] },
-                FEMALE: { label: 'Joana', geminiVoice: 'Aoede', keywords: ['joana', 'montserrat', 'nuria', 'núria', 'female', 'dona', 'català'] }
-            },
-            eu: {
-                locale: 'eu-ES',
-                langName: 'Basque (Euskadi)',
-                MALE: { label: 'Ander', geminiVoice: 'Orus', keywords: ['ander', 'gorka', 'jon', 'male', 'gizona'] },
-                FEMALE: { label: 'Amaia', geminiVoice: 'Aoede', keywords: ['amaia', 'ane', 'female', 'emakumea', 'euskara'] }
-            },
-            en: {
-                locale: 'en-GB',
-                langName: 'British English',
-                MALE: { label: 'Ryan', geminiVoice: 'Puck', keywords: ['ryan', 'george', 'daniel', 'oliver', 'arthur', 'thomas', 'david', 'mark', 'guy', 'uk english male', 'male'] },
-                FEMALE: { label: 'Sonia', geminiVoice: 'Kore', keywords: ['sonia', 'hazel', 'libby', 'serena', 'susan', 'kate', 'zoe', 'zira', 'uk english female', 'female'] }
-            },
-            fr: {
-                locale: 'fr-FR',
-                langName: 'French (France)',
-                MALE: { label: 'Henri', geminiVoice: 'Charon', keywords: ['henri', 'paul', 'thomas', 'nicolas', 'mathieu', 'alain', 'claude', 'jerome', 'jérôme', 'male', 'homme'] },
-                FEMALE: { label: 'Denise', geminiVoice: 'Aoede', keywords: ['denise', 'hortense', 'julie', 'eloise', 'éloïse', 'amelie', 'amélie', 'brigitte', 'audrey', 'female', 'femme', 'google français'] }
-            },
-            de: {
-                locale: 'de-DE',
-                langName: 'German (Germany)',
-                MALE: { label: 'Conrad', geminiVoice: 'Fenrir', keywords: ['conrad', 'stefan', 'killian', 'markus', 'klaus', 'yannick', 'martin', 'male', 'mann'] },
-                FEMALE: { label: 'Katja', geminiVoice: 'Kore', keywords: ['katja', 'hedda', 'amala', 'anna', 'petra', 'marlene', 'vicki', 'female', 'frau', 'google deutsch'] }
-            },
-            it: {
-                locale: 'it-IT',
-                langName: 'Italian (Italy)',
-                MALE: { label: 'Diego', geminiVoice: 'Orus', keywords: ['diego', 'cosimo', 'luca', 'alessandro', 'gianni', 'roberto', 'maurizio', 'male', 'uomo'] },
-                FEMALE: { label: 'Elsa', geminiVoice: 'Aoede', keywords: ['elsa', 'isabella', 'alice', 'fabiola', 'federica', 'paola', 'silvia', 'female', 'donna', 'google italiano'] }
+        function unlockMobileAudio() {
+            getAudioContext();
+            if (!speechUnlocked && window.speechSynthesis) {
+                const silentUt = new SpeechSynthesisUtterance('');
+                silentUt.volume = 0;
+                window.speechSynthesis.speak(silentUt);
+                speechUnlocked = true;
             }
+        }
+        document.addEventListener('touchstart', unlockMobileAudio, { once: true, passive: true });
+        document.addEventListener('click', unlockMobileAudio, { once: true, passive: true });
+
+        const NATIVE_SPEAKER_PROFILES = {
+            es: { locale: 'es-ES', MALE: { label: 'Álvaro', keywords: ['alvaro', 'álvaro', 'jorge', 'pablo', 'raul', 'male', 'hombre'] }, FEMALE: { label: 'Elvira', keywords: ['elvira', 'monica', 'mónica', 'laura', 'lucia', 'female', 'mujer'] } },
+            ca: { locale: 'ca-ES', MALE: { label: 'Enric', keywords: ['enric', 'jordi', 'pau', 'male', 'home'] }, FEMALE: { label: 'Joana', keywords: ['joana', 'montserrat', 'nuria', 'female', 'dona'] } },
+            eu: { locale: 'eu-ES', MALE: { label: 'Ander', keywords: ['ander', 'gorka', 'male', 'gizona'] }, FEMALE: { label: 'Amaia', keywords: ['amaia', 'ane', 'female', 'emakumea'] } },
+            en: { locale: 'en-GB', MALE: { label: 'Ryan', keywords: ['ryan', 'daniel', 'george', 'oliver', 'male'] }, FEMALE: { label: 'Sonia', keywords: ['sonia', 'kate', 'serena', 'hazel', 'female'] } },
+            fr: { locale: 'fr-FR', MALE: { label: 'Henri', keywords: ['henri', 'thomas', 'paul', 'male', 'homme'] }, FEMALE: { label: 'Denise', keywords: ['denise', 'amelie', 'amélie', 'female', 'femme'] } },
+            de: { locale: 'de-DE', MALE: { label: 'Conrad', keywords: ['conrad', 'markus', 'stefan', 'male', 'mann'] }, FEMALE: { label: 'Katja', keywords: ['katja', 'anna', 'female', 'frau'] } },
+            it: { locale: 'it-IT', MALE: { label: 'Diego', keywords: ['diego', 'luca', 'cosimo', 'male', 'uomo'] }, FEMALE: { label: 'Elsa', keywords: ['elsa', 'alice', 'federica', 'female', 'donna'] } }
         };
 
         function loadSystemVoices() {
             if (!window.speechSynthesis) return;
-            cachedVoices = window.speechSynthesis.getVoices();
-            updateVoiceLabels();
+            const voices = window.speechSynthesis.getVoices();
+            if (voices && voices.length > 0) {
+                cachedVoices = voices;
+                updateVoiceLabels();
+            }
         }
 
         if (window.speechSynthesis) {
             loadSystemVoices();
             window.speechSynthesis.onvoiceschanged = loadSystemVoices;
+            setTimeout(loadSystemVoices, 300);
         }
 
-        // Busca una voz instalada que coincida estrictamente con el idioma y con el género pedido
-        function findStrictLocalVoice(langCode, gender) {
+        function getNativeSystemVoicesForLang(langCode) {
             if (!cachedVoices || cachedVoices.length === 0) {
                 cachedVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
             }
-
             const profile = NATIVE_SPEAKER_PROFILES[langCode] || NATIVE_SPEAKER_PROFILES['es'];
             const langPrefix = langCode.toLowerCase();
 
-            // Filtrar solo voces nativas del idioma seleccionado (sin mezclar otros idiomas)
-            const langVoices = cachedVoices.filter(v => {
+            const matching = cachedVoices.filter(v => {
                 const l = v.lang.toLowerCase().replace('_', '-');
                 return l === profile.locale.toLowerCase() || l.startsWith(langPrefix + '-') || l === langPrefix;
             });
 
+            matching.sort((a, b) => {
+                let scoreA = (/natural|neural/i.test(a.name) ? 50 : 0);
+                let scoreB = (/natural|neural/i.test(b.name) ? 50 : 0);
+                return scoreB - scoreA;
+            });
+            return matching;
+        }
+
+        function findStrictLocalVoice(langCode, gender) {
+            const langVoices = getNativeSystemVoicesForLang(langCode);
             if (langVoices.length === 0) return null;
 
+            const profile = NATIVE_SPEAKER_PROFILES[langCode] || NATIVE_SPEAKER_PROFILES['es'];
             const targetKeywords = profile[gender].keywords;
             const oppositeGender = gender === 'MALE' ? 'FEMALE' : 'MALE';
             const oppositeKeywords = profile[oppositeGender].keywords;
 
             const matchesKeyword = (name, kwList) => kwList.some(kw => name.toLowerCase().includes(kw));
 
-            // Filtrar estrictamente las voces que tienen nombre/identificador del género buscado
-            let verifiedVoices = langVoices.filter(v => {
+            const verified = langVoices.filter(v => {
                 const n = v.name.toLowerCase();
                 return matchesKeyword(n, targetKeywords) && !matchesKeyword(n, oppositeKeywords);
             });
 
-            if (verifiedVoices.length === 0) return null;
-
-            // Priorizar voces Neurales / Naturales del sistema operativo
-            const scoreQuality = (v) => {
-                let s = 0;
-                const n = v.name.toLowerCase();
-                if (n.includes('natural') || n.includes('neural')) s += 50;
-                if (n.includes('online')) s += 30;
-                if (n.includes('premium') || n.includes('enhanced') || n.includes('siri')) s += 25;
-                return s;
-            };
-
-            verifiedVoices.sort((a, b) => scoreQuality(b) - scoreQuality(a));
-            return verifiedVoices[0];
+            if (verified.length > 0) return verified[0];
+            return langVoices[0] || null;
         }
 
         function updateVoiceLabels() {
-            const optMale = document.getElementById('optVoiceMale');
-            const optFemale = document.getElementById('optVoiceFemale');
+            const select = document.getElementById('headerVoiceSelect');
+            if (!select) return;
+
+            const previousValue = select.value;
             const profile = NATIVE_SPEAKER_PROFILES[currentLang] || NATIVE_SPEAKER_PROFILES['es'];
+            const langVoices = getNativeSystemVoicesForLang(currentLang);
 
             const localMale = findStrictLocalVoice(currentLang, 'MALE');
             const localFemale = findStrictLocalVoice(currentLang, 'FEMALE');
 
-            const cleanVoiceName = (v, fallback) => {
-                if (!v) return fallback;
-                let clean = v.name.replace(/Microsoft |Google |Apple |Online |\(Natural\) |Desktop /gi, '').split('-')[0].trim();
-                return clean || fallback;
-            };
+            const cleanName = (v, fallback) => v ? v.name.replace(/Microsoft |Google |Apple |Online |\(Natural\) /gi, '').split('-')[0].trim() : fallback;
 
-            const maleName = cleanVoiceName(localMale, profile.MALE.label);
-            const femaleName = cleanVoiceName(localFemale, profile.FEMALE.label);
-
-            if (optMale) optMale.textContent = `${t('voice_male')} (${maleName})`;
-            if (optFemale) optFemale.textContent = `${t('voice_female')} (${femaleName})`;
-
-            // Pre-cargar audios clave de salida en segundo plano si requiere voz neuronal
-            WarmUpCountdownAudio();
+            select.innerHTML = `
+                <option value="AUTO_MALE" class="bg-[#161820] text-white">👨 ${t('voice_male')} (${cleanName(localMale, profile.MALE.label)})</option>
+                <option value="AUTO_FEMALE" class="bg-[#161820] text-white">👩 ${t('voice_female')} (${cleanName(localFemale, profile.FEMALE.label)})</option>
+            `;
+            if (previousValue) select.value = previousValue;
         }
 
-        function base64ToArrayBuffer(base64) {
-            const binaryString = window.atob(base64);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-            return bytes.buffer;
+        function onVoiceSelectionChange() {
+            testVoice();
         }
 
-        function pcmToWav(pcm16, sampleRate) {
-            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
-            const view = new DataView(buffer);
-            const writeString = (v, o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-            writeString(view, 0, 'RIFF'); view.setUint32(4, 36 + pcm16.length * 2, true);
-            writeString(view, 8, 'WAVE'); writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
-            view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
-            view.setUint16(32, 2, true); view.setUint16(34, 16, true);
-            writeString(view, 36, 'data'); view.setUint32(40, pcm16.length * 2, true);
-            let offset = 44; for (let i = 0; i < pcm16.length; i++, offset += 2) view.setInt16(offset, pcm16[i], true);
-            return new Blob([view], { type: 'audio/wav' });
+        function resolveSelectedVoice() {
+            const select = document.getElementById('headerVoiceSelect');
+            const val = select ? select.value : 'AUTO_MALE';
+            const gender = val === 'AUTO_FEMALE' ? 'FEMALE' : 'MALE';
+            const localVoice = findStrictLocalVoice(currentLang, gender);
+            return { localVoice, gender };
         }
 
-        // Genera y reproduce voz neuronal con pronunciación nativa exacta y género garantizado
-        async function fetchNeuralAudioUrl(text, langCode, gender) {
-            const profile = NATIVE_SPEAKER_PROFILES[langCode] || NATIVE_SPEAKER_PROFILES['es'];
-            const geminiVoice = profile[gender].geminiVoice;
-            const cacheKey = `${langCode}|${gender}|${text}`;
-
-            if (neuralAudioCache[cacheKey]) return neuralAudioCache[cacheKey];
-
-            const promptText = `Speak as an excited, energetic Formula 1 TV commentator with a 100% native ${profile.langName} accent (${profile.locale}): "${text}"`;
-            const payload = {
-                contents: [{ parts: [{ text: promptText }] }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: geminiVoice } } }
-                },
-                model: "gemini-2.5-flash-preview-tts"
-            };
-
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) return null;
-                const result = await response.json();
-                const part = result?.candidates?.[0]?.content?.parts?.[0];
-                if (part?.inlineData?.data) {
-                    const sampleRate = parseInt(part.inlineData.mimeType.match(/rate=(\d+)/)?.[1] || "24000", 10);
-                    const pcm16 = new Int16Array(base64ToArrayBuffer(part.inlineData.data));
-                    const audioUrl = URL.createObjectURL(pcmToWav(pcm16, sampleRate));
-                    neuralAudioCache[cacheKey] = audioUrl;
-                    return audioUrl;
-                }
-            } catch (e) {
-                return null;
-            }
-            return null;
-        }
-
-        // Pre-carga la salida F1 para que el semáforo nunca tenga retraso de red
-        function WarmUpCountdownAudio() {
-            const voiceSelect = document.getElementById('headerVoiceSelect');
-            const gender = voiceSelect ? voiceSelect.value : 'MALE';
-            if (findStrictLocalVoice(currentLang, gender)) return; // Si tiene voz local nativa instantánea, no hace falta red
-            fetchNeuralAudioUrl(t('tts_go'), currentLang, gender);
-        }
-
-        function isCommentatorSpeaking() {
-            const synthBusy = window.speechSynthesis && window.speechSynthesis.speaking;
-            const audioBusy = activeAudioObj && !activeAudioObj.paused && !activeAudioObj.ended;
-            return synthBusy || audioBusy;
-        }
-
-        // speakSpotter con sistema de prioridades:
-        // priority = 'HIGH' (interrumpe inmediatamente: Salida, Bandera Amarilla, Victoria, Récord Morado)
-        // priority = 'NORMAL' (no pisa una frase en curso: narración de vueltas y batallas)
-        // instantSync = true (garantiza latencia 0ms para el semáforo de salida)
-        async function speakSpotter(text, priority = 'HIGH', instantSync = false) {
+        // Sistema anti-acoplamiento y control de cola de voz
+        function speakSpotter(text, priority = 'NORMAL') {
             if (!text) return;
-            if (priority === 'NORMAL' && isCommentatorSpeaking()) return;
-
-            const voiceSelect = document.getElementById('headerVoiceSelect');
-            const gender = voiceSelect ? voiceSelect.value : 'MALE';
-            const profile = NATIVE_SPEAKER_PROFILES[currentLang] || NATIVE_SPEAKER_PROFILES['es'];
-            const cacheKey = `${currentLang}|${gender}|${text}`;
 
             if (priority === 'HIGH') {
+                // Interrupción inmediata para alertas críticas (Salida F1, Bandera Roja, Victoria)
+                speechQueue.length = 0;
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
                 if (activeAudioObj) { activeAudioObj.pause(); activeAudioObj.currentTime = 0; }
+                isSpeakingQueue = false;
+            } else {
+                // Evitar saturación de mensajes si hay demasiada actividad en pista
+                if (speechQueue.length >= 2) return;
             }
 
-            // 1. Verificar si existe voz nativa local instalada del género correcto (Latencia 0ms)
-            const verifiedLocalVoice = findStrictLocalVoice(currentLang, gender);
-            if (verifiedLocalVoice && window.speechSynthesis) {
-                const ut = new SpeechSynthesisUtterance(text);
-                ut.voice = verifiedLocalVoice;
-                ut.lang = verifiedLocalVoice.lang;
-                ut.pitch = 1.0;
-                ut.rate = instantSync ? 1.18 : 1.05; // Ritmo vivo de narrador de F1
-                ut.volume = 1.0;
-                window.speechSynthesis.speak(ut);
-                return;
-            }
+            speechQueue.push({ text, priority });
+            processSpeechQueue();
+        }
 
-            // 2. Si ya está en la caché neuronal (Latencia 0ms)
-            if (neuralAudioCache[cacheKey]) {
-                activeAudioObj = new Audio(neuralAudioCache[cacheKey]);
-                activeAudioObj.play().catch(() => {});
-                return;
-            }
+        function processSpeechQueue() {
+            if (isSpeakingQueue || speechQueue.length === 0) return;
+            isSpeakingQueue = true;
 
-            // 3. Si requiere sincronización milimétrica (ej. cuenta atrás 5-4-3-2-1 del semáforo) y aún no está en caché,
-            // usar síntesis inmediata para no desincronizar las luces y precargar en segundo plano
-            if (instantSync && window.speechSynthesis) {
-                const ut = new SpeechSynthesisUtterance(text);
-                ut.lang = profile.locale;
-                const anyLangVoice = cachedVoices.find(v => v.lang.toLowerCase().startsWith(currentLang));
-                if (anyLangVoice) ut.voice = anyLangVoice;
-                ut.pitch = gender === 'MALE' ? 0.85 : 1.05;
-                ut.rate = 1.18;
-                window.speechSynthesis.speak(ut);
-                fetchNeuralAudioUrl(text, currentLang, gender);
-                return;
-            }
+            const item = speechQueue.shift();
+            const { localVoice } = resolveSelectedVoice();
 
-            // 4. Narración neuronal F1 de alta definición
-            const neuralUrl = await fetchNeuralAudioUrl(text, currentLang, gender);
-            if (neuralUrl) {
-                if (priority === 'NORMAL' && isCommentatorSpeaking()) return;
-                activeAudioObj = new Audio(neuralUrl);
-                activeAudioObj.play().catch(() => {});
-                return;
-            }
-
-            // 5. Fallback de emergencia offline
             if (window.speechSynthesis) {
-                const ut = new SpeechSynthesisUtterance(text);
-                ut.lang = profile.locale;
-                const anyLangVoice = cachedVoices.find(v => v.lang.toLowerCase().startsWith(currentLang));
-                if (anyLangVoice) ut.voice = anyLangVoice;
-                ut.pitch = gender === 'MALE' ? 0.85 : 1.05;
-                ut.rate = 1.05;
+                const ut = new SpeechSynthesisUtterance(item.text);
+                if (localVoice) {
+                    ut.voice = localVoice;
+                    ut.lang = localVoice.lang;
+                } else {
+                    const profile = NATIVE_SPEAKER_PROFILES[currentLang] || NATIVE_SPEAKER_PROFILES['es'];
+                    ut.lang = profile.locale;
+                }
+                ut.pitch = 1.0; 
+                ut.rate = 1.12; // Velocidad natural y fluida de locutor de TV (ni lento ni acelerado)
+                ut.volume = 1.0;
+
+                ut.onend = () => {
+                    isSpeakingQueue = false;
+                    setTimeout(processSpeechQueue, 150); // Pausa limpia entre locuciones
+                };
+                ut.onerror = () => {
+                    isSpeakingQueue = false;
+                    setTimeout(processSpeechQueue, 150);
+                };
+
                 window.speechSynthesis.speak(ut);
+            } else {
+                isSpeakingQueue = false;
             }
         }
 
         function testVoice() {
-            speakSpotter(t('tts_test'), 'HIGH', false);
+            speakSpotter(t('tts_test'), 'HIGH');
         }
 
         // ==========================================
-        // LÓGICA DE CARRERA Y UI
+        // LÓGICA DE CARRERA
         // ==========================================
-        function setRaceFormat(format) { appState.raceFormat = format; renderMasterClock(); }
+        function setRaceFormat(format) { 
+            appState.raceFormat = format; 
+            const btnTime = document.getElementById('btnMode-TIME');
+            const btnLaps = document.getElementById('btnMode-LAPS');
+            if (format === 'TIME') {
+                btnTime.className = 'px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-blue cursor-pointer transition';
+                btnLaps.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white cursor-pointer transition';
+            } else {
+                btnLaps.className = 'px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-blue cursor-pointer transition';
+                btnTime.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white cursor-pointer transition';
+            }
+            renderMasterClock(); 
+        }
+
         function setSystemTopology(newLanes, newSectors) {
             if (newLanes) appState.activeLanes = newLanes;
             if (newSectors) appState.numSectors = newSectors;
@@ -885,12 +983,24 @@
             return lane.history.reduce((a, b) => a + b, 0) / lane.history.length;
         }
 
+        function getStandingsMap() {
+            const list = [];
+            for (let i = 1; i <= appState.activeLanes; i++) list.push(appState.lanes[i]);
+            list.sort((a, b) => {
+                if (b.laps !== a.laps) return b.laps - a.laps;
+                if (a.bestLap !== b.bestLap) return a.bestLap - b.bestLap;
+                return a.id - b.id;
+            });
+            const map = {};
+            list.forEach((l, idx) => { map[l.id] = idx + 1; });
+            return map;
+        }
+
         function renderLanesGrid() {
             const container = document.getElementById('lanesGridContainer');
             const n = appState.activeLanes;
             const sCount = appState.numSectors;
-            
-            container.className = 'col-span-12 grid gap-3 md:gap-4 h-full min-h-0 transition-all duration-300';
+            const standings = getStandingsMap();
             
             let cols = 1, rows = 1;
             if (n === 1) { cols = 1; rows = 1; } else if (n === 2) { cols = 2; rows = 1; } else if (n === 3) { cols = 3; rows = 1; }
@@ -902,19 +1012,32 @@
 
             let html = '';
             for (let i = 1; i <= n; i++) {
-                const lane = appState.lanes[i], pal = LANE_PALETTE[i];
+                const lane = appState.lanes[i], pal = LANE_PALETTE[i], pos = standings[i];
+                const isLeader = pos === 1 && lane.laps > 0;
+
                 let historyHtml = '';
                 for (let j = lane.history.length - 1; j >= 0; j--) {
                     const tm = lane.history[j];
                     const isBest = tm === lane.bestLap;
                     const prev = j > 0 ? lane.history[j-1] : null;
-                    let trend = prev ? (tm < prev ? '<span class="arrow-down text-lg ml-2">▼</span>' : (tm > prev ? '<span class="arrow-up text-lg ml-2">▲</span>' : '<span class="text-[var(--text-muted)] text-lg ml-2">-</span>')) : '';
-                    historyHtml += `<div class="flex justify-between items-center text-lg md:text-xl font-mono-num border-b border-white/10 py-2 shrink-0"><span class="text-[var(--text-muted)] font-bold">V${j + 1}</span><div class="flex items-center"><span class="${isBest ? 'text-[#30d158] font-black' : 'text-white font-semibold'}">${tm.toFixed(3)}</span>${trend}</div></div>`;
+                    let trend = prev ? (tm < prev ? '<span class="arrow-down text-xs ml-1.5">▼</span>' : (tm > prev ? '<span class="arrow-up text-xs ml-1.5">▲</span>' : '<span class="text-[#64748b] text-xs ml-1.5">•</span>')) : '';
+                    historyHtml += `
+                        <div class="flex justify-between items-center text-sm md:text-base font-mono-num border-b border-white/5 py-1.5 px-2 rounded-lg hover:bg-white/5 shrink-0">
+                            <span class="text-[#94a3b8] text-xs font-bold">LAP ${j + 1}</span>
+                            <div class="flex items-center">
+                                <span class="${isBest ? 'text-[#30d158] font-extrabold drop-shadow-[0_0_8px_rgba(48,209,88,0.4)]' : 'text-[#f8fafc] font-semibold'}">${tm.toFixed(3)}s</span>
+                                ${trend}
+                            </div>
+                        </div>`;
+                }
+
+                if (!historyHtml) {
+                    historyHtml = `<div class="h-full flex items-center justify-center text-xs font-semibold text-[#64748b] tracking-widest uppercase">SIN REGISTROS EN PISTA</div>`;
                 }
 
                 let sectorsHtml = '';
                 if (sCount >= 2) {
-                    const getSecColor = (c) => c === 'sector-purple' ? 'text-[#bf5af2]' : c === 'sector-green' ? 'text-[#30d158]' : 'text-white';
+                    const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'text-white';
                     const s1Val = lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(3) : '--.---';
                     const s2Val = lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(3) : '--.---';
                     const s3Val = lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(3) : '--.---';
@@ -923,30 +1046,65 @@
                     const tr3 = (lane.lastSectors[3] && lane.prevSectors[3]) ? (lane.lastSectors[3] < lane.prevSectors[3] ? '▼' : '▲') : '';
 
                     sectorsHtml = `
-                        <div class="grid grid-cols-${sCount} gap-2 mt-auto pt-3 border-t border-white/10 shrink-0">
-                            <div class="text-center bg-[var(--bg-element)] rounded-lg p-2"><div class="text-xs text-[var(--text-muted)] font-bold">S1</div><div id="secVal-${i}-1" class="flex justify-center items-center text-xl md:text-3xl font-mono-num font-black ${getSecColor(lane.sectorColors[1])}">${s1Val}<span class="${tr1==='▼'?'arrow-down':'arrow-up'} text-xl ml-1">${tr1}</span></div></div>
-                            <div class="text-center bg-[var(--bg-element)] rounded-lg p-2"><div class="text-xs text-[var(--text-muted)] font-bold">${sCount === 2 ? t('finish_line') : 'S2'}</div><div id="secVal-${i}-2" class="flex justify-center items-center text-xl md:text-3xl font-mono-num font-black ${getSecColor(lane.sectorColors[2])}">${s2Val}<span class="${tr2==='▼'?'arrow-down':'arrow-up'} text-xl ml-1">${tr2}</span></div></div>
-                            ${sCount === 3 ? `<div class="text-center bg-[var(--bg-element)] rounded-lg p-2"><div class="text-xs text-[var(--text-muted)] font-bold">${t('finish_line')}</div><div id="secVal-${i}-3" class="flex justify-center items-center text-xl md:text-3xl font-mono-num font-black ${getSecColor(lane.sectorColors[3])}">${s3Val}<span class="${tr3==='▼'?'arrow-down':'arrow-up'} text-xl ml-1">${tr3}</span></div></div>` : ''}
+                        <div class="grid grid-cols-${sCount} gap-2 mt-auto pt-2.5 shrink-0">
+                            <div class="mac-group-box px-2.5 py-1.5 text-center">
+                                <div class="group-label">SECTOR 1</div>
+                                <div id="secVal-${i}-1" class="flex justify-center items-center text-base md:text-xl font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[1])}">${s1Val}<span class="${tr1==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr1}</span></div>
+                            </div>
+                            <div class="mac-group-box px-2.5 py-1.5 text-center">
+                                <div class="group-label">${sCount === 2 ? t('finish_line') : 'SECTOR 2'}</div>
+                                <div id="secVal-${i}-2" class="flex justify-center items-center text-base md:text-xl font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[2])}">${s2Val}<span class="${tr2==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr2}</span></div>
+                            </div>
+                            ${sCount === 3 ? `
+                            <div class="mac-group-box px-2.5 py-1.5 text-center">
+                                <div class="group-label">${t('finish_line')}</div>
+                                <div id="secVal-${i}-3" class="flex justify-center items-center text-base md:text-xl font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[3])}">${s3Val}<span class="${tr3==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr3}</span></div>
+                            </div>` : ''}
                         </div>`;
                 }
 
                 html += `
-                <div id="laneCard-${i}" class="glass-panel p-4 md:p-6 flex flex-col h-full min-h-0 border-t-[12px] shadow-2xl" style="border-top-color: ${pal.hex}">
-                    <div class="flex justify-between items-start mb-4 shrink-0">
-                        <div class="flex flex-col min-w-0 flex-1 pr-4">
-                            <span class="text-lg md:text-xl font-black uppercase mb-1" style="color: ${pal.hex}">${t('lane')} ${i}</span>
-                            <input type="text" value="${lane.name}" onchange="updateDriverName(${i}, this.value)" class="bg-transparent text-white font-black text-3xl md:text-4xl lg:text-5xl tracking-tight truncate leading-none focus:outline-none border-b border-transparent focus:border-white/30"/>
+                <div id="laneCard-${i}" onclick="triggerNextCheckpoint(${i})" class="mac-window p-4 flex flex-col h-full min-h-0 relative overflow-hidden transition-all hover:border-white/30 cursor-pointer" style="border-top: 4px solid ${pal.hex};">
+                    <div class="absolute -top-12 -left-12 w-36 h-36 rounded-full pointer-events-none opacity-20 blur-2xl" style="background: ${pal.hex}"></div>
+
+                    <div class="flex justify-between items-start gap-2 mb-3 shrink-0 z-10">
+                        <div class="flex flex-col min-w-0 flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider" style="background: ${pal.hex}22; color: ${pal.hex}; border: 1px solid ${pal.hex}55;">
+                                    ${t('lane')} ${i}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isLeader ? 'bg-[#0a84ff] text-white shadow-[0_0_10px_#0a84ff]' : 'bg-white/10 text-[#94a3b8]'}">
+                                    P${pos}
+                                </span>
+                            </div>
+                            <input type="text" value="${lane.name}" onclick="event.stopPropagation()" onchange="updateDriverName(${i}, this.value)" class="bg-transparent text-white font-black text-xl md:text-3xl tracking-tight truncate leading-none focus:outline-none border-b border-transparent focus:border-[#0a84ff]"/>
                         </div>
-                        <div class="text-right shrink-0 flex flex-col items-end">
-                            <div id="laps-${i}" class="text-7xl md:text-[6rem] font-mono-num font-black text-white leading-none tracking-tighter">${lane.laps}</div>
-                            <div class="text-xl text-[#30d158] font-black mt-2 uppercase">${t('laps')}</div>
+
+                        <div class="mac-group-box px-3.5 py-2 text-right shrink-0 flex flex-col items-end border border-white/10">
+                            <span class="group-label text-[#30d158]">${t('laps')}</span>
+                            <div id="laps-${i}" class="text-4xl md:text-6xl font-mono-num font-black text-white leading-none tracking-tighter mt-0.5">${lane.laps}</div>
                         </div>
                     </div>
-                    <div class="flex justify-between items-end mb-4 shrink-0 border-b border-white/10 pb-4">
-                        <div><div class="text-lg text-[var(--text-muted)] font-black mb-1">${t('mean_lap')}</div><div id="meanLap-${i}" class="text-4xl md:text-5xl font-mono-num font-black text-white leading-none tracking-tighter">${getDriverMeanLap(lane) > 0 ? getDriverMeanLap(lane).toFixed(3) : '0.000'}</div></div>
-                        <div class="text-right"><div class="text-lg text-[var(--text-muted)] font-black mb-1">${t('record')}</div><div id="bestLap-${i}" class="text-4xl md:text-5xl font-mono-num font-black text-[#30d158] leading-none tracking-tighter">${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}</div></div>
+
+                    <div class="grid grid-cols-2 gap-2.5 mb-3 shrink-0 z-10">
+                        <div class="mac-group-box px-3 py-2">
+                            <div class="group-label">${t('mean_lap')}</div>
+                            <div id="meanLap-${i}" class="text-xl md:text-2xl font-mono-num font-extrabold text-[#e2e8f0] leading-none mt-1">
+                                ${getDriverMeanLap(lane) > 0 ? getDriverMeanLap(lane).toFixed(3) : '0.000'}
+                            </div>
+                        </div>
+                        <div class="mac-group-box px-3 py-2 text-right border border-[#30d158]/25 bg-[#30d158]/5">
+                            <div class="group-label text-[#30d158]">${t('record')}</div>
+                            <div id="bestLap-${i}" class="text-xl md:text-2xl font-mono-num font-black text-[#30d158] leading-none mt-1 drop-shadow-[0_0_10px_rgba(48,209,88,0.35)]">
+                                ${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex-1 min-h-0 overflow-y-auto pr-3 flex flex-col" id="lapHistory-${i}">${historyHtml}</div>
+
+                    <div class="mac-group-box p-2 flex-1 min-h-0 overflow-y-auto flex flex-col z-10" id="lapHistory-${i}">
+                        ${historyHtml}
+                    </div>
+
                     ${sectorsHtml}
                 </div>`;
             }
@@ -959,7 +1117,6 @@
             }
         }
 
-        // Evalúa la clasificación en tiempo real y genera comentarios profesionales de Fórmula 1
         function evaluateF1Commentary(lane, lapSec, isPurpleLap, isPersonalBest) {
             const now = performance.now();
             const activeList = [];
@@ -967,7 +1124,6 @@
                 activeList.push(appState.lanes[i]);
             }
 
-            // Ordenar por vueltas completadas (descendente) y por quién cruzó antes la meta en esa vuelta
             activeList.sort((a, b) => {
                 if (b.laps !== a.laps) return b.laps - a.laps;
                 return a.lastLapPassTime - b.lastLapPassTime;
@@ -978,60 +1134,53 @@
             const prevLeaderId = appState.currentLeaderId;
             appState.currentLeaderId = leader.id;
 
-            // 1. Aviso de ÚLTIMA VUELTA (Modo vueltas)
             if (appState.raceFormat === 'LAPS' && leader.laps === appState.targetLaps - 1 && !appState.announcedLastLap) {
                 appState.announcedLastLap = true;
                 appState.lastCommentaryTime = now;
-                speakSpotter(f1Text().last_lap(leader.name), 'HIGH', false);
+                speakSpotter(f1Text().last_lap(leader.name), 'HIGH');
                 return;
             }
 
-            // 2. Cambio de líder en carrera (después de la vuelta 1)
             if (prevLeaderId !== null && prevLeaderId !== leader.id && leader.laps > 1) {
                 appState.lastCommentaryTime = now;
-                speakSpotter(f1Text().new_leader(leader.name, leader.id), 'HIGH', false);
+                speakSpotter(f1Text().new_leader(leader.name, leader.id), 'HIGH');
                 return;
             }
 
-            // 3. Vuelta rápida absoluta de la carrera (Sector/Vuelta Morada) tras la primera vuelta de lanzamiento
-            if (isPurpleLap && lane.laps > 1 && (now - appState.lastCommentaryTime > 4500)) {
+            if (isPurpleLap && lane.laps > 1 && (now - appState.lastCommentaryTime > 6000)) {
                 appState.lastCommentaryTime = now;
-                speakSpotter(f1Text().purple_lap(lane.name, lapSec), 'HIGH', false);
+                speakSpotter(f1Text().purple_lap(lane.name, lapSec), 'HIGH');
                 return;
             }
 
-            // Respetar margen entre comentarios normales para no saturar la retransmisión
-            if (now - appState.lastCommentaryTime < 5500) return;
+            if (now - appState.lastCommentaryTime < 7000) return;
 
-            // 4. Batalla cuerpo a cuerpo (misma vuelta y menos de 0.6s de diferencia al cruzar meta)
             if (second && leader.laps > 1 && leader.laps === second.laps) {
                 const gapMs = Math.abs(leader.lastLapPassTime - second.lastLapPassTime);
-                if (gapMs > 0 && gapMs < 650) {
+                if (gapMs > 0 && gapMs < 600) {
                     const tenths = Math.max(1, Math.round(gapMs / 100));
                     appState.lastCommentaryTime = now;
-                    speakSpotter(f1Text().battle(leader.name, second.name, tenths), 'NORMAL', false);
+                    speakSpotter(f1Text().battle(leader.name, second.name, tenths), 'NORMAL');
                     return;
                 }
             }
 
-            // 5. Cantar paso por vuelta del líder cada 3 vueltas
-            if (lane.id === leader.id && leader.laps > 1 && leader.laps % 3 === 0) {
+            if (lane.id === leader.id && leader.laps > 1 && leader.laps % 4 === 0) {
                 appState.lastCommentaryTime = now;
-                speakSpotter(f1Text().lap_milestone(leader.name, leader.laps), 'NORMAL', false);
+                speakSpotter(f1Text().lap_milestone(leader.name, leader.laps), 'NORMAL');
                 return;
             }
 
-            // 6. Récord personal en verde
             if (isPersonalBest && lane.laps > 2) {
                 appState.lastCommentaryTime = now;
-                speakSpotter(f1Text().personal_best(lane.name, lapSec), 'NORMAL', false);
+                speakSpotter(f1Text().personal_best(lane.name, lapSec), 'NORMAL');
             }
         }
 
         function triggerNextCheckpoint(laneId) {
             const lane = appState.lanes[laneId];
             if (appState.raceStatus === 'COUNTDOWN') { 
-                speakSpotter(`${t('tts_false_start')} ${laneId}`, 'HIGH', true); 
+                speakSpotter(`${t('tts_false_start')} ${laneId}`, 'HIGH'); 
                 lane.laps = Math.max(-1, lane.laps - 1); 
                 return renderLanesGrid(); 
             }
@@ -1065,15 +1214,13 @@
             
             renderLanesGrid();
 
-            // Comprobar final de carrera por vueltas
             if (appState.raceFormat === 'LAPS' && lane.laps >= appState.targetLaps && appState.raceStatus === 'RACING') {
                 appState.raceStatus = 'FINISHED'; clearInterval(appState.clockInterval); if(appState.autoDemoTimer) clearInterval(appState.autoDemoTimer);
                 document.body.classList.remove('race-mode-active'); 
-                speakSpotter(`${t('tts_victory')} ${lane.name}!`, 'HIGH', false);
+                speakSpotter(`${t('tts_victory')} ${lane.name}.`, 'HIGH');
                 return;
             }
 
-            // Narración profesional F1 en directo
             if (appState.raceStatus === 'RACING') {
                 evaluateF1Commentary(lane, lapSec, isPurpleLap, isPersonalBest);
             }
@@ -1082,10 +1229,10 @@
         function toggleAutoDemo() {
             if (appState.autoDemoTimer || appState.raceStatus === 'COUNTDOWN') {
                 clearInterval(appState.autoDemoTimer); appState.autoDemoTimer = null; appState.pendingAutoSim = false;
-                if(appState.raceStatus === 'RACING') speakSpotter(t('tts_pause'), 'HIGH', false);
+                if(appState.raceStatus === 'RACING') speakSpotter(t('tts_pause'), 'HIGH');
             } else {
                 if (appState.raceStatus === 'STANDBY' || appState.raceStatus === 'FINISHED') { appState.pendingAutoSim = true; startF1Sequence(); }
-                else { appState.autoDemoTimer = setInterval(() => triggerNextCheckpoint(1 + Math.floor(Math.random() * appState.activeLanes)), 950); }
+                else { appState.autoDemoTimer = setInterval(() => triggerNextCheckpoint(1 + Math.floor(Math.random() * appState.activeLanes)), 1100); }
             }
         }
 
@@ -1093,8 +1240,7 @@
             if (appState.raceStatus === 'RACING' || appState.raceStatus === 'COUNTDOWN') return;
             countdownTimeouts.forEach(t => clearTimeout(t)); countdownTimeouts = [];
             
-            // Pre-calentar audio de salida en el idioma actual
-            WarmUpCountdownAudio();
+            switchModuleTab('LIVE');
 
             const overlay = document.getElementById('centerF1Overlay');
             overlay.classList.remove('hidden'); overlay.classList.add('flex');
@@ -1107,17 +1253,15 @@
             
             appState.raceStatus = 'COUNTDOWN'; document.body.classList.add('race-mode-active');
             
-            // Secuencia sincronizada al milisegundo (1000ms por luz roja + voz instantánea en el idioma activo)
             for (let i = 1; i <= 5; i++) {
                 countdownTimeouts.push(setTimeout(() => { 
                     document.getElementById(`giantL${i}`).classList.add('red-on');
                     document.getElementById(`f1L${i}`).classList.add('red-on');
                     const countDownNum = 6 - i;
                     centerText.textContent = String(countDownNum);
-                    centerText.style.transform = 'scale(1.15)'; setTimeout(() => centerText.style.transform = 'scale(1)', 150);
+                    centerText.style.transform = 'scale(1.12)'; setTimeout(() => centerText.style.transform = 'scale(1)', 150);
                     
-                    // instantSync = true garantiza que el número suene en el mismo instante en que se enciende el foco rojo
-                    speakSpotter(t('nums')[countDownNum], 'HIGH', true); 
+                    speakSpotter(t('nums')[countDownNum], 'HIGH'); 
                     playTone(440, 130, 'square', 0.2); 
                 }, i * 1000));
             }
@@ -1130,8 +1274,7 @@
                 centerText.style.fontSize = window.innerWidth < 768 ? '80px' : '150px'; 
                 centerText.textContent = 'GO!'; centerText.style.transform = 'scale(1.1)'; setTimeout(() => centerText.style.transform = 'scale(1)', 150);
                 
-                // Grito de salida F1 sincronizado con el encendido verde
-                speakSpotter(t('tts_go'), 'HIGH', true); 
+                speakSpotter(t('tts_go'), 'HIGH'); 
                 playTone(1046.5, 450, 'sawtooth', 0.25);
                 
                 appState.raceStatus = 'RACING'; 
@@ -1139,7 +1282,7 @@
                 startMasterClock();
                 
                 if (appState.pendingAutoSim) { 
-                    appState.autoDemoTimer = setInterval(() => triggerNextCheckpoint(1 + Math.floor(Math.random() * appState.activeLanes)), 950); 
+                    appState.autoDemoTimer = setInterval(() => triggerNextCheckpoint(1 + Math.floor(Math.random() * appState.activeLanes)), 1100); 
                     appState.pendingAutoSim = false; 
                 }
                 setTimeout(() => { 
@@ -1156,13 +1299,13 @@
             const btnFloat = document.getElementById('btnFloatingTrackCall');
             if (appState.raceStatus === 'RACING') { 
                 appState.raceStatus = 'TRACK_CALL'; 
-                if (btnFloat) { btnFloat.innerHTML = `🟢 ${t('resume')}`; btnFloat.className = 'px-8 py-4 bg-[#30d158] hover:bg-[#32d74b] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(48,209,88,0.5)] transition cursor-pointer track-call-active-btn'; }
-                speakSpotter(t('tts_pause'), 'HIGH', false); 
+                if (btnFloat) { btnFloat.innerHTML = `🟢 ${t('resume')}`; btnFloat.className = 'px-5 py-2.5 btn-neon-green font-extrabold text-sm rounded-xl transition cursor-pointer track-call-active-btn'; }
+                speakSpotter(t('tts_pause'), 'HIGH'); 
             } 
             else if (appState.raceStatus === 'TRACK_CALL') { 
                 appState.raceStatus = 'RACING'; 
-                if (btnFloat) { btnFloat.innerHTML = `⚠️ ${t('track_call')}`; btnFloat.className = 'px-8 py-4 bg-[#ff9f0a] hover:bg-[#ffd60a] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(255,159,10,0.5)] transition cursor-pointer'; }
-                speakSpotter(t('tts_resume'), 'HIGH', false); 
+                if (btnFloat) { btnFloat.innerHTML = `⚠️ ${t('track_call')}`; btnFloat.className = 'px-5 py-2.5 btn-neon-red font-extrabold text-sm rounded-xl transition cursor-pointer'; }
+                speakSpotter(t('tts_resume'), 'HIGH'); 
             }
         }
 
@@ -1173,14 +1316,13 @@
                 if (appState.raceFormat === 'TIME') {
                     appState.remainingSeconds = Math.max(0, appState.remainingSeconds - 0.1);
                     
-                    // Avisos de tiempo del comentarista de F1 (1 minuto y 30 segundos)
                     if (Math.abs(appState.remainingSeconds - 60.0) < 0.08 && !appState.announcedOneMin) {
                         appState.announcedOneMin = true;
-                        speakSpotter(f1Text().one_min, 'HIGH', false);
+                        speakSpotter(f1Text().one_min, 'HIGH');
                     }
                     if (Math.abs(appState.remainingSeconds - 30.0) < 0.08 && !appState.announcedThirtySec) {
                         appState.announcedThirtySec = true;
-                        speakSpotter(f1Text().thirty_sec, 'HIGH', false);
+                        speakSpotter(f1Text().thirty_sec, 'HIGH');
                     }
                 }
                 renderMasterClock();
@@ -1188,7 +1330,7 @@
                     appState.raceStatus = 'FINISHED'; clearInterval(appState.clockInterval); 
                     if(appState.autoDemoTimer) clearInterval(appState.autoDemoTimer); 
                     document.body.classList.remove('race-mode-active'); 
-                    speakSpotter(t('tts_end'), 'HIGH', false);
+                    speakSpotter(t('tts_end'), 'HIGH');
                 }
             }, 100);
         }
@@ -1211,7 +1353,7 @@
             document.body.classList.remove('race-mode-active');
             const overlay = document.getElementById('centerF1Overlay'); if(overlay) { overlay.classList.remove('flex'); overlay.classList.add('hidden'); }
             const btnFloat = document.getElementById('btnFloatingTrackCall');
-            if (btnFloat) { btnFloat.innerHTML = `⚠️ ${t('track_call')}`; btnFloat.className = 'px-8 py-4 bg-[#ff9f0a] hover:bg-[#ffd60a] active:scale-95 text-black font-black text-xl rounded-full shadow-[0_4px_20px_rgba(255,159,10,0.5)] transition cursor-pointer'; }
+            if (btnFloat) { btnFloat.innerHTML = `⚠️ ${t('track_call')}`; btnFloat.className = 'px-5 py-2.5 btn-neon-red font-extrabold text-sm rounded-xl transition cursor-pointer'; }
         }
         
         function resetRaceSession() { location.reload(); }
