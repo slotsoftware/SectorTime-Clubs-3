@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KRONOS SLOT PRO OS v7.0 // Multi-Language Race Director</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
@@ -194,22 +195,105 @@
         
         .arrow-up { color: var(--neon-red); }
         .arrow-down { color: var(--neon-green); }
+
+        /* =====================================================================
+           5 TEMAS DE COLOR PARA LOS DATOS DE LOS CUADROS DE PILOTOS
+           ===================================================================== */
+        .lane-card-box {
+            --data-primary: #ffffff;
+            --data-secondary: #5ac8fa;
+            --data-record: #30d158;
+            --data-accent: #ffd60a;
+            --data-muted: #94a3b8;
+            --data-box-bg: rgba(15, 17, 23, 0.55);
+            --data-box-border: rgba(255, 255, 255, 0.08);
+        }
+
+        /* 1. KRONOS NEÓN (Original) */
+        .data-palette-NEON {
+            --data-primary: #ffffff;
+            --data-secondary: #5ac8fa;
+            --data-record: #30d158;
+            --data-accent: #ffd60a;
+            --data-muted: #94a3b8;
+        }
+
+        /* 2. COLOR DE CARRIL (Sincronizado con el color del carril) */
+        .data-palette-LANE {
+            --data-primary: var(--lane-hex, #ffffff);
+            --data-secondary: #ffffff;
+            --data-record: #30d158;
+            --data-accent: var(--lane-hex, #5ac8fa);
+            --data-muted: #cbd5e1;
+            --data-box-bg: rgba(10, 12, 18, 0.72);
+            --data-box-border: color-mix(in srgb, var(--lane-hex, #fff) 35%, transparent);
+        }
+
+        /* 3. ALTO CONTRASTE (Blanco Puro & Oro Competición) */
+        .data-palette-CONTRAST {
+            --data-primary: #ffffff;
+            --data-secondary: #fde047;
+            --data-record: #facc15;
+            --data-accent: #38bdf8;
+            --data-muted: #e2e8f0;
+            --data-box-bg: rgba(0, 0, 0, 0.78);
+            --data-box-border: rgba(255, 255, 255, 0.28);
+        }
+
+        /* 4. RETRO LED (Ámbar / Cronómetro Clásico) */
+        .data-palette-RETRO {
+            --data-primary: #ff9f0a;
+            --data-secondary: #ffd60a;
+            --data-record: #30d158;
+            --data-accent: #ff453a;
+            --data-muted: #d97706;
+            --data-box-bg: rgba(20, 14, 5, 0.75);
+            --data-box-border: rgba(255, 159, 10, 0.25);
+        }
+
+        /* 5. CYBER F1 (Púrpura, Magenta & Cian) */
+        .data-palette-CYBER {
+            --data-primary: #f0abfc;
+            --data-secondary: #22d3ee;
+            --data-record: #c084fc;
+            --data-accent: #f43f5e;
+            --data-muted: #a5b4fc;
+            --data-box-bg: rgba(22, 12, 36, 0.68);
+            --data-box-border: rgba(192, 132, 252, 0.26);
+        }
+
+        .lane-card-box .mac-group-box {
+            background: var(--data-box-bg);
+            border-color: var(--data-box-border);
+        }
+        .dyn-text-primary { color: var(--data-primary) !important; }
+        .dyn-text-secondary { color: var(--data-secondary) !important; }
+        .dyn-text-record { color: var(--data-record) !important; text-shadow: 0 0 12px color-mix(in srgb, var(--data-record) 45%, transparent); }
+        .dyn-text-accent { color: var(--data-accent) !important; }
+        .dyn-text-muted { color: var(--data-muted) !important; }
+
+        @media print {
+            body * { visibility: hidden !important; }
+            #printableCalendarSheet, #printableCalendarSheet * { visibility: visible !important; }
+            #printableCalendarSheet {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100vw !important;
+                min-height: 100vh !important;
+                background: #0b0c10 !important;
+                color: #ffffff !important;
+                z-index: 99999 !important;
+                padding: 24px !important;
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2.5 md:px-5 md:py-3.5 gap-3">
 
-    <!-- FLOATING HUD EN MODO CARRERA ACTIVA -->
-    <div id="floatingRaceUI" class="fixed top-4 right-5 z-50 hidden items-center gap-3 bg-[#12141a]/90 backdrop-blur-2xl px-4 py-2.5 rounded-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
-        <button onclick="goHome()" data-i18n="home" class="px-4 py-2.5 btn-silver hover:bg-[#ff453a] hover:border-[#ff453a] text-white font-bold text-sm rounded-xl transition cursor-pointer">
-            🏠 INICIO
-        </button>
-        <div class="h-7 w-[1px] bg-white/15"></div>
-        <div id="floatingMasterClock" class="font-mono-num font-black text-[#5ac8fa] px-2 text-2xl md:text-4xl tracking-tight drop-shadow-[0_0_12px_rgba(10,132,255,0.5)]">05:00.0</div>
-        <div class="h-7 w-[1px] bg-white/15"></div>
-        <button id="btnFloatingTrackCall" onclick="toggleTrackCall()" data-i18n="track_call" class="px-5 py-2.5 btn-neon-red font-extrabold text-sm rounded-xl transition cursor-pointer">
-            ⚠️ TRACK CALL
-        </button>
-    </div>
+    <!-- HOJA OFICIAL PARA IMPRESIÓN Y EXPORTACIÓN PDF DEL CALENDARIO -->
+    <div id="printableCalendarSheet" class="hidden bg-[#0b0c10] text-white p-8 font-sans"></div>
 
     <!-- OVERLAY SEMÁFORO DE SALIDA F1 -->
     <div id="centerF1Overlay" class="fixed inset-0 z-50 bg-[#07080c]/95 backdrop-blur-3xl hidden flex-col items-center justify-center overflow-hidden">
@@ -223,25 +307,68 @@
         </div>
     </div>
 
+    <!-- MODAL CENTRAL DE SESIÓN / TEMPORADA (80% DE LA PANTALLA) -->
+    <div id="sessionModalOverlay" onclick="if(event.target === this) closeSessionModal()" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl hidden items-center justify-center p-4">
+        <div class="w-[80vw] h-[80vh] mac-window border border-white/25 shadow-[0_30px_90px_rgba(0,0,0,0.9)] flex flex-col justify-between overflow-hidden relative">
+            <!-- Cabecera estilo macOS -->
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/30 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="closeSessionModal()" class="w-3.5 h-3.5 rounded-full bg-[#ff453a] shadow-[0_0_8px_#ff453a] cursor-pointer"></button>
+                        <span class="w-3.5 h-3.5 rounded-full bg-[#ffd60a]"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-[#30d158]"></span>
+                    </div>
+                    <div class="h-5 w-[1px] bg-white/15 mx-1"></div>
+                    <span id="sessionModalBadge" class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40">SESIÓN</span>
+                    <h2 id="sessionModalTitle" class="text-lg md:text-2xl font-black text-white tracking-tight">CONFIGURACIÓN DE SESIÓN</h2>
+                </div>
+                <button onclick="closeSessionModal()" class="px-4 py-1.5 mac-control-pill text-xs font-extrabold text-[#94a3b8] hover:text-white cursor-pointer">
+                    ✕ CERRAR
+                </button>
+            </div>
+
+            <!-- Cuerpo dinámico del modal (80% pantalla) -->
+            <div id="sessionModalContent" class="p-6 md:p-8 flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+            </div>
+
+            <!-- Pie del modal -->
+            <div class="px-6 py-4 border-t border-white/10 bg-black/30 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <span id="dbStatusBadge" class="px-2.5 py-1 rounded-md bg-[#30d158]/15 border border-[#30d158]/40 text-[#30d158] text-[10px] font-black tracking-wider">● DB LOCAL ACTIVA</span>
+                    <div class="text-xs font-bold text-[#94a3b8]" id="sessionModalFooterNote">
+                        KRONOS PRO RACE // BASE DE DATOS INTERNA SINCRONIZADA
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="saveCurrentModalDataAndClose()" class="px-5 py-2.5 btn-silver hover:border-[#30d158] font-bold text-xs rounded-xl cursor-pointer">
+                        💾 GUARDAR EN DISPOSITIVO Y VOLVER
+                    </button>
+                    <button onclick="saveCurrentModalDataAndClose(); startF1Sequence();" class="px-6 py-2.5 btn-neon-green font-black text-xs rounded-xl cursor-pointer flex items-center gap-2">
+                        🚦 INICIAR SALIDA F1 AHORA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- =====================================================================
          NIVEL 1: BARRA DE SISTEMA MACOS
          ===================================================================== -->
     <header id="topSystemBar" class="mac-window px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0 z-30">
         
         <div class="flex items-center gap-3.5">
-            <div class="flex items-center gap-1.5 px-1">
-                <span class="w-3 h-3 rounded-full bg-[#ff453a] shadow-[0_0_8px_#ff453a]"></span>
-                <span class="w-3 h-3 rounded-full bg-[#ffd60a] shadow-[0_0_8px_#ffd60a]"></span>
-                <span class="w-3 h-3 rounded-full bg-[#30d158] shadow-[0_0_8px_#30d158]"></span>
-            </div>
-            <div class="h-5 w-[1px] bg-white/15"></div>
+            <button onclick="openSessionModal('SEASON')" class="px-3.5 py-2 rounded-xl btn-neon-blue font-black text-xs tracking-wide flex items-center gap-2 transition active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(10,132,255,0.4)]">
+                <span>🏆</span>
+                <span data-i18n="create_season">CREAR TEMPORADA</span>
+            </button>
+            <div class="h-6 w-[1px] bg-white/15"></div>
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-[#0a84ff] to-[#5ac8fa] flex items-center justify-center font-black text-xs text-black shadow-[0_0_15px_rgba(10,132,255,0.5)]">K7</div>
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0a84ff] to-[#5ac8fa] flex items-center justify-center font-black text-[10px] tracking-tighter text-black shadow-[0_0_15px_rgba(10,132,255,0.5)]">KPR</div>
                 <div>
-                    <h1 id="appMainTitle" data-i18n="title" class="text-sm md:text-base font-extrabold tracking-tight text-white leading-none">
-                        KRONOS PRO OS
+                    <h1 id="appMainTitle" data-i18n="title" class="text-sm md:text-base font-black tracking-tight text-white leading-none">
+                        KRONOS PRO RACE
                     </h1>
-                    <span class="text-[10px] font-semibold text-[#94a3b8] tracking-widest block mt-0.5">RACE DIRECTOR STUDIO</span>
+                    <span class="text-[10px] font-semibold text-[#5ac8fa] tracking-wider block mt-0.5">by Albert Closa</span>
                 </div>
             </div>
             <span id="raceStateBadge" data-i18n="standby" class="px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#0a84ff]/15 text-[#5ac8fa] border border-[#0a84ff]/40 shadow-[0_0_12px_rgba(10,132,255,0.2)]">
@@ -280,8 +407,7 @@
             <div class="flex items-center gap-1.5 mac-control-pill px-2.5 py-1">
                 <span class="text-[10px] text-[#94a3b8] font-extrabold" data-i18n="voice_label">VOZ:</span>
                 <select id="headerVoiceSelect" onchange="onVoiceSelectionChange()" class="bg-transparent text-xs font-bold text-[#5ac8fa] focus:outline-none cursor-pointer max-w-[165px] truncate">
-                    <option value="AUTO_MALE" class="bg-[#161820] text-white">👨 HOMBRE</option>
-                    <option value="AUTO_FEMALE" class="bg-[#161820] text-white">👩 MUJER</option>
+                    <option value="FEMALE" class="bg-[#161820] text-white">MUJER</option>
                 </select>
                 <button onclick="testVoice()" data-i18n="test_btn" class="px-2 py-0.5 bg-[#0a84ff]/20 hover:bg-[#0a84ff] text-[#5ac8fa] hover:text-white border border-[#0a84ff]/40 rounded-md text-[10px] font-extrabold transition cursor-pointer">
                     🔊 TEST
@@ -306,8 +432,9 @@
             <div class="mac-group-box px-3 py-2 flex flex-col gap-1">
                 <span class="group-label">1. TIPO DE SESIÓN</span>
                 <div class="apple-segmented">
-                    <button onclick="setSessionType('PRACTICE')" id="btnSession-PRACTICE" data-i18n="practice" class="px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer">ENTRENOS LIBRES</button>
-                    <button onclick="setSessionType('CLUB')" id="btnSession-CLUB" data-i18n="club" class="px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer">CARRERA CLUB</button>
+                    <button onclick="setSessionType('PRACTICE', true)" id="btnSession-PRACTICE" data-i18n="practice" class="px-3 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer">ENTRENOS</button>
+                    <button onclick="setSessionType('CLUB', true)" id="btnSession-CLUB" data-i18n="club" class="px-3 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer">CLUB</button>
+                    <button onclick="setSessionType('OFFICIAL', true)" id="btnSession-OFFICIAL" data-i18n="official" class="px-3 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer">OFICIAL</button>
                 </div>
             </div>
 
@@ -339,6 +466,46 @@
                             <option value="3" selected class="bg-[#12141a]">3 SECTORES</option>
                         </select>
                     </div>
+                    <div class="h-4 w-[1px] bg-white/10"></div>
+                    <div class="flex items-center gap-1" title="Longitud de cuerda del carril en metros (para cálculo de km/h y distancia)">
+                        <span class="text-[10px] font-bold text-[#94a3b8]">CUERDA:</span>
+                        <input type="number" min="5" max="200" step="0.5" value="24.5" onchange="setTrackLengthMeters(parseFloat(this.value))" class="w-14 bg-white/5 border border-white/15 rounded-lg px-1.5 py-0.5 text-xs font-mono-num font-black text-[#30d158] text-center focus:outline-none focus:border-[#30d158]"/>
+                        <span class="text-[10px] font-bold text-[#64748b]">m</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mac-group-box px-3 py-2 flex flex-col gap-1">
+                <span class="group-label text-[#5ac8fa]">4. DATOS EN CUADROS (HUD)</span>
+                <div class="apple-segmented">
+                    <button onclick="setDataViewLevel('BASIC')" id="btnView-BASIC" data-i18n="view_basic" class="px-3 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-blue transition cursor-pointer">🔹 BÁSICO</button>
+                    <button onclick="setDataViewLevel('MEDIUM')" id="btnView-MEDIUM" data-i18n="view_medium" class="px-3 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer">🔸 MEDIO</button>
+                    <button onclick="setDataViewLevel('EXPERT')" id="btnView-EXPERT" id="btnView-EXPERT" data-i18n="view_expert" class="px-3 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer">⚡ EXPERTO</button>
+                </div>
+            </div>
+
+            <div class="mac-group-box px-3 py-2 flex flex-col gap-1">
+                <span class="group-label text-[#30d158]">5. ESTILO DE CUADROS</span>
+                <div class="flex items-center gap-2">
+                    <!-- BOTÓN 1: 5 OPCIONES DE ORGANIZACIÓN DE DATOS -->
+                    <div class="relative" id="layoutDropdownContainer">
+                        <button type="button" onclick="toggleLayoutDropdown(event)" class="mac-control-pill px-3 py-1.5 text-xs font-extrabold text-white flex items-center gap-1.5 cursor-pointer hover:border-[#5ac8fa]">
+                            <span>📐</span>
+                            <span id="currentLayoutBtnText">1. Estándar</span>
+                            <span class="text-[10px] text-[#94a3b8]">▼</span>
+                        </button>
+                        <div id="layoutDropdownMenu" class="hidden absolute top-full left-0 mt-2 w-60 mac-window p-1.5 z-50 flex-col gap-1 border border-white/20 shadow-2xl"></div>
+                    </div>
+
+                    <!-- BOTÓN 2: 5 OPCIONES DE COLORES DE DATOS -->
+                    <div class="relative" id="paletteDropdownContainer">
+                        <button type="button" onclick="togglePaletteDropdown(event)" class="mac-control-pill px-3 py-1.5 text-xs font-extrabold text-white flex items-center gap-1.5 cursor-pointer hover:border-[#30d158]">
+                            <span>🎨</span>
+                            <span id="currentPaletteBtnText">1. Kronos Neón</span>
+                            <span class="text-[10px] text-[#94a3b8]">▼</span>
+                        </button>
+                        <div id="paletteDropdownMenu" class="hidden absolute top-full left-0 mt-2 w-60 mac-window p-1.5 z-50 flex-col gap-1 border border-white/20 shadow-2xl"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -357,7 +524,7 @@
             <div class="h-9 w-[1px] bg-white/10"></div>
             <div class="text-right">
                 <div id="masterClockLabel" data-i18n="track_time" class="group-label text-[#5ac8fa]">CRONO MANGA</div>
-                <div id="masterClock" class="text-3xl md:text-4xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">05:00.0</div>
+                <div id="masterClock" class="text-3xl md:text-4xl font-mono-num font-black text-white tracking-tight leading-none mt-0.5 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">05:00</div>
             </div>
         </div>
 
@@ -386,6 +553,55 @@
             </button>
         </div>
     </main>
+
+    <!-- =====================================================================
+         NIVEL 4: BARRA INFERIOR EN MODO CARRERA / ENTRENOS / OFICIAL + LOGO.JPG
+         ===================================================================== -->
+    <footer id="floatingRaceUI" class="hidden mac-window px-4 py-2.5 items-center justify-between gap-4 shrink-0 z-40 border border-white/20 shadow-[0_-10px_40px_rgba(0,0,0,0.75)]">
+        <!-- ESPACIO RESERVADO PARA LOGO.JPG -->
+        <div class="flex items-center gap-3 bg-black/45 px-3.5 py-1.5 rounded-xl border border-white/15 shrink-0">
+            <img src="logo.jpg" alt="Logo" class="h-10 md:h-12 w-auto max-w-[180px] object-contain rounded-lg" onerror="this.style.display='none'; document.getElementById('logoPlaceholderBox').style.display='flex';" />
+            <div id="logoPlaceholderBox" style="display: none;" class="h-10 md:h-12 px-4 rounded-lg border border-dashed border-[#5ac8fa]/60 bg-[#0a84ff]/10 items-center justify-center gap-2 text-xs font-mono-num font-extrabold text-[#5ac8fa]">
+                <span>🖼️</span>
+                <span>logo.jpg</span>
+            </div>
+        </div>
+
+        <!-- CONTROLES DE CARRERA DEBAJO DE TODOS LOS CUADROS -->
+        <div class="flex flex-wrap items-center justify-end gap-2.5 md:gap-3.5 flex-1">
+            <button onclick="goHome()" data-i18n="home" class="px-4 py-2.5 btn-silver hover:bg-[#ff453a] hover:border-[#ff453a] text-white font-bold text-xs md:text-sm rounded-xl transition cursor-pointer">
+                🏠 INICIO
+            </button>
+
+            <div class="h-7 w-[1px] bg-white/15 hidden sm:block"></div>
+
+            <div class="apple-segmented">
+                <button onclick="setDataViewLevel('BASIC')" id="btnFloatView-BASIC" class="px-3 py-1.5 text-[10px] md:text-xs font-extrabold rounded-[8px] btn-neon-blue cursor-pointer">BÁSICO</button>
+                <button onclick="setDataViewLevel('MEDIUM')" id="btnFloatView-MEDIUM" class="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer">MEDIO</button>
+                <button onclick="setDataViewLevel('EXPERT')" id="btnFloatView-EXPERT" class="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer">EXPERTO</button>
+            </div>
+
+            <button onclick="cycleCardLayout()" id="btnFloatLayout" class="px-3 py-2 mac-control-pill text-[10px] md:text-xs font-extrabold text-[#5ac8fa] hover:text-white cursor-pointer" title="Cambiar organización del cuadro">
+                📐 1. Estándar
+            </button>
+            <button onclick="cycleCardColorPalette()" id="btnFloatPalette" class="px-3 py-2 mac-control-pill text-[10px] md:text-xs font-extrabold text-[#30d158] hover:text-white cursor-pointer" title="Cambiar colores de datos">
+                🎨 1. Kronos Neón
+            </button>
+
+            <div class="h-7 w-[1px] bg-white/15 hidden sm:block"></div>
+
+            <div class="mac-group-box px-4 py-1.5 flex items-center gap-2 border border-white/10">
+                <span class="group-label text-[#5ac8fa] hidden md:inline" data-i18n="track_time">CRONO</span>
+                <div id="floatingMasterClock" class="font-mono-num font-black text-[#5ac8fa] text-2xl md:text-4xl tracking-tight leading-none drop-shadow-[0_0_12px_rgba(10,132,255,0.5)]">05:00</div>
+            </div>
+
+            <div class="h-7 w-[1px] bg-white/15 hidden sm:block"></div>
+
+            <button id="btnFloatingTrackCall" onclick="toggleTrackCall()" data-i18n="track_call" class="px-5 py-2.5 btn-neon-red font-extrabold text-xs md:text-sm rounded-xl transition cursor-pointer">
+                ⚠️ TRACK CALL
+            </button>
+        </div>
+    </footer>
 
     <script>
         const LANG_META = {
@@ -419,15 +635,18 @@
             }
         };
 
-        // DICCIONARIO NATURAL Y FLUIDO (Sin pausas lentas)
         const i18n = {
             es: {
-                practice: "ENTRENOS LIBRES", club: "CARRERA CLUB", time_mode: "⏱️ TIEMPO", laps_mode: "🏁 VUELTAS",
-                title: "KRONOS PRO OS", standby: "ESPERA", voice_label: "VOZ:", test_btn: "🔊 TEST",
-                voice_male: "👨 HOMBRE", voice_female: "👩 MUJER",
+                create_season: "CREAR TEMPORADA",
+                practice: "ENTRENOS", club: "CLUB", official: "OFICIAL", time_mode: "⏱️ TIEMPO", laps_mode: "🏁 VUELTAS",
+                view_basic: "🔹 BÁSICO", view_medium: "🔸 MEDIO", view_expert: "⚡ EXPERTO",
+                title: "KRONOS PRO RACE", standby: "ESPERA", voice_label: "VOZ:", test_btn: "🔊 TEST",
+                voice_female: "MUJER",
                 track_time: "CRONO MANGA", f1_start: "🚦 SALIDA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 PARRILLA EN VIVO",
                 home: "🏠 INICIO", track_call: "⚠️ TRACK CALL", resume: "🟢 REANUDAR", lane: "CARRIL", laps: "VUELTAS",
                 mean_lap: "VUELTA MEDIA", record: "RÉCORD", finish_line: "META",
+                last_lap_lbl: "ÚLTIMA VUELTA", gap_leader: "GAP LÍDER", opt_lap: "V. ÓPTIMA", consistency: "CONSISTENCIA",
+                avg5_lbl: "MEDIA 5V", speed_lbl: "VELOCIDAD", dist_lbl: "DISTANCIA", deslots_lbl: "SALIDAS", eff_lbl: "EFICIENCIA", sigma_lbl: "DESV. σ",
                 tts_test: "Prueba de audio del sistema Kronos. Todo listo en pista.", 
                 tts_false_start: "Atención, salida falsa en el carril",
                 tts_pause: "Atención pilotos, carrera en pausa. Pista cerrada.", 
@@ -438,12 +657,16 @@
                 nums: ["", "Uno", "Dos", "Tres", "Cuatro", "Cinco"]
             },
             ca: {
-                practice: "ENTRENAMENTS LLIURES", club: "CURSA CLUB", time_mode: "⏱️ TEMPS", laps_mode: "🏁 VOLTES",
-                title: "KRONOS PRO OS", standby: "ESPERA", voice_label: "VEU:", test_btn: "🔊 PROVAR",
-                voice_male: "👨 HOME", voice_female: "👩 DONA",
+                create_season: "CREAR TEMPORADA",
+                practice: "ENTRENAMENTS", club: "CLUB", official: "OFICIAL", time_mode: "⏱️ TEMPS", laps_mode: "🏁 VOLTES",
+                view_basic: "🔹 BÀSIC", view_medium: "🔸 MITJÀ", view_expert: "⚡ EXPERT",
+                title: "KRONOS PRO RACE", standby: "ESPERA", voice_label: "VEU:", test_btn: "🔊 PROVAR",
+                voice_female: "DONA",
                 track_time: "CRONO MÀNIGA", f1_start: "🚦 SORTIDA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRAELLA EN VIU",
                 home: "🏠 INICI", track_call: "⚠️ PISTA TANCADA", resume: "🟢 REPRENDRE", lane: "CARRIL", laps: "VOLTES",
                 mean_lap: "VOLTA MITJANA", record: "RÈCORD", finish_line: "META",
+                last_lap_lbl: "ÚLTIMA VOLTA", gap_leader: "GAP LÍDER", opt_lap: "V. ÒPTIMA", consistency: "CONSISTÈNCIA",
+                avg5_lbl: "MITJANA 5V", speed_lbl: "VELOCITAT", dist_lbl: "DISTÀNCIA", deslots_lbl: "SORTIDES", eff_lbl: "EFICIÈNCIA", sigma_lbl: "DESV. σ",
                 tts_test: "Prova d'àudio del sistema Kronos. Tot a punt a la pista.", 
                 tts_false_start: "Atenció, sortida falsa al carril",
                 tts_pause: "Atenció pilots, cursa en pausa. Pista tancada.", 
@@ -454,12 +677,16 @@
                 nums: ["", "Un", "Dos", "Tres", "Quatre", "Cinc"]
             },
             eu: {
-                practice: "ENTRENAMENDU LIBREAK", club: "KLUBA LASTERKETA", time_mode: "⏱️ DENBORA", laps_mode: "🏁 ITZULIAK",
-                title: "KRONOS PRO OS", standby: "ITXARON", voice_label: "AHOTSA:", test_btn: "🔊 PROBATU",
-                voice_male: "👨 GIZONA", voice_female: "👩 EMAKUMEA",
+                create_season: "DENBORALDIA SORTU",
+                practice: "ENTRENAMENDU", club: "KLUBA", official: "OFIZIALA", time_mode: "⏱️ DENBORA", laps_mode: "🏁 ITZULIAK",
+                view_basic: "🔹 OINARRIZKOA", view_medium: "🔸 ERTAINA", view_expert: "⚡ ADITUA",
+                title: "KRONOS PRO RACE", standby: "ITXARON", voice_label: "AHOTSA:", test_btn: "🔊 PROBATU",
+                voice_female: "EMAKUMEA",
                 track_time: "MAHUKA DENBORA", f1_start: "🚦 F1 IRTEERA", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 ZUZENEKO SARETA",
                 home: "🏠 HASIERA", track_call: "⚠️ PISTA ITXITA", resume: "🟢 BERREKIN", lane: "ERREIA", laps: "ITZULIAK",
                 mean_lap: "BATEZ BESTEKOA", record: "ERREKORRA", finish_line: "HELBURUA",
+                last_lap_lbl: "AZKEN ITZULIA", gap_leader: "TARTEA", opt_lap: "I. OPTIMO", consistency: "SENDOTASUNA",
+                avg5_lbl: "BATEZ 5I", speed_lbl: "ABIADURA", dist_lbl: "DISTANTZIA", deslots_lbl: "IRTEERAK", eff_lbl: "ERAGINKOR.", sigma_lbl: "DESB. σ",
                 tts_test: "Kronos sistemaren soinu proba. Dena prest pistan.", 
                 tts_false_start: "Adi, irteera faltsua erreian",
                 tts_pause: "Lasterketa geldituta. Pista itxita dago.", 
@@ -470,12 +697,16 @@
                 nums: ["", "Bat", "Bi", "Hiru", "Lau", "Bost"]
             },
             en: {
-                practice: "FREE PRACTICE", club: "CLUB RACE", time_mode: "⏱️ TIME", laps_mode: "🏁 LAPS",
-                title: "KRONOS PRO OS", standby: "STANDBY", voice_label: "VOICE:", test_btn: "🔊 TEST",
-                voice_male: "👨 MALE", voice_female: "👩 FEMALE",
+                create_season: "CREATE SEASON",
+                practice: "PRACTICE", club: "CLUB", official: "OFFICIAL", time_mode: "⏱️ TIME", laps_mode: "🏁 LAPS",
+                view_basic: "🔹 BASIC", view_medium: "🔸 MEDIUM", view_expert: "⚡ EXPERT",
+                title: "KRONOS PRO RACE", standby: "STANDBY", voice_label: "VOICE:", test_btn: "🔊 TEST",
+                voice_female: "FEMALE",
                 track_time: "HEAT TIME", f1_start: "🚦 F1 START", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 LIVE GRID",
                 home: "🏠 HOME", track_call: "⚠️ TRACK CALL", resume: "🟢 RESUME", lane: "LANE", laps: "LAPS",
                 mean_lap: "MEAN LAP", record: "RECORD", finish_line: "FINISH",
+                last_lap_lbl: "LAST LAP", gap_leader: "GAP LEADER", opt_lap: "OPTIMAL", consistency: "CONSISTENCY",
+                avg5_lbl: "5-LAP PACE", speed_lbl: "AVG SPEED", dist_lbl: "DISTANCE", deslots_lbl: "DE-SLOTS", eff_lbl: "EFFICIENCY", sigma_lbl: "STD DEV σ",
                 tts_test: "Kronos timing system audio check. Track is ready.", 
                 tts_false_start: "Warning, false start on lane",
                 tts_pause: "Track call. Race paused, track is closed.", 
@@ -486,12 +717,16 @@
                 nums: ["", "One", "Two", "Three", "Four", "Five"]
             },
             fr: {
-                practice: "ESSAIS LIBRES", club: "COURSE CLUB", time_mode: "⏱️ TEMPS", laps_mode: "🏁 TOURS",
-                title: "KRONOS PRO OS", standby: "ATTENTE", voice_label: "VOIX:", test_btn: "🔊 TEST",
-                voice_male: "👨 HOMME", voice_female: "👩 FEMME",
+                create_season: "CRÉER SAISON",
+                practice: "ESSAIS", club: "CLUB", official: "OFFICIEL", time_mode: "⏱️ TEMPS", laps_mode: "🏁 TOURS",
+                view_basic: "🔹 BASIQUE", view_medium: "🔸 MOYEN", view_expert: "⚡ EXPERT",
+                title: "KRONOS PRO RACE", standby: "ATTENTE", voice_label: "VOIX:", test_btn: "🔊 TEST",
+                voice_female: "FEMME",
                 track_time: "CHRONO MANCHE", f1_start: "🚦 DÉPART F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRILLE DIRECT",
                 home: "🏠 ACCUEIL", track_call: "⚠️ DRAPEAU JAUNE", resume: "🟢 REPRENDRE", lane: "VOIE", laps: "TOURS",
                 mean_lap: "TOUR MOYEN", record: "RECORD", finish_line: "ARRIVÉE",
+                last_lap_lbl: "DERNIER TOUR", gap_leader: "ÉCART", opt_lap: "T. OPTIMAL", consistency: "RÉGULARITÉ",
+                avg5_lbl: "MOY 5T", speed_lbl: "VITESSE", dist_lbl: "DISTANCE", deslots_lbl: "SORTIES", eff_lbl: "EFFICACITÉ", sigma_lbl: "ÉCART σ",
                 tts_test: "Test audio du système Kronos. La piste est prête.", 
                 tts_false_start: "Attention, faux départ sur la voie",
                 tts_pause: "Course suspendue, la piste est fermée.", 
@@ -502,12 +737,16 @@
                 nums: ["", "Un", "Deux", "Trois", "Quatre", "Cinq"]
             },
             de: {
-                practice: "FREIES TRAINING", club: "CLUBRENNEN", time_mode: "⏱️ ZEIT", laps_mode: "🏁 RUNDEN",
-                title: "KRONOS PRO OS", standby: "BEREIT", voice_label: "STIMME:", test_btn: "🔊 TEST",
-                voice_male: "👨 MANN", voice_female: "👩 FRAU",
+                create_season: "SAISON ERSTELLEN",
+                practice: "TRAINING", club: "CLUB", official: "OFFIZIELL", time_mode: "⏱️ ZEIT", laps_mode: "🏁 RUNDEN",
+                view_basic: "🔹 BASIS", view_medium: "🔸 MITTEL", view_expert: "⚡ EXPERTE",
+                title: "KRONOS PRO RACE", standby: "BEREIT", voice_label: "STIMME:", test_btn: "🔊 TEST",
+                voice_female: "FRAU",
                 track_time: "LAUFZEIT", f1_start: "🚦 F1 START", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 LIVE GRID",
                 home: "🏠 START", track_call: "⚠️ STRECKENSTOPP", resume: "🟢 WEITER", lane: "SPUR", laps: "RUNDEN",
                 mean_lap: "DURCHSCHNITT", record: "REKORD", finish_line: "ZIEL",
+                last_lap_lbl: "LETZTE RUNDE", gap_leader: "ABSTAND", opt_lap: "OPTIMAL", consistency: "KONSTANZ",
+                avg5_lbl: "5R-SCHNITT", speed_lbl: "TEMPO", dist_lbl: "STRECKE", deslots_lbl: "ABFLÜGE", eff_lbl: "EFFIZIENZ", sigma_lbl: "ABW. σ",
                 tts_test: "Audiotest des Kronos-Systems. Die Strecke ist bereit.", 
                 tts_false_start: "Achtung, Frühstart auf Spur",
                 tts_pause: "Rennen unterbrochen, die Strecke ist gesperrt.", 
@@ -518,12 +757,16 @@
                 nums: ["", "Eins", "Zwei", "Drei", "Vier", "Fünf"]
             },
             it: {
-                practice: "PROVE LIBERE", club: "GARA CLUB", time_mode: "⏱️ TEMPO", laps_mode: "🏁 GIRI",
-                title: "KRONOS PRO OS", standby: "ATTESA", voice_label: "VOCE:", test_btn: "🔊 PROVA",
-                voice_male: "👨 UOMO", voice_female: "👩 DONNA",
+                create_season: "CREA STAGIONE",
+                practice: "PROVE", club: "CLUB", official: "UFFICIALE", time_mode: "⏱️ TEMPO", laps_mode: "🏁 GIRI",
+                view_basic: "🔹 BASE", view_medium: "🔸 MEDIO", view_expert: "⚡ ESPERTO",
+                title: "KRONOS PRO RACE", standby: "ATTESA", voice_label: "VOCE:", test_btn: "🔊 PROVA",
+                voice_female: "DONNA",
                 track_time: "TEMPO MANCHE", f1_start: "🚦 PARTENZA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRIGLIA LIVE",
                 home: "🏠 INIZIO", track_call: "⚠️ BANDIERA GIALLA", resume: "🟢 RIPRENDI", lane: "CORSIA", laps: "GIRI",
                 mean_lap: "GIRO MEDIO", record: "RECORD", finish_line: "TRAGUARDO",
+                last_lap_lbl: "ULTIMO GIRO", gap_leader: "DISTACCO", opt_lap: "G. OTTIMALE", consistency: "COSTANZA",
+                avg5_lbl: "MEDIA 5G", speed_lbl: "VELOCITÀ", dist_lbl: "DISTANZA", deslots_lbl: "USCITE", eff_lbl: "EFFICIENZA", sigma_lbl: "DEV. σ",
                 tts_test: "Prova audio del sistema Kronos. Pista pronta.", 
                 tts_false_start: "Attenzione, falsa partenza in corsia",
                 tts_pause: "Gara sospesa, pista chiusa.", 
@@ -642,10 +885,267 @@
 
         const appState = {
             raceStatus: 'STANDBY', sessionType: 'PRACTICE', raceFormat: 'TIME', targetLaps: 25, activeLanes: 2, numSectors: 3,
+            dataViewLevel: 'BASIC', trackLengthMeters: 24.5,
+            cardLayout: 'STANDARD', cardColorPalette: 'NEON',
             heatTotalSeconds: 300, remainingSeconds: 300, overallBestLap: Infinity, overallBestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
             autoDemoTimer: null, pendingAutoSim: false, clockInterval: null, lanes: {},
-            currentLeaderId: null, announcedOneMin: false, announcedThirtySec: false, announcedLastLap: false, lastCommentaryTime: 0
+            currentLeaderId: null, announcedOneMin: false, announcedThirtySec: false, announcedLastLap: false, lastCommentaryTime: 0,
+            currentModalType: null,
+            seasonClockTimer: null,
+            activeBrushColor: 'BLUE',
+            seasonConfig: {
+                name: 'COPA KRONOS SLOT PRO 2026',
+                selectedCategory: 'GT',
+                customCategories: ['GT', 'CLÁSICOS', 'F1', 'CAMIONES', 'DTM'],
+                selectedDate: new Date().toISOString().split('T')[0],
+                calendarMonth: new Date().getMonth(),
+                calendarYear: new Date().getFullYear(),
+                scheduledDates: [new Date().toISOString().split('T')[0]],
+                calendarEvents: {
+                    [new Date().toISOString().split('T')[0]]: {
+                        title: 'GP INAUGURAL KRONOS',
+                        color: 'BLUE',
+                        category: 'GT'
+                    }
+                },
+                roster: [
+                    { id: 1, dorsal: '01', name: 'ALBERT CLOSA', team: 'KRONOS FACTORY TEAM', category: 'GT' },
+                    { id: 2, dorsal: '07', name: 'MARC ROSSI', team: 'SCUDERIA TITANIUM', category: 'GT' },
+                    { id: 3, dorsal: '23', name: 'ALEX RACING', team: 'SILVER ARROW SLOT', category: 'F1' }
+                ]
+            }
         };
+
+        const EVENT_COLORS = {
+            BLUE:   { id: 'BLUE',   hex: '#0a84ff', label: 'CARRERA OFICIAL', bg: 'rgba(10, 132, 255, 0.28)', border: '#5ac8fa' },
+            GREEN:  { id: 'GREEN',  hex: '#30d158', label: 'ENTRENOS / TEST', bg: 'rgba(48, 209, 88, 0.28)',  border: '#68f789' },
+            RED:    { id: 'RED',    hex: '#ff453a', label: 'GRAN FINAL / GP', bg: 'rgba(255, 69, 58, 0.30)',  border: '#ff8a84' },
+            AMBER:  { id: 'AMBER',  hex: '#ff9f0a', label: 'RESISTENCIA',     bg: 'rgba(255, 159, 10, 0.28)', border: '#ffd60a' },
+            PURPLE: { id: 'PURPLE', hex: '#bf5af2', label: 'EVENTO ESPECIAL', bg: 'rgba(191, 90, 242, 0.28)', border: '#d982ff' }
+        };
+
+        const CARD_LAYOUT_OPTIONS = [
+            { id: 'STANDARD',  short: '1. Estándar',      label: '1. Estándar (Vertical Clásico)', desc: 'Cabecera arriba, datos en medio e historial abajo' },
+            { id: 'SPLIT',     short: '2. Dual 2-Col',    label: '2. Telemetría Dual (2 Columnas)', desc: 'Datos a la izquierda e historial alto a la derecha' },
+            { id: 'HERO',      short: '3. Crono Gigante', label: '3. Crono Gigante (Club / Lejos)', desc: 'Vueltas y última vuelta gigantes en el centro' },
+            { id: 'BROADCAST', short: '4. F1 TV Tower',   label: '4. F1 Broadcast (Horizontal)',    desc: 'Diseño panorámico estilo retransmisión TV' },
+            { id: 'ANALYTIC',  short: '5. Cockpit Pro',   label: '5. Cockpit (Sectores Arriba)',    desc: 'Sectores e historial arriba, métricas al pie' }
+        ];
+
+        const CARD_PALETTE_OPTIONS = [
+            { id: 'NEON',     short: '1. Kronos Neón',   label: '1. Kronos Neón (Original)',    dot: '#5ac8fa' },
+            { id: 'LANE',     short: '2. Color Carril',  label: '2. Sincronizado al Carril',    dot: '#ff453a' },
+            { id: 'CONTRAST', short: '3. Alto Contraste',label: '3. Alto Contraste (Blanco/Oro)',dot: '#facc15' },
+            { id: 'RETRO',    short: '4. Retro LED',     label: '4. Retro LED (Ámbar Pista)',   dot: '#ff9f0a' },
+            { id: 'CYBER',    short: '5. Cyber F1',      label: '5. Cyber F1 (Púrpura & Cian)', dot: '#c084fc' }
+        ];
+
+        function initCardStyleDropdowns() {
+            const layoutMenu = document.getElementById('layoutDropdownMenu');
+            const paletteMenu = document.getElementById('paletteDropdownMenu');
+
+            if (layoutMenu) {
+                layoutMenu.innerHTML = CARD_LAYOUT_OPTIONS.map(opt => `
+                    <button type="button" onclick="setCardLayout('${opt.id}')" class="flex flex-col px-3 py-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer w-full">
+                        <span class="text-xs font-extrabold text-white">${opt.label}</span>
+                        <span class="text-[10px] text-[#94a3b8] leading-tight">${opt.desc}</span>
+                    </button>
+                `).join('');
+            }
+
+            if (paletteMenu) {
+                paletteMenu.innerHTML = CARD_PALETTE_OPTIONS.map(opt => `
+                    <button type="button" onclick="setCardColorPalette('${opt.id}')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer w-full">
+                        <span class="w-3 h-3 rounded-full shrink-0" style="background:${opt.dot}; box-shadow: 0 0 8px ${opt.dot}"></span>
+                        <span class="text-xs font-extrabold text-white truncate">${opt.label}</span>
+                    </button>
+                `).join('');
+            }
+
+            document.addEventListener('click', (e) => {
+                const lCont = document.getElementById('layoutDropdownContainer');
+                const pCont = document.getElementById('paletteDropdownContainer');
+                if (lCont && !lCont.contains(e.target) && layoutMenu) {
+                    layoutMenu.classList.add('hidden');
+                    layoutMenu.classList.remove('flex');
+                }
+                if (pCont && !pCont.contains(e.target) && paletteMenu) {
+                    paletteMenu.classList.add('hidden');
+                    paletteMenu.classList.remove('flex');
+                }
+            });
+        }
+
+        function toggleLayoutDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('layoutDropdownMenu');
+            const other = document.getElementById('paletteDropdownMenu');
+            if (other) { other.classList.add('hidden'); other.classList.remove('flex'); }
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !isHidden);
+            menu.classList.toggle('flex', isHidden);
+        }
+
+        function togglePaletteDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('paletteDropdownMenu');
+            const other = document.getElementById('layoutDropdownMenu');
+            if (other) { other.classList.add('hidden'); other.classList.remove('flex'); }
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !isHidden);
+            menu.classList.toggle('flex', isHidden);
+        }
+
+        function setCardLayout(layoutId) {
+            const foundIdx = CARD_LAYOUT_OPTIONS.findIndex(o => o.id === layoutId);
+            if (foundIdx === -1) return;
+            appState.cardLayout = layoutId;
+            const opt = CARD_LAYOUT_OPTIONS[foundIdx];
+            const btnText = document.getElementById('currentLayoutBtnText');
+            if (btnText) btnText.textContent = opt.short;
+            const floatBtn = document.getElementById('btnFloatLayout');
+            if (floatBtn) floatBtn.textContent = `📐 ${opt.short}`;
+            const menu = document.getElementById('layoutDropdownMenu');
+            if (menu) { menu.classList.add('hidden'); menu.classList.remove('flex'); }
+            renderLanesGrid();
+        }
+
+        function cycleCardLayout() {
+            const idx = CARD_LAYOUT_OPTIONS.findIndex(o => o.id === appState.cardLayout);
+            const next = CARD_LAYOUT_OPTIONS[(idx + 1) % CARD_LAYOUT_OPTIONS.length];
+            setCardLayout(next.id);
+        }
+
+        function setCardColorPalette(paletteId) {
+            const foundIdx = CARD_PALETTE_OPTIONS.findIndex(o => o.id === paletteId);
+            if (foundIdx === -1) return;
+            appState.cardColorPalette = paletteId;
+            const opt = CARD_PALETTE_OPTIONS[foundIdx];
+            const btnText = document.getElementById('currentPaletteBtnText');
+            if (btnText) btnText.textContent = opt.short;
+            const floatBtn = document.getElementById('btnFloatPalette');
+            if (floatBtn) floatBtn.textContent = `🎨 ${opt.short}`;
+            const menu = document.getElementById('paletteDropdownMenu');
+            if (menu) { menu.classList.add('hidden'); menu.classList.remove('flex'); }
+            renderLanesGrid();
+        }
+
+        function cycleCardColorPalette() {
+            const idx = CARD_PALETTE_OPTIONS.findIndex(o => o.id === appState.cardColorPalette);
+            const next = CARD_PALETTE_OPTIONS[(idx + 1) % CARD_PALETTE_OPTIONS.length];
+            setCardColorPalette(next.id);
+        }
+
+        const DB_NAME = 'KronosProRaceLocalDB';
+        const DB_VERSION = 1;
+        let kronosDB = null;
+
+        function initLocalDatabase() {
+            return new Promise((resolve) => {
+                if (!window.indexedDB) {
+                    resolve(false);
+                    return;
+                }
+                const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('seasonStore')) {
+                        db.createObjectStore('seasonStore', { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = (e) => {
+                    kronosDB = e.target.result;
+                    loadSeasonFromLocalDB().then(() => resolve(true));
+                };
+                request.onerror = () => resolve(false);
+            });
+        }
+
+        function saveSeasonToLocalDB() {
+            if (!kronosDB) return;
+            try {
+                const tx = kronosDB.transaction(['seasonStore'], 'readwrite');
+                const store = tx.objectStore('seasonStore');
+                const payload = {
+                    id: 'MAIN_SEASON_DATA',
+                    updatedAt: new Date().toISOString(),
+                    seasonConfig: JSON.parse(JSON.stringify(appState.seasonConfig)),
+                    lanesNames: Object.keys(appState.lanes).reduce((acc, k) => {
+                        acc[k] = {
+                            name: appState.lanes[k].name,
+                            team: appState.lanes[k].team || '',
+                            dorsal: appState.lanes[k].dorsal || k
+                        };
+                        return acc;
+                    }, {})
+                };
+                store.put(payload);
+                const badge = document.getElementById('dbStatusBadge');
+                if (badge) {
+                    badge.textContent = '✓ GUARDADO EN BASE DE DATOS LOCAL';
+                    setTimeout(() => {
+                        if (badge) badge.textContent = '● DB LOCAL ACTIVA (PC / MAC / TABLET)';
+                    }, 1800);
+                }
+            } catch (err) {
+                console.warn('Error guardando en IndexedDB:', err);
+            }
+        }
+
+        function loadSeasonFromLocalDB() {
+            return new Promise((resolve) => {
+                if (!kronosDB) return resolve();
+                try {
+                    const tx = kronosDB.transaction(['seasonStore'], 'readonly');
+                    const store = tx.objectStore('seasonStore');
+                    const req = store.get('MAIN_SEASON_DATA');
+                    req.onsuccess = () => {
+                        if (req.result && req.result.seasonConfig) {
+                            appState.seasonConfig = Object.assign(appState.seasonConfig, req.result.seasonConfig);
+                            if (!appState.seasonConfig.calendarEvents) {
+                                appState.seasonConfig.calendarEvents = {};
+                                (appState.seasonConfig.scheduledDates || []).forEach(iso => {
+                                    appState.seasonConfig.calendarEvents[iso] = {
+                                        title: `CARRERA ${appState.seasonConfig.selectedCategory || 'GT'}`,
+                                        color: 'BLUE',
+                                        category: appState.seasonConfig.selectedCategory || 'GT'
+                                    };
+                                });
+                            }
+                            if (req.result.lanesNames) {
+                                Object.keys(req.result.lanesNames).forEach(k => {
+                                    if (appState.lanes[k]) {
+                                        appState.lanes[k].name = req.result.lanesNames[k].name || appState.lanes[k].name;
+                                        appState.lanes[k].team = req.result.lanesNames[k].team || '';
+                                        appState.lanes[k].dorsal = req.result.lanesNames[k].dorsal || k;
+                                    }
+                                });
+                            }
+                            syncRosterToActiveLanes();
+                            renderLanesGrid();
+                        }
+                        resolve();
+                    };
+                    req.onerror = () => resolve();
+                } catch (e) {
+                    resolve();
+                }
+            });
+        }
+
+        function syncRosterToActiveLanes() {
+            const roster = appState.seasonConfig.roster || [];
+            for (let i = 1; i <= 10; i++) {
+                const pilot = roster[i - 1];
+                if (pilot && appState.lanes[i]) {
+                    appState.lanes[i].name = pilot.name;
+                    appState.lanes[i].team = pilot.team;
+                    appState.lanes[i].dorsal = pilot.dorsal;
+                }
+            }
+        }
 
         function switchModuleTab(tabId) {
             const tabs = ['LIVE', 'TELEMETRY', 'CHAMPIONSHIP', 'GARAGE', 'HARDWARE'];
@@ -683,17 +1183,730 @@
             }
         }
 
-        function setSessionType(type) {
+        function setSessionType(type, openModal = false) {
             appState.sessionType = type;
-            const btnPrac = document.getElementById('btnSession-PRACTICE');
-            const btnClub = document.getElementById('btnSession-CLUB');
-            if (type === 'PRACTICE') {
-                btnPrac.className = 'px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer';
-                btnClub.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer';
-            } else {
-                btnClub.className = 'px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] btn-neon-green transition cursor-pointer';
-                btnPrac.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer';
+            const types = ['PRACTICE', 'CLUB', 'OFFICIAL'];
+            types.forEach(tKey => {
+                const btn = document.getElementById(`btnSession-${tKey}`);
+                if (!btn) return;
+                if (tKey === type) {
+                    const activeStyle = type === 'OFFICIAL' ? 'btn-neon-blue' : 'btn-neon-green';
+                    btn.className = `px-3.5 py-1.5 text-xs font-extrabold rounded-[9px] ${activeStyle} transition cursor-pointer`;
+                } else {
+                    btn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer';
+                }
+            });
+
+            if (openModal) {
+                openSessionModal(type);
             }
+        }
+
+        function openSessionModal(type) {
+            appState.currentModalType = type;
+            const overlay = document.getElementById('sessionModalOverlay');
+            const badge = document.getElementById('sessionModalBadge');
+            const title = document.getElementById('sessionModalTitle');
+            const content = document.getElementById('sessionModalContent');
+            if (!overlay || !content) return;
+
+            if (appState.seasonClockTimer) {
+                clearInterval(appState.seasonClockTimer);
+                appState.seasonClockTimer = null;
+            }
+
+            let driversInputsHtml = '';
+            for (let i = 1; i <= appState.activeLanes; i++) {
+                const lane = appState.lanes[i];
+                const pal = LANE_PALETTE[i];
+                driversInputsHtml += `
+                    <div class="mac-group-box p-3 flex items-center justify-between gap-3 border-l-4" style="border-left-color: ${pal.hex}">
+                        <span class="text-xs font-black uppercase px-2 py-1 rounded bg-white/5" style="color: ${pal.hex}">${t('lane')} ${i}</span>
+                        <input type="text" value="${lane.name}" onchange="updateDriverName(${i}, this.value); renderLanesGrid();" class="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-sm font-black text-white flex-1 focus:outline-none focus:border-[#0a84ff]"/>
+                    </div>
+                `;
+            }
+
+            if (type === 'PRACTICE' || type === 'CLUB' || type === 'OFFICIAL') {
+                const isOfficial = type === 'OFFICIAL';
+                const isClub = type === 'CLUB';
+                badge.textContent = isOfficial ? t('official') : (isClub ? t('club') : t('practice'));
+                badge.className = `px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${isOfficial ? 'bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40' : 'bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40'}`;
+                title.textContent = `${badge.textContent} // PANEL CENTRAL DE PISTA`;
+                
+                content.innerHTML = `
+                    <div class="md:col-span-7 flex flex-col gap-4">
+                        <div class="mac-group-box p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="group-label text-[#30d158]">PARÁMETROS DE DIRECCIÓN DE CARRERA</span>
+                                <h3 class="text-xl font-black text-white mt-1 mb-4">Configuración de Manga (${appState.seasonConfig.selectedCategory})</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="mac-control-pill p-4">
+                                        <div class="group-label mb-2">TIEMPO DE SESIÓN (MIN / HORAS)</div>
+                                        <div class="flex items-center gap-2 flex-wrap mb-2">
+                                            <button onclick="adjustHeatTime(300)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===300?'btn-neon-green':'btn-silver'} cursor-pointer">5 MIN</button>
+                                            <button onclick="adjustHeatTime(600)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===600?'btn-neon-green':'btn-silver'} cursor-pointer">10 MIN</button>
+                                            <button onclick="adjustHeatTime(900)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===900?'btn-neon-green':'btn-silver'} cursor-pointer">15 MIN</button>
+                                            <button onclick="adjustHeatTime(1800)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===1800?'btn-neon-green':'btn-silver'} cursor-pointer">30 MIN</button>
+                                            <button onclick="adjustHeatTime(3600)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===3600?'btn-neon-green':'btn-silver'} cursor-pointer">1 HORA</button>
+                                        </div>
+                                        <div class="flex items-center gap-2 flex-wrap pt-2 border-t border-white/10">
+                                            <span class="text-[10px] text-[#ffd60a] font-black">⚡ RESISTENCIA:</span>
+                                            <button onclick="adjustHeatTime(43200)" class="px-3.5 py-1.5 rounded-lg text-xs font-black ${appState.heatTotalSeconds===43200?'btn-neon-blue':'btn-silver'} cursor-pointer">12 HORAS</button>
+                                            <button onclick="adjustHeatTime(86400)" class="px-3.5 py-1.5 rounded-lg text-xs font-black ${appState.heatTotalSeconds===86400?'btn-neon-blue':'btn-silver'} cursor-pointer">24 HORAS</button>
+                                        </div>
+                                    </div>
+                                    <div class="mac-control-pill p-4">
+                                        <div class="group-label mb-2">META DE VUELTAS (5 HASTA 1000)</div>
+                                        <div class="flex items-center gap-2 flex-wrap mb-3">
+                                            <button onclick="adjustTargetLaps(25)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===25?'btn-neon-blue':'btn-silver'} cursor-pointer">25 V</button>
+                                            <button onclick="adjustTargetLaps(50)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===50?'btn-neon-blue':'btn-silver'} cursor-pointer">50 V</button>
+                                            <button onclick="adjustTargetLaps(100)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===100?'btn-neon-blue':'btn-silver'} cursor-pointer">100 V</button>
+                                            <button onclick="adjustTargetLaps(250)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===250?'btn-neon-blue':'btn-silver'} cursor-pointer">250 V</button>
+                                            <button onclick="adjustTargetLaps(500)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===500?'btn-neon-blue':'btn-silver'} cursor-pointer">500 V</button>
+                                            <button onclick="adjustTargetLaps(1000)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===1000?'btn-neon-blue':'btn-silver'} cursor-pointer">1000 V</button>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] text-[#94a3b8] font-bold">Personalizado:</span>
+                                            <input type="number" min="5" max="1000" value="${appState.targetLaps}" onchange="adjustTargetLaps(parseInt(this.value)||25)" class="w-24 bg-black/60 border border-white/15 rounded-lg px-2 py-1 text-xs font-mono-num font-black text-white focus:outline-none focus:border-[#0a84ff]"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mac-control-pill p-4 mt-4 border border-[#30d158]/30 bg-[#30d158]/5">
+                                <div class="text-xs font-extrabold text-[#30d158] uppercase">BASE DE DATOS LOCAL ACTIVA</div>
+                                <p class="text-xs text-[#94a3b8] mt-1">Los pilotos y dorsales cargados proceden de la temporada activa guardada en este dispositivo.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-5 mac-group-box p-5 flex flex-col">
+                        <span class="group-label text-[#5ac8fa] mb-2">PARRILLA DE SALIDA (${appState.activeLanes} CARRILES)</span>
+                        <div class="flex-1 overflow-y-auto flex flex-col gap-2.5 pr-1">
+                            ${driversInputsHtml}
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'SEASON') {
+                badge.textContent = t('create_season');
+                badge.className = 'px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40 shadow-[0_0_12px_rgba(10,132,255,0.3)]';
+                title.textContent = `${t('create_season')} // GESTOR DE CATEGORÍAS, CALENDARIO Y PILOTOS`;
+                renderSeasonModalContent();
+                startSeasonLiveClock();
+            }
+
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function renderSeasonModalContent() {
+            const content = document.getElementById('sessionModalContent');
+            if (!content) return;
+
+            const cfg = appState.seasonConfig;
+            if (!cfg.calendarEvents) cfg.calendarEvents = {};
+
+            const categoriesHtml = cfg.customCategories.map(cat => {
+                const isSelected = cfg.selectedCategory === cat;
+                const catIcons = { 'GT': '🏎️', 'CLÁSICOS': '🏁', 'F1': '🚀', 'CAMIONES': '🚛', 'DTM': '⚡' };
+                const icon = catIcons[cat] || '🏆';
+                return `
+                    <button type="button" onclick="selectSeasonCategory('${cat}')" class="px-3.5 py-2 rounded-xl text-xs font-black tracking-wide transition cursor-pointer flex items-center gap-1.5 ${isSelected ? 'btn-neon-blue scale-[1.02]' : 'btn-silver hover:text-white'}">
+                        <span>${icon}</span>
+                        <span>${cat}</span>
+                    </button>
+                `;
+            }).join('');
+
+            const colorSwatchesHtml = Object.values(EVENT_COLORS).map(col => {
+                const isActive = appState.activeBrushColor === col.id;
+                return `
+                    <button type="button" onclick="setCalendarBrushColor('${col.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-black transition cursor-pointer flex items-center gap-1.5 border ${isActive ? 'scale-105 text-white shadow-lg' : 'opacity-70 hover:opacity-100 text-[#e2e8f0]'}" style="background:${col.bg}; border-color:${isActive ? '#ffffff' : col.hex}; box-shadow:${isActive ? '0 0 12px '+col.hex : 'none'}">
+                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${col.hex}"></span>
+                        <span>${col.label}</span>
+                    </button>
+                `;
+            }).join('');
+
+            const calendarGridHtml = buildMinimalistCalendarHtml(cfg.calendarYear, cfg.calendarMonth);
+
+            const selectedIso = cfg.selectedDate || new Date().toISOString().split('T')[0];
+            const activeEvent = cfg.calendarEvents[selectedIso];
+            const activeColMeta = activeEvent ? (EVENT_COLORS[activeEvent.color] || EVENT_COLORS.BLUE) : EVENT_COLORS[appState.activeBrushColor];
+
+            const sortedEventsList = Object.keys(cfg.calendarEvents).sort().map(iso => {
+                const ev = cfg.calendarEvents[iso];
+                const cMeta = EVENT_COLORS[ev.color] || EVENT_COLORS.BLUE;
+                return `
+                    <div onclick="selectCalendarDateOnly('${iso}')" class="px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/10 hover:border-white/25 flex items-center justify-between gap-2 cursor-pointer transition">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${cMeta.hex}; box-shadow: 0 0 8px ${cMeta.hex}"></span>
+                            <span class="font-mono-num text-[11px] font-black text-white shrink-0">${formatIsoToShort(iso)}</span>
+                            <span class="text-[11px] font-bold text-[#e2e8f0] truncate">${ev.title}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-white/10" style="color:${cMeta.border}">${ev.category || cfg.selectedCategory}</span>
+                            <button type="button" onclick="event.stopPropagation(); removeCalendarEvent('${iso}')" class="text-[10px] text-[#ff453a] hover:text-white font-black px-1 cursor-pointer">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const rosterListHtml = cfg.roster.map((p, idx) => `
+                <div class="mac-control-pill px-3.5 py-2.5 flex items-center justify-between gap-3 border-l-4 border-l-[#0a84ff]">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="px-2.5 py-1 rounded-lg bg-[#0a84ff]/20 border border-[#0a84ff]/50 font-mono-num font-black text-sm text-[#5ac8fa] shrink-0">
+                            #${p.dorsal}
+                        </span>
+                        <div class="min-w-0">
+                            <div class="text-sm font-black text-white truncate">${p.name}</div>
+                            <div class="text-[11px] font-semibold text-[#94a3b8] truncate">🛡️ ${p.team} <span class="text-[#30d158] ml-1">● ${p.category || cfg.selectedCategory}</span></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 text-[#94a3b8]">CARRIL ${idx + 1 <= 10 ? idx + 1 : '-'}</span>
+                        <button type="button" onclick="deleteDriverFromRoster(${p.id})" class="w-7 h-7 rounded-lg bg-[#ff453a]/15 hover:bg-[#ff453a] text-[#ff453a] hover:text-white text-xs font-black transition cursor-pointer" title="Eliminar piloto">✕</button>
+                    </div>
+                </div>
+            `).join('');
+
+            content.innerHTML = `
+                <div class="md:col-span-5 flex flex-col gap-3.5 min-h-0 overflow-y-auto pr-1">
+                    <div class="mac-group-box p-3.5 flex items-center justify-between gap-4 border border-white/10">
+                        <div class="flex-1 min-w-0">
+                            <span class="group-label text-[#5ac8fa]">TEMPORADA ACTIVA</span>
+                            <input type="text" value="${cfg.name}" onchange="updateSeasonName(this.value)" class="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 mt-1 text-sm font-black text-white focus:outline-none focus:border-[#0a84ff]" placeholder="NOMBRE DE LA TEMPORADA"/>
+                        </div>
+                        <div class="text-right shrink-0 bg-black/50 px-3.5 py-2 rounded-2xl border border-white/10">
+                            <div class="group-label text-[#30d158] flex items-center justify-end gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping"></span> HORA OFICIAL
+                            </div>
+                            <div id="seasonLiveClock" class="text-xl md:text-2xl font-mono-num font-black text-white tracking-tight leading-none mt-1">00:00:00</div>
+                            <div id="seasonLiveDateText" class="text-[10px] font-bold text-[#94a3b8] mt-0.5 uppercase">--/--/----</div>
+                        </div>
+                    </div>
+
+                    <div class="mac-group-box p-4 flex flex-col gap-3 border border-white/10">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <span class="group-label text-[#5ac8fa]">CONTROL DE EVENTOS Y CALENDARIO</span>
+                                <div class="text-[11px] font-bold text-[#94a3b8]">Elige un color y pulsa un día (${Object.keys(cfg.calendarEvents).length} eventos)</div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="printSeasonCalendar()" class="px-2.5 py-1 btn-silver hover:border-[#5ac8fa] text-[10px] font-black rounded-lg cursor-pointer flex items-center gap-1" title="Imprimir Calendario">
+                                    🖨️ IMPRIMIR
+                                </button>
+                                <button type="button" onclick="downloadSeasonCalendarPDF()" id="btnDownloadCalendarPdf" class="px-2.5 py-1 btn-neon-blue text-[10px] font-black rounded-lg cursor-pointer flex items-center gap-1" title="Descargar en PDF">
+                                    📄 BAJAR PDF
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-1.5 bg-black/35 p-2 rounded-xl border border-white/10">
+                            ${colorSwatchesHtml}
+                        </div>
+
+                        <div class="flex items-center justify-between bg-black/25 px-2.5 py-1.5 rounded-xl border border-white/5">
+                            <button type="button" onclick="changeCalendarMonth(-1)" class="px-2.5 py-1 mac-control-pill text-xs font-black text-white cursor-pointer">◀</button>
+                            <span class="text-xs font-black text-white px-2 uppercase tracking-wider">${getMonthYearLabel(cfg.calendarYear, cfg.calendarMonth)}</span>
+                            <button type="button" onclick="changeCalendarMonth(1)" class="px-2.5 py-1 mac-control-pill text-xs font-black text-white cursor-pointer">▶</button>
+                        </div>
+
+                        ${calendarGridHtml}
+
+                        <div class="p-3 rounded-xl bg-black/45 border border-white/10 flex flex-col gap-2" style="border-left: 4px solid ${activeColMeta.hex}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-black uppercase tracking-wider" style="color:${activeColMeta.border}">
+                                    📅 DÍA SELECCIONADO: ${formatIsoToShort(selectedIso)}
+                                </span>
+                                ${activeEvent ? `<button type="button" onclick="removeCalendarEvent('${selectedIso}')" class="text-[10px] font-black text-[#ff453a] hover:underline cursor-pointer">BORRAR EVENTO</button>` : `<span class="text-[10px] font-bold text-[#64748b]">SIN EVENTO ASIGNADO</span>`}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="calendarEventTitleInput" value="${activeEvent ? activeEvent.title : ''}" placeholder="Nombre del evento (ej. GP Nocturno GT...)" class="flex-1 bg-black/60 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#0a84ff]"/>
+                                <button type="button" onclick="saveCalendarEventDetails('${selectedIso}')" class="px-3 py-1.5 btn-neon-green text-[11px] font-black rounded-lg cursor-pointer shrink-0">
+                                    ✓ GUARDAR EVENTO
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="max-h-28 overflow-y-auto flex flex-col gap-1 pr-1">
+                            ${sortedEventsList || `<div class="text-[11px] text-[#64748b] font-bold text-center py-2">Pulsa sobre cualquier día del calendario para marcar un evento con el color activo.</div>`}
+                        </div>
+                    </div>
+
+                    <div class="mac-group-box p-3.5 flex flex-col gap-2 border border-white/10">
+                        <div class="flex items-center justify-between">
+                            <span class="group-label text-[#30d158]">CATEGORÍAS OFICIALES</span>
+                            <span class="text-[11px] font-black text-[#5ac8fa]">ACTIVA: ${cfg.selectedCategory}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${categoriesHtml}
+                        </div>
+                        <div class="flex items-center gap-2 mt-1 pt-2 border-t border-white/10">
+                            <input type="text" id="newCustomCatInput" placeholder="Nueva categoría (ej. RALLY, LMP1...)" class="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#0a84ff]"/>
+                            <button type="button" onclick="addCustomCategory()" class="px-3.5 py-1.5 btn-silver hover:border-[#5ac8fa] text-xs font-black rounded-xl cursor-pointer shrink-0">+ CATEGORÍA</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-7 mac-group-box p-5 flex flex-col justify-between min-h-0 border border-white/10">
+                    <div class="shrink-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <span class="group-label text-[#5ac8fa]">INSCRIPCIÓN DE PILOTOS, EQUIPOS Y DORSALES</span>
+                                <h3 class="text-base font-black text-white">Añadir Piloto a la Base de Datos del Dispositivo</h3>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-lg bg-[#0a84ff]/15 text-[#5ac8fa] border border-[#0a84ff]/30 text-xs font-black">
+                                ${cfg.roster.length} INSCRITOS
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-2.5 bg-black/35 p-3 rounded-2xl border border-white/10 mb-4">
+                            <div class="col-span-2">
+                                <label class="group-label block mb-1">DORSAL</label>
+                                <input type="text" id="inputPilotDorsal" maxlength="4" placeholder="99" class="w-full bg-black/60 border border-white/15 rounded-xl px-2.5 py-2 text-sm font-mono-num font-black text-[#30d158] text-center focus:outline-none focus:border-[#30d158]"/>
+                            </div>
+                            <div class="col-span-4">
+                                <label class="group-label block mb-1">PILOTO</label>
+                                <input type="text" id="inputPilotName" placeholder="NOMBRE PILOTO" class="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#0a84ff]"/>
+                            </div>
+                            <div class="col-span-4">
+                                <label class="group-label block mb-1">EQUIPO / ESCUDERÍA</label>
+                                <input type="text" id="inputPilotTeam" placeholder="NOMBRE EQUIPO" class="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs font-bold text-white uppercase focus:outline-none focus:border-[#0a84ff]"/>
+                            </div>
+                            <div class="col-span-2 flex items-end">
+                                <button type="button" onclick="addDriverToRoster()" class="w-full py-2 btn-neon-green font-black text-xs rounded-xl cursor-pointer transition active:scale-95">
+                                    + AÑADIR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2 pr-1">
+                        ${rosterListHtml || `<div class="h-full flex items-center justify-center text-xs font-bold text-[#64748b]">NO HAY PILOTOS INSCRITOS. AÑADE EL PRIMERO ARRIBA.</div>`}
+                    </div>
+
+                    <div class="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                        <div class="text-[11px] font-semibold text-[#94a3b8]">
+                            💾 Almacenado automáticamente en la Base de Datos Interna (<span class="text-white font-bold">IndexedDB</span>) de este PC, Mac o Tablet.
+                        </div>
+                        <button type="button" onclick="applyRosterToGridAndNotify()" class="px-3.5 py-1.5 btn-neon-blue text-[11px] font-black rounded-lg cursor-pointer">
+                            🏁 ENVIAR PILOTOS A LA PARRILLA EN VIVO
+                        </button>
+                    </div>
+                </div>
+            `;
+            updateSeasonClockDOM();
+        }
+
+        function formatIsoToShort(iso) {
+            if (!iso) return '--/--/----';
+            const parts = iso.split('-');
+            if (parts.length !== 3) return iso;
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function setCalendarBrushColor(colorId) {
+            if (EVENT_COLORS[colorId]) {
+                appState.activeBrushColor = colorId;
+                const selIso = appState.seasonConfig.selectedDate;
+                if (selIso && appState.seasonConfig.calendarEvents && appState.seasonConfig.calendarEvents[selIso]) {
+                    appState.seasonConfig.calendarEvents[selIso].color = colorId;
+                    saveSeasonToLocalDB();
+                }
+                renderSeasonModalContent();
+            }
+        }
+
+        function selectCalendarDateOnly(isoDate) {
+            appState.seasonConfig.selectedDate = isoDate;
+            const ev = appState.seasonConfig.calendarEvents[isoDate];
+            if (ev && ev.color) {
+                appState.activeBrushColor = ev.color;
+            }
+            renderSeasonModalContent();
+        }
+
+        function saveCalendarEventDetails(isoDate) {
+            const input = document.getElementById('calendarEventTitleInput');
+            const customTitle = input && input.value.trim() ? input.value.trim().toUpperCase() : `${EVENT_COLORS[appState.activeBrushColor].label} (${appState.seasonConfig.selectedCategory})`;
+            if (!appState.seasonConfig.calendarEvents) appState.seasonConfig.calendarEvents = {};
+            appState.seasonConfig.calendarEvents[isoDate] = {
+                title: customTitle,
+                color: appState.activeBrushColor,
+                category: appState.seasonConfig.selectedCategory
+            };
+            if (!appState.seasonConfig.scheduledDates.includes(isoDate)) {
+                appState.seasonConfig.scheduledDates.push(isoDate);
+            }
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+            playTone(987.77, 100, 'sine', 0.15);
+        }
+
+        function removeCalendarEvent(isoDate) {
+            if (appState.seasonConfig.calendarEvents && appState.seasonConfig.calendarEvents[isoDate]) {
+                delete appState.seasonConfig.calendarEvents[isoDate];
+            }
+            appState.seasonConfig.scheduledDates = (appState.seasonConfig.scheduledDates || []).filter(d => d !== isoDate);
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+        }
+
+        function getMonthYearLabel(year, month) {
+            const monthsEs = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            return `${monthsEs[month]} ${year}`;
+        }
+
+        function buildMinimalistCalendarHtml(year, month) {
+            const daysHeader = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            const firstDayRaw = new Date(year, month, 1).getDay();
+            const startOffset = (firstDayRaw === 0) ? 6 : firstDayRaw - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayIso = new Date().toISOString().split('T')[0];
+            const eventsMap = appState.seasonConfig.calendarEvents || {};
+            const selectedIso = appState.seasonConfig.selectedDate;
+
+            let html = `<div class="grid grid-cols-7 gap-1 text-center mb-1">`;
+            daysHeader.forEach(d => {
+                html += `<div class="text-[10px] font-black text-[#64748b] py-0.5">${d}</div>`;
+            });
+            html += `</div><div class="grid grid-cols-7 gap-1 text-center">`;
+
+            for (let e = 0; e < startOffset; e++) {
+                html += `<div class="h-8"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const ev = eventsMap[iso];
+                const isToday = iso === todayIso;
+                const isSelected = iso === selectedIso;
+
+                let inlineStyle = '';
+                let cellClasses = 'bg-white/5 text-[#e2e8f0] hover:bg-white/15';
+
+                if (ev) {
+                    const cMeta = EVENT_COLORS[ev.color] || EVENT_COLORS.BLUE;
+                    inlineStyle = `background: ${cMeta.bg}; border: 1.5px solid ${isSelected ? '#ffffff' : cMeta.hex}; color: #ffffff; box-shadow: 0 0 10px ${cMeta.hex}55;`;
+                    cellClasses = 'font-black';
+                } else if (isSelected) {
+                    inlineStyle = `border: 1.5px solid #5ac8fa; background: rgba(255,255,255,0.12);`;
+                    cellClasses = 'font-black text-white';
+                } else if (isToday) {
+                    cellClasses = 'border border-[#30d158] text-[#30d158] font-black bg-[#30d158]/10';
+                }
+
+                html += `
+                    <button type="button" onclick="toggleCalendarDate('${iso}')" title="${ev ? ev.title + ' (' + ev.category + ')' : 'Marcar/Editar fecha'}" style="${inlineStyle}" class="h-8 rounded-lg text-xs font-mono-num transition cursor-pointer flex flex-col items-center justify-center relative ${cellClasses}">
+                        <span>${day}</span>
+                        ${ev ? `<span class="w-1.5 h-1.5 rounded-full mt-0.5" style="background:${(EVENT_COLORS[ev.color] || EVENT_COLORS.BLUE).hex}"></span>` : ''}
+                    </button>
+                `;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        function changeCalendarMonth(delta) {
+            let m = appState.seasonConfig.calendarMonth + delta;
+            let y = appState.seasonConfig.calendarYear;
+            if (m < 0) { m = 11; y--; }
+            if (m > 11) { m = 0; y++; }
+            appState.seasonConfig.calendarMonth = m;
+            appState.seasonConfig.calendarYear = y;
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+        }
+
+        function toggleCalendarDate(isoDate) {
+            if (!appState.seasonConfig.calendarEvents) appState.seasonConfig.calendarEvents = {};
+            const existing = appState.seasonConfig.calendarEvents[isoDate];
+            appState.seasonConfig.selectedDate = isoDate;
+
+            if (!existing) {
+                const colMeta = EVENT_COLORS[appState.activeBrushColor] || EVENT_COLORS.BLUE;
+                appState.seasonConfig.calendarEvents[isoDate] = {
+                    title: `${colMeta.label} - ${appState.seasonConfig.selectedCategory}`,
+                    color: appState.activeBrushColor,
+                    category: appState.seasonConfig.selectedCategory
+                };
+                if (!appState.seasonConfig.scheduledDates.includes(isoDate)) {
+                    appState.seasonConfig.scheduledDates.push(isoDate);
+                }
+            } else if (existing.color !== appState.activeBrushColor) {
+                existing.color = appState.activeBrushColor;
+            } else {
+                delete appState.seasonConfig.calendarEvents[isoDate];
+                appState.seasonConfig.scheduledDates = appState.seasonConfig.scheduledDates.filter(d => d !== isoDate);
+            }
+
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+        }
+
+        function buildPrintableCalendarSheetHTML() {
+            const cfg = appState.seasonConfig;
+            const year = cfg.calendarYear;
+            const month = cfg.calendarMonth;
+            const daysHeader = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+            const firstDayRaw = new Date(year, month, 1).getDay();
+            const startOffset = (firstDayRaw === 0) ? 6 : firstDayRaw - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const eventsMap = cfg.calendarEvents || {};
+
+            let cellsHtml = '';
+            for (let e = 0; e < startOffset; e++) {
+                cellsHtml += `<div style="height:68px; background:#12141c; border-radius:10px; border:1px solid rgba(255,255,255,0.04);"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const ev = eventsMap[iso];
+                if (ev) {
+                    const cMeta = EVENT_COLORS[ev.color] || EVENT_COLORS.BLUE;
+                    cellsHtml += `
+                        <div style="height:68px; background:${cMeta.bg}; border:2px solid ${cMeta.hex}; border-radius:10px; padding:6px; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:14px; font-weight:900; color:#ffffff;">${day}</span>
+                                <span style="font-size:9px; font-weight:800; padding:1px 5px; border-radius:4px; background:${cMeta.hex}; color:#000;">${ev.category || cfg.selectedCategory}</span>
+                            </div>
+                            <div style="font-size:9px; font-weight:800; color:#ffffff; line-height:1.15; overflow:hidden;">${ev.title}</div>
+                        </div>
+                    `;
+                } else {
+                    cellsHtml += `
+                        <div style="height:68px; background:#141720; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:6px;">
+                            <span style="font-size:13px; font-weight:700; color:#94a3b8;">${day}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            const sortedDates = Object.keys(eventsMap).sort();
+            const eventsRowsHtml = sortedDates.map(iso => {
+                const ev = eventsMap[iso];
+                const cMeta = EVENT_COLORS[ev.color] || EVENT_COLORS.BLUE;
+                return `
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#141720; border-left:4px solid ${cMeta.hex}; border-radius:8px; margin-bottom:6px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-family:monospace; font-size:12px; font-weight:900; color:${cMeta.border};">${formatIsoToShort(iso)}</span>
+                            <span style="font-size:12px; font-weight:800; color:#ffffff;">${ev.title}</span>
+                        </div>
+                        <span style="font-size:10px; font-weight:900; padding:2px 8px; border-radius:6px; background:${cMeta.bg}; color:${cMeta.border}; border:1px solid ${cMeta.hex};">
+                            ${ev.category || cfg.selectedCategory} ● ${cMeta.label}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            const legendHtml = Object.values(EVENT_COLORS).map(c => `
+                <div style="display:flex; align-items:center; gap:6px; font-size:10px; font-weight:800; color:#e2e8f0;">
+                    <span style="width:10px; height:10px; border-radius:50%; background:${c.hex}; display:inline-block;"></span>
+                    <span>${c.label}</span>
+                </div>
+            `).join('');
+
+            return `
+                <div style="background:#0b0c10; color:#ffffff; padding:28px; border-radius:20px; border:1px solid rgba(255,255,255,0.15); font-family:'Inter', sans-serif;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:16px; margin-bottom:18px;">
+                        <div>
+                            <div style="font-size:11px; font-weight:900; color:#5ac8fa; letter-spacing:0.12em;">KRONOS PRO RACE // by Albert Closa</div>
+                            <h1 style="font-size:24px; font-weight:900; margin:4px 0 0 0; color:#ffffff;">${cfg.name}</h1>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:11px; font-weight:800; color:#30d158;">CALENDARIO OFICIAL DE TEMPORADA</div>
+                            <div style="font-size:16px; font-weight:900; color:#ffffff; text-transform:uppercase;">${getMonthYearLabel(year, month)}</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; padding:8px 12px; background:#141720; border-radius:10px;">
+                        ${legendHtml}
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; text-align:center; margin-bottom:6px;">
+                        ${daysHeader.map(d => `<div style="font-size:10px; font-weight:900; color:#94a3b8; padding:4px 0;">${d}</div>`).join('')}
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; margin-bottom:22px;">
+                        ${cellsHtml}
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+                        <div>
+                            <div style="font-size:11px; font-weight:900; color:#5ac8fa; letter-spacing:0.1em; margin-bottom:8px;">AGENDA DE EVENTOS (${sortedDates.length})</div>
+                            ${eventsRowsHtml || `<div style="font-size:11px; color:#64748b;">No hay eventos registrados.</div>`}
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:900; color:#30d158; letter-spacing:0.1em; margin-bottom:8px;">PILOTOS INSCRITOS (${cfg.roster.length})</div>
+                            ${cfg.roster.map(p => `
+                                <div style="display:flex; justify-content:space-between; padding:6px 10px; background:#141720; border-radius:8px; margin-bottom:5px; font-size:11px;">
+                                    <span><strong style="color:#5ac8fa;">#${p.dorsal}</strong> <strong>${p.name}</strong> (${p.team})</span>
+                                    <span style="color:#30d158; font-weight:800;">${p.category || cfg.selectedCategory}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function printSeasonCalendar() {
+            const sheet = document.getElementById('printableCalendarSheet');
+            if (!sheet) return;
+            sheet.innerHTML = buildPrintableCalendarSheetHTML();
+            sheet.classList.remove('hidden');
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => sheet.classList.add('hidden'), 500);
+            }, 150);
+        }
+
+        function downloadSeasonCalendarPDF() {
+            const btn = document.getElementById('btnDownloadCalendarPdf');
+            if (btn) btn.textContent = '⏳ GENERANDO PDF...';
+
+            const tempContainer = document.createElement('div');
+            tempContainer.style.width = '1020px';
+            tempContainer.style.background = '#0b0c10';
+            tempContainer.innerHTML = buildPrintableCalendarSheetHTML();
+            document.body.appendChild(tempContainer);
+
+            const safeName = (appState.seasonConfig.name || 'KRONOS_CALENDARIO').replace(/[^a-zA-Z0-9_-]/g, '_');
+            const opt = {
+                margin: [8, 8, 8, 8],
+                filename: `${safeName}_${getMonthYearLabel(appState.seasonConfig.calendarYear, appState.seasonConfig.calendarMonth).replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0b0c10' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            if (window.html2pdf) {
+                window.html2pdf().set(opt).from(tempContainer).save().then(() => {
+                    document.body.removeChild(tempContainer);
+                    if (btn) btn.textContent = '📄 BAJAR PDF';
+                }).catch(() => {
+                    document.body.removeChild(tempContainer);
+                    if (btn) btn.textContent = '📄 BAJAR PDF';
+                    printSeasonCalendar();
+                });
+            } else {
+                document.body.removeChild(tempContainer);
+                if (btn) btn.textContent = '📄 BAJAR PDF';
+                printSeasonCalendar();
+            }
+        }
+
+        function startSeasonLiveClock() {
+            if (appState.seasonClockTimer) clearInterval(appState.seasonClockTimer);
+            updateSeasonClockDOM();
+            appState.seasonClockTimer = setInterval(updateSeasonClockDOM, 1000);
+        }
+
+        function updateSeasonClockDOM() {
+            const clockEl = document.getElementById('seasonLiveClock');
+            const dateEl = document.getElementById('seasonLiveDateText');
+            if (!clockEl) return;
+            const now = new Date();
+            clockEl.textContent = now.toLocaleTimeString('es-ES', { hour12: false });
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+            }
+        }
+
+        function updateSeasonName(val) {
+            if (val && val.trim() !== '') {
+                appState.seasonConfig.name = val.trim().toUpperCase();
+                saveSeasonToLocalDB();
+            }
+        }
+
+        function selectSeasonCategory(cat) {
+            appState.seasonConfig.selectedCategory = cat;
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+        }
+
+        function addCustomCategory() {
+            const input = document.getElementById('newCustomCatInput');
+            if (!input) return;
+            const val = input.value.trim().toUpperCase();
+            if (!val) return;
+            if (!appState.seasonConfig.customCategories.includes(val)) {
+                appState.seasonConfig.customCategories.push(val);
+            }
+            appState.seasonConfig.selectedCategory = val;
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+        }
+
+        function addDriverToRoster() {
+            const dorsalEl = document.getElementById('inputPilotDorsal');
+            const nameEl = document.getElementById('inputPilotName');
+            const teamEl = document.getElementById('inputPilotTeam');
+            if (!nameEl || !nameEl.value.trim()) return;
+
+            const dorsal = (dorsalEl && dorsalEl.value.trim()) ? dorsalEl.value.trim().toUpperCase() : String(appState.seasonConfig.roster.length + 1).padStart(2, '0');
+            const name = nameEl.value.trim().toUpperCase();
+            const team = (teamEl && teamEl.value.trim()) ? teamEl.value.trim().toUpperCase() : 'ESCUDERÍA PRIVADA';
+
+            appState.seasonConfig.roster.push({
+                id: Date.now(),
+                dorsal,
+                name,
+                team,
+                category: appState.seasonConfig.selectedCategory
+            });
+
+            syncRosterToActiveLanes();
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+            renderLanesGrid();
+        }
+
+        function deleteDriverFromRoster(pilotId) {
+            appState.seasonConfig.roster = appState.seasonConfig.roster.filter(p => p.id !== pilotId);
+            syncRosterToActiveLanes();
+            saveSeasonToLocalDB();
+            renderSeasonModalContent();
+            renderLanesGrid();
+        }
+
+        function applyRosterToGridAndNotify() {
+            syncRosterToActiveLanes();
+            saveSeasonToLocalDB();
+            renderLanesGrid();
+            playTone(1046.5, 140, 'sine', 0.18);
+        }
+
+        function saveCurrentModalDataAndClose() {
+            saveSeasonToLocalDB();
+            renderLanesGrid();
+            closeSessionModal();
+        }
+
+        function closeSessionModal() {
+            if (appState.seasonClockTimer) {
+                clearInterval(appState.seasonClockTimer);
+                appState.seasonClockTimer = null;
+            }
+            const overlay = document.getElementById('sessionModalOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }
+        }
+
+        function adjustHeatTime(totalSecs) {
+            appState.heatTotalSeconds = totalSecs;
+            appState.remainingSeconds = appState.heatTotalSeconds;
+            setRaceFormat('TIME');
+            openSessionModal(appState.sessionType);
+        }
+
+        function adjustTargetLaps(laps) {
+            appState.targetLaps = Math.max(5, Math.min(1000, laps));
+            setRaceFormat('LAPS');
+            openSessionModal(appState.sessionType);
         }
 
         function initLangDropdown() {
@@ -763,11 +1976,167 @@
             for (let i = 1; i <= 10; i++) {
                 appState.lanes[i] = {
                     id: i, name: `PILOT ${i}`, laps: 0, lastLap: 0, bestLap: Infinity, history: [],
+                    totalTrackTime: 0, deslots: 0,
                     lastSectors: { 1: null, 2: null, 3: null },
                     prevSectors: { 1: null, 2: null, 3: null }, bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity }, 
                     sectorColors: { 1: '', 2: '', 3: '' }, lastLapPassTime: 0
                 };
             }
+        }
+
+        function setDataViewLevel(level) {
+            appState.dataViewLevel = level;
+            ['BASIC', 'MEDIUM', 'EXPERT'].forEach(lvl => {
+                const btn = document.getElementById(`btnView-${lvl}`);
+                if (btn) {
+                    if (lvl === level) {
+                        const activeColor = lvl === 'EXPERT' ? 'btn-neon-green' : 'btn-neon-blue';
+                        btn.className = `px-3 py-1.5 text-xs font-extrabold rounded-[9px] ${activeColor} transition cursor-pointer`;
+                    } else {
+                        btn.className = 'px-3 py-1.5 text-xs font-bold rounded-[9px] text-[#94a3b8] hover:text-white transition cursor-pointer';
+                    }
+                }
+                const fBtn = document.getElementById(`btnFloatView-${lvl}`);
+                if (fBtn) {
+                    if (lvl === level) {
+                        const activeColor = lvl === 'EXPERT' ? 'btn-neon-green' : 'btn-neon-blue';
+                        fBtn.className = `px-2.5 py-1 text-[10px] font-extrabold rounded-[8px] ${activeColor} cursor-pointer`;
+                    } else {
+                        fBtn.className = 'px-2.5 py-1 text-[10px] font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer';
+                    }
+                }
+            });
+            renderLanesGrid();
+        }
+
+        function setTrackLengthMeters(meters) {
+            if (!isNaN(meters) && meters >= 2 && meters <= 500) {
+                appState.trackLengthMeters = meters;
+                renderLanesGrid();
+            }
+        }
+
+        function registerManualDeslot(laneId, ev) {
+            if (ev) ev.stopPropagation();
+            if (appState.lanes[laneId]) {
+                appState.lanes[laneId].deslots = (appState.lanes[laneId].deslots || 0) + 1;
+                playTone(220, 120, 'sawtooth', 0.18);
+                renderLanesGrid();
+            }
+        }
+
+        function getSlotAdvancedMetrics(lane, leaderLane) {
+            const hist = lane.history || [];
+            const n = hist.length;
+            const mean = n > 0 ? hist.reduce((a, b) => a + b, 0) / n : 0;
+
+            // Desviación estándar (Sigma) y Consistencia (%)
+            let stdDev = 0;
+            let consistency = 100;
+            if (n >= 2 && mean > 0) {
+                const variance = hist.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / n;
+                stdDev = Math.sqrt(variance);
+                consistency = Math.max(0, Math.min(100, 100 - (stdDev / mean) * 100));
+            }
+
+            // Vuelta Óptima Teórica (Suma de mejores sectores del piloto)
+            let optimalLap = Infinity;
+            const sCount = appState.numSectors;
+            if (sCount === 1) {
+                optimalLap = lane.bestLap;
+            } else {
+                let sumBestSec = 0;
+                let allValid = true;
+                for (let s = 1; s <= sCount; s++) {
+                    if (lane.bestSectors[s] < Infinity) {
+                        sumBestSec += lane.bestSectors[s];
+                    } else {
+                        allValid = false;
+                    }
+                }
+                if (allValid && sumBestSec > 0) optimalLap = sumBestSec;
+                else if (lane.bestLap < Infinity) optimalLap = lane.bestLap;
+            }
+
+            // Ritmo últimas 5 vueltas (Stint Pace)
+            const last5 = hist.slice(-5);
+            const avg5 = last5.length > 0 ? last5.reduce((a, b) => a + b, 0) / last5.length : 0;
+
+            // Delta última vuelta vs Mejor Vuelta Personal
+            const deltaBest = (lane.lastLap > 0 && lane.bestLap < Infinity) ? (lane.lastLap - lane.bestLap) : null;
+
+            // Gap respecto al Líder de la manga
+            let gapText = 'LÍDER';
+            if (leaderLane && leaderLane.id !== lane.id) {
+                if (leaderLane.laps === 0 && lane.laps === 0) {
+                    gapText = '--';
+                } else {
+                    const lapDiff = leaderLane.laps - lane.laps;
+                    if (lapDiff > 0) {
+                        const timeDiff = (lane.totalTrackTime || 0) - (leaderLane.totalTrackTime || 0);
+                        gapText = `+${lapDiff}V`;
+                        if (lapDiff === 1 && leaderLane.lastLap > 0 && timeDiff > 0) {
+                            gapText = `+1V (${timeDiff.toFixed(1)}s)`;
+                        }
+                    } else {
+                        const secGap = Math.max(0.001, (lane.totalTrackTime || 0) - (leaderLane.totalTrackTime || 0));
+                        gapText = `+${secGap.toFixed(3)}s`;
+                    }
+                }
+            } else if (!leaderLane || leaderLane.laps === 0) {
+                gapText = '--';
+            }
+
+            // Velocidad en pista (km/h) sobre la última vuelta y Distancia total (m)
+            const trackLen = appState.trackLengthMeters || 24.5;
+            const lastSpeedKmh = lane.lastLap > 0 ? (trackLen / lane.lastLap) * 3.6 : 0;
+            const bestSpeedKmh = lane.bestLap < Infinity ? (trackLen / lane.bestLap) * 3.6 : 0;
+            const totalDistanceM = Math.max(0, lane.laps) * trackLen;
+
+            // Eficiencia del piloto (Mejor vuelta / Media)
+            const efficiency = (mean > 0 && lane.bestLap < Infinity) ? Math.min(100, (lane.bestLap / mean) * 100) : 0;
+
+            return {
+                mean,
+                stdDev,
+                consistency,
+                optimalLap,
+                avg5,
+                deltaBest,
+                gapText,
+                lastSpeedKmh,
+                bestSpeedKmh,
+                totalDistanceM,
+                efficiency
+            };
+        }
+
+        function buildSparklineSvg(history, hexColor, bestLap) {
+            if (!history || history.length < 2) {
+                return `<div class="h-full flex items-center justify-center text-[10px] font-bold text-[#64748b] tracking-wider">ESPERANDO +2 VUELTAS PARA TELEMETRÍA GRÁFICA</div>`;
+            }
+            const recent = history.slice(-10);
+            const minV = Math.min(...recent);
+            const maxV = Math.max(...recent);
+            const range = Math.max(0.05, maxV - minV);
+            const w = 240, h = 38;
+            const pts = recent.map((val, idx) => {
+                const x = 8 + (idx / Math.max(1, recent.length - 1)) * (w - 16);
+                const y = (h - 6) - ((val - minV) / range) * (h - 14);
+                return { x, y, val };
+            });
+            const polyPoints = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+            const circles = pts.map(p => {
+                const isBest = Math.abs(p.val - bestLap) < 0.0001;
+                return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${isBest ? 3.5 : 2.2}" fill="${isBest ? '#30d158' : hexColor}" />`;
+            }).join('');
+
+            return `
+                <svg viewBox="0 0 ${w} ${h}" class="w-full h-9 overflow-visible">
+                    <polyline fill="none" stroke="${hexColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${polyPoints}" opacity="0.85"/>
+                    ${circles}
+                </svg>
+            `;
         }
 
         function getAudioContext() {
@@ -779,11 +2148,7 @@
             try { const c = getAudioContext(), o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.value = f; g.gain.value = v; g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d/1000); o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + d/1000); } catch(e){}
         }
 
-        // ==========================================
-        // MOTOR DE VOZ NATIVO Y PROFESIONAL (SIN ACOPLAMIENTOS NI LENTITUD)
-        // ==========================================
         let cachedVoices = [];
-        let activeAudioObj = null;
         let speechUnlocked = false;
         const speechQueue = [];
         let isSpeakingQueue = false;
@@ -801,13 +2166,13 @@
         document.addEventListener('click', unlockMobileAudio, { once: true, passive: true });
 
         const NATIVE_SPEAKER_PROFILES = {
-            es: { locale: 'es-ES', MALE: { label: 'Álvaro', keywords: ['alvaro', 'álvaro', 'jorge', 'pablo', 'raul', 'male', 'hombre'] }, FEMALE: { label: 'Elvira', keywords: ['elvira', 'monica', 'mónica', 'laura', 'lucia', 'female', 'mujer'] } },
-            ca: { locale: 'ca-ES', MALE: { label: 'Enric', keywords: ['enric', 'jordi', 'pau', 'male', 'home'] }, FEMALE: { label: 'Joana', keywords: ['joana', 'montserrat', 'nuria', 'female', 'dona'] } },
-            eu: { locale: 'eu-ES', MALE: { label: 'Ander', keywords: ['ander', 'gorka', 'male', 'gizona'] }, FEMALE: { label: 'Amaia', keywords: ['amaia', 'ane', 'female', 'emakumea'] } },
-            en: { locale: 'en-GB', MALE: { label: 'Ryan', keywords: ['ryan', 'daniel', 'george', 'oliver', 'male'] }, FEMALE: { label: 'Sonia', keywords: ['sonia', 'kate', 'serena', 'hazel', 'female'] } },
-            fr: { locale: 'fr-FR', MALE: { label: 'Henri', keywords: ['henri', 'thomas', 'paul', 'male', 'homme'] }, FEMALE: { label: 'Denise', keywords: ['denise', 'amelie', 'amélie', 'female', 'femme'] } },
-            de: { locale: 'de-DE', MALE: { label: 'Conrad', keywords: ['conrad', 'markus', 'stefan', 'male', 'mann'] }, FEMALE: { label: 'Katja', keywords: ['katja', 'anna', 'female', 'frau'] } },
-            it: { locale: 'it-IT', MALE: { label: 'Diego', keywords: ['diego', 'luca', 'cosimo', 'male', 'uomo'] }, FEMALE: { label: 'Elsa', keywords: ['elsa', 'alice', 'federica', 'female', 'donna'] } }
+            es: { locale: 'es-ES', FEMALE: { label: 'Elvira', keywords: ['elvira', 'monica', 'mónica', 'laura', 'lucia', 'female', 'mujer'] } },
+            ca: { locale: 'ca-ES', FEMALE: { label: 'Joana', keywords: ['joana', 'montserrat', 'nuria', 'female', 'dona'] } },
+            eu: { locale: 'eu-ES', FEMALE: { label: 'Amaia', keywords: ['amaia', 'ane', 'female', 'emakumea'] } },
+            en: { locale: 'en-GB', FEMALE: { label: 'Sonia', keywords: ['sonia', 'kate', 'serena', 'hazel', 'female'] } },
+            fr: { locale: 'fr-FR', FEMALE: { label: 'Denise', keywords: ['denise', 'amelie', 'amélie', 'female', 'femme'] } },
+            de: { locale: 'de-DE', FEMALE: { label: 'Katja', keywords: ['katja', 'anna', 'female', 'frau'] } },
+            it: { locale: 'it-IT', FEMALE: { label: 'Elsa', keywords: ['elsa', 'alice', 'federica', 'female', 'donna'] } }
         };
 
         function loadSystemVoices() {
@@ -845,20 +2210,15 @@
             return matching;
         }
 
-        function findStrictLocalVoice(langCode, gender) {
+        function findStrictLocalVoice(langCode) {
             const langVoices = getNativeSystemVoicesForLang(langCode);
             if (langVoices.length === 0) return null;
-
             const profile = NATIVE_SPEAKER_PROFILES[langCode] || NATIVE_SPEAKER_PROFILES['es'];
-            const targetKeywords = profile[gender].keywords;
-            const oppositeGender = gender === 'MALE' ? 'FEMALE' : 'MALE';
-            const oppositeKeywords = profile[oppositeGender].keywords;
-
-            const matchesKeyword = (name, kwList) => kwList.some(kw => name.toLowerCase().includes(kw));
+            const femaleKeywords = profile.FEMALE.keywords;
 
             const verified = langVoices.filter(v => {
                 const n = v.name.toLowerCase();
-                return matchesKeyword(n, targetKeywords) && !matchesKeyword(n, oppositeKeywords);
+                return femaleKeywords.some(kw => n.includes(kw));
             });
 
             if (verified.length > 0) return verified[0];
@@ -872,17 +2232,22 @@
             const previousValue = select.value;
             const profile = NATIVE_SPEAKER_PROFILES[currentLang] || NATIVE_SPEAKER_PROFILES['es'];
             const langVoices = getNativeSystemVoicesForLang(currentLang);
+            const localFemale = findStrictLocalVoice(currentLang);
+            const cleanName = (v, fallback) => v ? v.name.replace(/Microsoft |Google |Apple |Online |\(Natural\) |Desktop /gi, '').split('-')[0].trim() : fallback;
 
-            const localMale = findStrictLocalVoice(currentLang, 'MALE');
-            const localFemale = findStrictLocalVoice(currentLang, 'FEMALE');
+            let optionsHtml = `<option value="FEMALE" class="bg-[#161820] text-white">${cleanName(localFemale, profile.FEMALE.label)} (${t('voice_female')})</option>`;
 
-            const cleanName = (v, fallback) => v ? v.name.replace(/Microsoft |Google |Apple |Online |\(Natural\) /gi, '').split('-')[0].trim() : fallback;
+            langVoices.forEach(v => {
+                if (localFemale && v.name === localFemale.name) return;
+                optionsHtml += `<option value="VOICE_URI:${v.voiceURI}" class="bg-[#161820] text-white">${cleanName(v, v.name)}</option>`;
+            });
 
-            select.innerHTML = `
-                <option value="AUTO_MALE" class="bg-[#161820] text-white">👨 ${t('voice_male')} (${cleanName(localMale, profile.MALE.label)})</option>
-                <option value="AUTO_FEMALE" class="bg-[#161820] text-white">👩 ${t('voice_female')} (${cleanName(localFemale, profile.FEMALE.label)})</option>
-            `;
-            if (previousValue) select.value = previousValue;
+            select.innerHTML = optionsHtml;
+            if (previousValue && Array.from(select.options).some(o => o.value === previousValue)) {
+                select.value = previousValue;
+            } else {
+                select.value = 'FEMALE';
+            }
         }
 
         function onVoiceSelectionChange() {
@@ -891,24 +2256,23 @@
 
         function resolveSelectedVoice() {
             const select = document.getElementById('headerVoiceSelect');
-            const val = select ? select.value : 'AUTO_MALE';
-            const gender = val === 'AUTO_FEMALE' ? 'FEMALE' : 'MALE';
-            const localVoice = findStrictLocalVoice(currentLang, gender);
-            return { localVoice, gender };
+            const val = select ? select.value : 'FEMALE';
+            if (val && val.startsWith('VOICE_URI:')) {
+                const uri = val.replace('VOICE_URI:', '');
+                const found = cachedVoices.find(v => v.voiceURI === uri);
+                if (found) return found;
+            }
+            return findStrictLocalVoice(currentLang);
         }
 
-        // Sistema anti-acoplamiento y control de cola de voz
         function speakSpotter(text, priority = 'NORMAL') {
             if (!text) return;
 
             if (priority === 'HIGH') {
-                // Interrupción inmediata para alertas críticas (Salida F1, Bandera Roja, Victoria)
                 speechQueue.length = 0;
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
-                if (activeAudioObj) { activeAudioObj.pause(); activeAudioObj.currentTime = 0; }
                 isSpeakingQueue = false;
             } else {
-                // Evitar saturación de mensajes si hay demasiada actividad en pista
                 if (speechQueue.length >= 2) return;
             }
 
@@ -921,7 +2285,7 @@
             isSpeakingQueue = true;
 
             const item = speechQueue.shift();
-            const { localVoice } = resolveSelectedVoice();
+            const localVoice = resolveSelectedVoice();
 
             if (window.speechSynthesis) {
                 const ut = new SpeechSynthesisUtterance(item.text);
@@ -933,12 +2297,12 @@
                     ut.lang = profile.locale;
                 }
                 ut.pitch = 1.0; 
-                ut.rate = 1.12; // Velocidad natural y fluida de locutor de TV (ni lento ni acelerado)
+                ut.rate = 1.12;
                 ut.volume = 1.0;
 
                 ut.onend = () => {
                     isSpeakingQueue = false;
-                    setTimeout(processSpeechQueue, 150); // Pausa limpia entre locuciones
+                    setTimeout(processSpeechQueue, 150);
                 };
                 ut.onerror = () => {
                     isSpeakingQueue = false;
@@ -955,9 +2319,6 @@
             speakSpotter(t('tts_test'), 'HIGH');
         }
 
-        // ==========================================
-        // LÓGICA DE CARRERA
-        // ==========================================
         function setRaceFormat(format) { 
             appState.raceFormat = format; 
             const btnTime = document.getElementById('btnMode-TIME');
@@ -1000,7 +2361,17 @@
             const container = document.getElementById('lanesGridContainer');
             const n = appState.activeLanes;
             const sCount = appState.numSectors;
+            const viewLevel = appState.dataViewLevel || 'BASIC';
             const standings = getStandingsMap();
+
+            // Encontrar el carril líder actual para cálculo de Gaps reales
+            let leaderLane = null;
+            for (let i = 1; i <= n; i++) {
+                if (standings[i] === 1) {
+                    leaderLane = appState.lanes[i];
+                    break;
+                }
+            }
             
             let cols = 1, rows = 1;
             if (n === 1) { cols = 1; rows = 1; } else if (n === 2) { cols = 2; rows = 1; } else if (n === 3) { cols = 3; rows = 1; }
@@ -1014,6 +2385,7 @@
             for (let i = 1; i <= n; i++) {
                 const lane = appState.lanes[i], pal = LANE_PALETTE[i], pos = standings[i];
                 const isLeader = pos === 1 && lane.laps > 0;
+                const metrics = getSlotAdvancedMetrics(lane, leaderLane);
 
                 let historyHtml = '';
                 for (let j = lane.history.length - 1; j >= 0; j--) {
@@ -1021,11 +2393,21 @@
                     const isBest = tm === lane.bestLap;
                     const prev = j > 0 ? lane.history[j-1] : null;
                     let trend = prev ? (tm < prev ? '<span class="arrow-down text-xs ml-1.5">▼</span>' : (tm > prev ? '<span class="arrow-up text-xs ml-1.5">▲</span>' : '<span class="text-[#64748b] text-xs ml-1.5">•</span>')) : '';
+                    const diffPrev = prev ? (tm - prev) : null;
+                    const diffBadge = (viewLevel !== 'BASIC' && diffPrev !== null)
+                        ? `<span class="text-[10px] font-mono-num ml-1.5 px-1.5 py-0.2 rounded bg-white/5 ${diffPrev <= 0 ? 'text-[#30d158]' : 'text-[#ff453a]'}">${diffPrev > 0 ? '+' : ''}${diffPrev.toFixed(3)}</span>`
+                        : '';
+                    const kmhBadge = (viewLevel === 'EXPERT')
+                        ? `<span class="text-[10px] font-mono-num text-[#5ac8fa] ml-2 hidden sm:inline">${((appState.trackLengthMeters || 24.5) / tm * 3.6).toFixed(1)} km/h</span>`
+                        : '';
+
                     historyHtml += `
-                        <div class="flex justify-between items-center text-sm md:text-base font-mono-num border-b border-white/5 py-1.5 px-2 rounded-lg hover:bg-white/5 shrink-0">
-                            <span class="text-[#94a3b8] text-xs font-bold">LAP ${j + 1}</span>
+                        <div class="flex justify-between items-center text-xs md:text-sm font-mono-num border-b border-white/5 py-1 px-2 rounded-lg hover:bg-white/5 shrink-0">
+                            <span class="dyn-text-muted text-[11px] font-bold">LAP ${j + 1}</span>
                             <div class="flex items-center">
-                                <span class="${isBest ? 'text-[#30d158] font-extrabold drop-shadow-[0_0_8px_rgba(48,209,88,0.4)]' : 'text-[#f8fafc] font-semibold'}">${tm.toFixed(3)}s</span>
+                                <span class="${isBest ? 'dyn-text-record font-extrabold' : 'dyn-text-primary font-semibold'}">${tm.toFixed(3)}s</span>
+                                ${diffBadge}
+                                ${kmhBadge}
                                 ${trend}
                             </div>
                         </div>`;
@@ -1037,75 +2419,321 @@
 
                 let sectorsHtml = '';
                 if (sCount >= 2) {
-                    const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'text-white';
+                    const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'dyn-text-primary';
                     const s1Val = lane.lastSectors[1] !== null ? lane.lastSectors[1].toFixed(3) : '--.---';
                     const s2Val = lane.lastSectors[2] !== null ? lane.lastSectors[2].toFixed(3) : '--.---';
                     const s3Val = lane.lastSectors[3] !== null ? lane.lastSectors[3].toFixed(3) : '--.---';
+                    const b1Val = lane.bestSectors[1] < Infinity ? lane.bestSectors[1].toFixed(3) : '--.---';
+                    const b2Val = lane.bestSectors[2] < Infinity ? lane.bestSectors[2].toFixed(3) : '--.---';
+                    const b3Val = lane.bestSectors[3] < Infinity ? lane.bestSectors[3].toFixed(3) : '--.---';
                     const tr1 = (lane.lastSectors[1] && lane.prevSectors[1]) ? (lane.lastSectors[1] < lane.prevSectors[1] ? '▼' : '▲') : '';
                     const tr2 = (lane.lastSectors[2] && lane.prevSectors[2]) ? (lane.lastSectors[2] < lane.prevSectors[2] ? '▼' : '▲') : '';
                     const tr3 = (lane.lastSectors[3] && lane.prevSectors[3]) ? (lane.lastSectors[3] < lane.prevSectors[3] ? '▼' : '▲') : '';
 
                     sectorsHtml = `
-                        <div class="grid grid-cols-${sCount} gap-2 mt-auto pt-2.5 shrink-0">
-                            <div class="mac-group-box px-2.5 py-1.5 text-center">
-                                <div class="group-label">SECTOR 1</div>
-                                <div id="secVal-${i}-1" class="flex justify-center items-center text-base md:text-xl font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[1])}">${s1Val}<span class="${tr1==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr1}</span></div>
+                        <div class="grid grid-cols-${sCount} gap-2 shrink-0 z-10">
+                            <div class="mac-group-box px-2 py-1.5 text-center">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="group-label">S1</span>
+                                    ${viewLevel !== 'BASIC' ? `<span class="text-[9px] font-mono-num dyn-text-record font-bold">PB ${b1Val}</span>` : ''}
+                                </div>
+                                <div id="secVal-${i}-1" class="flex justify-center items-center text-sm md:text-lg font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[1])}">${s1Val}<span class="${tr1==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr1}</span></div>
                             </div>
-                            <div class="mac-group-box px-2.5 py-1.5 text-center">
-                                <div class="group-label">${sCount === 2 ? t('finish_line') : 'SECTOR 2'}</div>
-                                <div id="secVal-${i}-2" class="flex justify-center items-center text-base md:text-xl font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[2])}">${s2Val}<span class="${tr2==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr2}</span></div>
+                            <div class="mac-group-box px-2 py-1.5 text-center">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="group-label">${sCount === 2 ? t('finish_line') : 'S2'}</span>
+                                    ${viewLevel !== 'BASIC' ? `<span class="text-[9px] font-mono-num dyn-text-record font-bold">PB ${b2Val}</span>` : ''}
+                                </div>
+                                <div id="secVal-${i}-2" class="flex justify-center items-center text-sm md:text-lg font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[2])}">${s2Val}<span class="${tr2==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr2}</span></div>
                             </div>
                             ${sCount === 3 ? `
-                            <div class="mac-group-box px-2.5 py-1.5 text-center">
-                                <div class="group-label">${t('finish_line')}</div>
-                                <div id="secVal-${i}-3" class="flex justify-center items-center text-base md:text-xl font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[3])}">${s3Val}<span class="${tr3==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr3}</span></div>
+                            <div class="mac-group-box px-2 py-1.5 text-center">
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="group-label">${t('finish_line')}</span>
+                                    ${viewLevel !== 'BASIC' ? `<span class="text-[9px] font-mono-num dyn-text-record font-bold">PB ${b3Val}</span>` : ''}
+                                </div>
+                                <div id="secVal-${i}-3" class="flex justify-center items-center text-sm md:text-lg font-mono-num font-extrabold mt-0.5 ${getSecColor(lane.sectorColors[3])}">${s3Val}<span class="${tr3==='▼'?'arrow-down':'arrow-up'} text-xs ml-1">${tr3}</span></div>
                             </div>` : ''}
                         </div>`;
                 }
 
-                html += `
-                <div id="laneCard-${i}" onclick="triggerNextCheckpoint(${i})" class="mac-window p-4 flex flex-col h-full min-h-0 relative overflow-hidden transition-all hover:border-white/30 cursor-pointer" style="border-top: 4px solid ${pal.hex};">
-                    <div class="absolute -top-12 -left-12 w-36 h-36 rounded-full pointer-events-none opacity-20 blur-2xl" style="background: ${pal.hex}"></div>
+                // Construcción del bloque de telemetría según el Nivel seleccionado (BÁSICO / MEDIO / EXPERTO)
+                let telemetryBodyHtml = '';
+                const deltaStr = metrics.deltaBest !== null ? `${metrics.deltaBest > 0 ? '+' : ''}${metrics.deltaBest.toFixed(3)}s` : '--.---';
+                const deltaColor = metrics.deltaBest !== null ? (metrics.deltaBest <= 0.001 ? 'dyn-text-record' : 'dyn-text-accent') : 'text-[#64748b]';
 
-                    <div class="flex justify-between items-start gap-2 mb-3 shrink-0 z-10">
+                if (viewLevel === 'BASIC') {
+                    telemetryBodyHtml = `
+                        <div class="grid grid-cols-2 gap-2.5 shrink-0 z-10">
+                            <div class="mac-group-box px-3 py-2">
+                                <div class="group-label">${t('mean_lap')}</div>
+                                <div id="meanLap-${i}" class="text-xl md:text-2xl font-mono-num font-extrabold dyn-text-primary leading-none mt-1">
+                                    ${metrics.mean > 0 ? metrics.mean.toFixed(3) : '0.000'}
+                                </div>
+                            </div>
+                            <div class="mac-group-box px-3 py-2 text-right border border-[#30d158]/25 bg-[#30d158]/5">
+                                <div class="group-label dyn-text-record">${t('record')}</div>
+                                <div id="bestLap-${i}" class="text-xl md:text-2xl font-mono-num font-black dyn-text-record leading-none mt-1">
+                                    ${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (viewLevel === 'MEDIUM') {
+                    telemetryBodyHtml = `
+                        <div class="flex flex-col gap-2 shrink-0 z-10">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="mac-group-box px-2.5 py-1.5 border border-[#5ac8fa]/25 bg-[#0a84ff]/5">
+                                    <div class="flex items-center justify-between">
+                                        <span class="group-label dyn-text-secondary">${t('last_lap_lbl')}</span>
+                                        <span class="text-[10px] font-mono-num font-black ${deltaColor}">${deltaStr}</span>
+                                    </div>
+                                    <div class="text-lg md:text-2xl font-mono-num font-black dyn-text-primary leading-none mt-1">
+                                        ${lane.lastLap > 0 ? lane.lastLap.toFixed(3) : '--.---'}
+                                    </div>
+                                </div>
+                                <div class="mac-group-box px-2.5 py-1.5 border border-[#30d158]/25 bg-[#30d158]/5">
+                                    <div class="group-label dyn-text-record">${t('record')}</div>
+                                    <div id="bestLap-${i}" class="text-lg md:text-2xl font-mono-num font-black dyn-text-record leading-none mt-1">
+                                        ${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}
+                                    </div>
+                                </div>
+                                <div class="mac-group-box px-2.5 py-1.5 text-right">
+                                    <div class="group-label dyn-text-accent">${t('gap_leader')}</div>
+                                    <div class="text-base md:text-xl font-mono-num font-black ${isLeader ? 'dyn-text-record' : 'dyn-text-accent'} leading-none mt-1 truncate">
+                                        ${metrics.gapText}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="mac-group-box px-2.5 py-1.5">
+                                    <div class="group-label">${t('mean_lap')}</div>
+                                    <div id="meanLap-${i}" class="text-sm md:text-base font-mono-num font-extrabold dyn-text-primary leading-none mt-1">
+                                        ${metrics.mean > 0 ? metrics.mean.toFixed(3) + 's' : '0.000s'}
+                                    </div>
+                                </div>
+                                <div class="mac-group-box px-2.5 py-1.5">
+                                    <div class="group-label text-[#d982ff]">${t('opt_lap')}</div>
+                                    <div class="text-sm md:text-base font-mono-num font-extrabold text-[#d982ff] leading-none mt-1">
+                                        ${metrics.optimalLap < Infinity ? metrics.optimalLap.toFixed(3) + 's' : '--.---'}
+                                    </div>
+                                </div>
+                                <div class="mac-group-box px-2.5 py-1.5 text-right">
+                                    <div class="group-label">${t('consistency')}</div>
+                                    <div class="text-sm md:text-base font-mono-num font-extrabold ${metrics.consistency >= 95 ? 'dyn-text-record' : 'dyn-text-secondary'} leading-none mt-1">
+                                        ${lane.laps >= 2 ? metrics.consistency.toFixed(1) + '%' : '100%'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // MODO EXPERTO: Ingeniería de pista Slot completa
+                    telemetryBodyHtml = `
+                        <div class="flex flex-col gap-1.5 shrink-0 z-10">
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <div class="mac-group-box px-2 py-1.5 border border-[#5ac8fa]/30 bg-[#0a84ff]/10">
+                                    <div class="group-label dyn-text-secondary">${t('last_lap_lbl')}</div>
+                                    <div class="text-base md:text-xl font-mono-num font-black dyn-text-primary leading-none mt-0.5">
+                                        ${lane.lastLap > 0 ? lane.lastLap.toFixed(3) : '--.---'}
+                                    </div>
+                                    <div class="text-[9px] font-mono-num font-bold ${deltaColor} mt-0.5">Δ PB: ${deltaStr}</div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1.5 border border-[#30d158]/30 bg-[#30d158]/10">
+                                    <div class="group-label dyn-text-record">${t('record')}</div>
+                                    <div id="bestLap-${i}" class="text-base md:text-xl font-mono-num font-black dyn-text-record leading-none mt-0.5">
+                                        ${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}
+                                    </div>
+                                    <div class="text-[9px] font-mono-num font-bold text-[#d982ff] mt-0.5">OPT: ${metrics.optimalLap < Infinity ? metrics.optimalLap.toFixed(3) : '--.---'}</div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1.5">
+                                    <div class="group-label">${t('avg5_lbl')} / MEDIA</div>
+                                    <div id="meanLap-${i}" class="text-base md:text-xl font-mono-num font-black dyn-text-primary leading-none mt-0.5">
+                                        ${metrics.avg5 > 0 ? metrics.avg5.toFixed(3) : '0.000'}
+                                    </div>
+                                    <div class="text-[9px] font-mono-num font-bold dyn-text-muted mt-0.5">TOT: ${metrics.mean > 0 ? metrics.mean.toFixed(3) : '0.000'}s</div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1.5 text-right">
+                                    <div class="group-label dyn-text-accent">${t('gap_leader')}</div>
+                                    <div class="text-sm md:text-lg font-mono-num font-black ${isLeader ? 'dyn-text-record' : 'dyn-text-accent'} leading-none mt-0.5 truncate">
+                                        ${metrics.gapText}
+                                    </div>
+                                    <div class="text-[9px] font-mono-num font-bold dyn-text-muted mt-0.5">T.PISTA: ${(lane.totalTrackTime || 0).toFixed(1)}s</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-5 gap-1.5">
+                                <div class="mac-group-box px-2 py-1">
+                                    <div class="group-label text-[9px]">${t('speed_lbl')}</div>
+                                    <div class="text-xs md:text-sm font-mono-num font-black dyn-text-secondary mt-0.5">${metrics.lastSpeedKmh.toFixed(1)} <span class="text-[9px] dyn-text-muted">km/h</span></div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1">
+                                    <div class="group-label text-[9px]">${t('dist_lbl')}</div>
+                                    <div class="text-xs md:text-sm font-mono-num font-black dyn-text-primary mt-0.5">${metrics.totalDistanceM.toFixed(0)} <span class="text-[9px] dyn-text-muted">m</span></div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1">
+                                    <div class="group-label text-[9px]">${t('consistency')}</div>
+                                    <div class="text-xs md:text-sm font-mono-num font-black dyn-text-record mt-0.5">${lane.laps >= 2 ? metrics.consistency.toFixed(1) : '100'}%</div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1">
+                                    <div class="group-label text-[9px]">${t('sigma_lbl')} / EFIC.</div>
+                                    <div class="text-xs md:text-sm font-mono-num font-black dyn-text-primary mt-0.5">±${metrics.stdDev.toFixed(2)}s</div>
+                                </div>
+                                <div class="mac-group-box px-2 py-1 flex items-center justify-between border border-[#ff453a]/30 bg-[#ff453a]/10">
+                                    <div>
+                                        <div class="group-label text-[9px] text-[#ff453a]">${t('deslots_lbl')}</div>
+                                        <div class="text-xs md:text-sm font-mono-num font-black text-[#ff453a] mt-0.5">${lane.deslots || 0}</div>
+                                    </div>
+                                    <button type="button" onclick="registerManualDeslot(${i}, event)" title="Registrar salida de pista manual" class="px-1.5 py-0.5 rounded bg-[#ff453a]/30 hover:bg-[#ff453a] text-white text-[9px] font-black cursor-pointer">+1</button>
+                                </div>
+                            </div>
+
+                            <div class="mac-group-box px-3 py-1 flex items-center justify-between gap-3">
+                                <div class="shrink-0">
+                                    <span class="group-label text-[9px] dyn-text-secondary block">RITMO 10V (SPARKLINE)</span>
+                                    <span class="text-[10px] font-mono-num font-bold dyn-text-muted">V.MAX: ${metrics.bestSpeedKmh.toFixed(1)} km/h</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    ${buildSparklineSvg(lane.history, pal.hex, lane.bestLap)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Cabecera común del piloto y su contador de vueltas
+                const headerBlockHtml = `
+                    <div class="flex justify-between items-start gap-2 shrink-0 z-10">
                         <div class="flex flex-col min-w-0 flex-1">
-                            <div class="flex items-center gap-2 mb-1">
+                            <div class="flex items-center gap-1.5 mb-1 flex-wrap">
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider" style="background: ${pal.hex}22; color: ${pal.hex}; border: 1px solid ${pal.hex}55;">
                                     ${t('lane')} ${i}
                                 </span>
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isLeader ? 'bg-[#0a84ff] text-white shadow-[0_0_10px_#0a84ff]' : 'bg-white/10 text-[#94a3b8]'}">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-mono-num font-black bg-white/10 dyn-text-record">
+                                    #${lane.dorsal || String(i).padStart(2, '0')}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isLeader ? 'bg-[#0a84ff] text-white shadow-[0_0_10px_#0a84ff]' : 'bg-white/10 dyn-text-muted'}">
                                     P${pos}
                                 </span>
+                                ${lane.bestLap === appState.overallBestLap && lane.bestLap < Infinity ? `<span class="px-2 py-0.5 rounded-md text-[9px] font-black bg-[#bf5af2]/25 text-[#d982ff] border border-[#bf5af2]/50">🟣 VR PISTA</span>` : ''}
                             </div>
-                            <input type="text" value="${lane.name}" onclick="event.stopPropagation()" onchange="updateDriverName(${i}, this.value)" class="bg-transparent text-white font-black text-xl md:text-3xl tracking-tight truncate leading-none focus:outline-none border-b border-transparent focus:border-[#0a84ff]"/>
+                            <input type="text" value="${lane.name}" onclick="event.stopPropagation()" onchange="updateDriverName(${i}, this.value)" class="bg-transparent dyn-text-primary font-black text-lg md:text-2xl tracking-tight truncate leading-none focus:outline-none border-b border-transparent focus:border-[#0a84ff]"/>
+                            <div class="text-[10px] font-bold dyn-text-muted truncate mt-0.5">${lane.team || appState.seasonConfig.selectedCategory}</div>
                         </div>
 
-                        <div class="mac-group-box px-3.5 py-2 text-right shrink-0 flex flex-col items-end border border-white/10">
-                            <span class="group-label text-[#30d158]">${t('laps')}</span>
-                            <div id="laps-${i}" class="text-4xl md:text-6xl font-mono-num font-black text-white leading-none tracking-tighter mt-0.5">${lane.laps}</div>
+                        <div class="mac-group-box px-3 py-1.5 text-right shrink-0 flex flex-col items-end border border-white/10">
+                            <span class="group-label dyn-text-record">${t('laps')}</span>
+                            <div id="laps-${i}" class="text-3xl md:text-5xl font-mono-num font-black dyn-text-primary leading-none tracking-tighter mt-0.5">${lane.laps}</div>
                         </div>
                     </div>
+                `;
 
-                    <div class="grid grid-cols-2 gap-2.5 mb-3 shrink-0 z-10">
-                        <div class="mac-group-box px-3 py-2">
-                            <div class="group-label">${t('mean_lap')}</div>
-                            <div id="meanLap-${i}" class="text-xl md:text-2xl font-mono-num font-extrabold text-[#e2e8f0] leading-none mt-1">
-                                ${getDriverMeanLap(lane) > 0 ? getDriverMeanLap(lane).toFixed(3) : '0.000'}
-                            </div>
-                        </div>
-                        <div class="mac-group-box px-3 py-2 text-right border border-[#30d158]/25 bg-[#30d158]/5">
-                            <div class="group-label text-[#30d158]">${t('record')}</div>
-                            <div id="bestLap-${i}" class="text-xl md:text-2xl font-mono-num font-black text-[#30d158] leading-none mt-1 drop-shadow-[0_0_10px_rgba(48,209,88,0.35)]">
-                                ${lane.bestLap < Infinity ? lane.bestLap.toFixed(3) : '--.---'}
-                            </div>
-                        </div>
-                    </div>
-
+                const historyBoxHtml = `
                     <div class="mac-group-box p-2 flex-1 min-h-0 overflow-y-auto flex flex-col z-10" id="lapHistory-${i}">
                         ${historyHtml}
                     </div>
+                `;
 
-                    ${sectorsHtml}
+                // Ensamblaje según las 5 opciones de organización de datos (cardLayout)
+                const layoutMode = appState.cardLayout || 'STANDARD';
+                const paletteClass = `data-palette-${appState.cardColorPalette || 'NEON'}`;
+                let cardInnerLayoutHtml = '';
+
+                if (layoutMode === 'STANDARD') {
+                    // 1. Estándar (Vertical Clásico)
+                    cardInnerLayoutHtml = `
+                        <div class="flex flex-col gap-2.5 h-full min-h-0 z-10">
+                            ${headerBlockHtml}
+                            ${telemetryBodyHtml}
+                            ${historyBoxHtml}
+                            ${sectorsHtml}
+                        </div>
+                    `;
+                } else if (layoutMode === 'SPLIT') {
+                    // 2. Telemetría Dual (2 Columnas: Datos e indicadores a la izquierda, Historial extendido a la derecha)
+                    cardInnerLayoutHtml = `
+                        <div class="flex flex-col gap-2.5 h-full min-h-0 z-10">
+                            ${headerBlockHtml}
+                            <div class="grid grid-cols-12 gap-2.5 flex-1 min-h-0">
+                                <div class="col-span-7 flex flex-col justify-between gap-2 min-h-0 overflow-y-auto pr-0.5">
+                                    ${telemetryBodyHtml}
+                                    ${sectorsHtml}
+                                </div>
+                                <div class="col-span-5 flex flex-col min-h-0 h-full">
+                                    ${historyBoxHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (layoutMode === 'HERO') {
+                    // 3. Crono Gigante (Enfoque de lectura lejana para clubes)
+                    const heroLastLap = lane.lastLap > 0 ? lane.lastLap.toFixed(3) + 's' : '--.---';
+                    cardInnerLayoutHtml = `
+                        <div class="flex flex-col gap-2 h-full min-h-0 z-10">
+                            ${headerBlockHtml}
+                            <div class="mac-group-box px-4 py-2.5 flex items-center justify-between border border-white/15 shrink-0">
+                                <div>
+                                    <span class="group-label dyn-text-secondary block">${t('last_lap_lbl')} (HERO DISPLAY)</span>
+                                    <div class="text-3xl md:text-5xl font-mono-num font-black dyn-text-primary tracking-tight leading-none mt-1">${heroLastLap}</div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="group-label dyn-text-accent block">${t('gap_leader')}</span>
+                                    <div class="text-xl md:text-3xl font-mono-num font-black dyn-text-accent leading-none mt-1">${metrics.gapText}</div>
+                                </div>
+                            </div>
+                            ${telemetryBodyHtml}
+                            ${historyBoxHtml}
+                            ${sectorsHtml}
+                        </div>
+                    `;
+                } else if (layoutMode === 'BROADCAST') {
+                    // 4. F1 TV Tower (Estilo retransmisión horizontal compacta)
+                    cardInnerLayoutHtml = `
+                        <div class="flex flex-col gap-2 h-full min-h-0 z-10">
+                            <div class="mac-group-box p-2.5 flex items-center justify-between gap-3 border-l-4 shrink-0" style="border-left-color:${pal.hex}">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span class="px-2.5 py-1 rounded-lg text-sm font-mono-num font-black ${isLeader ? 'bg-[#0a84ff] text-white' : 'bg-white/10 dyn-text-primary'}">P${pos}</span>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[10px] font-black uppercase" style="color:${pal.hex}">${t('lane')} ${i}</span>
+                                            <span class="text-[10px] font-mono-num font-bold dyn-text-record">#${lane.dorsal || i}</span>
+                                        </div>
+                                        <input type="text" value="${lane.name}" onclick="event.stopPropagation()" onchange="updateDriverName(${i}, this.value)" class="bg-transparent dyn-text-primary font-black text-base md:text-xl tracking-tight truncate leading-none focus:outline-none"/>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 shrink-0">
+                                    <div class="text-right">
+                                        <span class="group-label block">GAP</span>
+                                        <span class="font-mono-num text-sm md:text-base font-black dyn-text-accent">${metrics.gapText}</span>
+                                    </div>
+                                    <div class="h-7 w-[1px] bg-white/10"></div>
+                                    <div class="text-right">
+                                        <span class="group-label dyn-text-record block">${t('laps')}</span>
+                                        <span id="laps-${i}" class="font-mono-num text-2xl md:text-4xl font-black dyn-text-primary leading-none">${lane.laps}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${sectorsHtml}
+                            ${telemetryBodyHtml}
+                            ${historyBoxHtml}
+                        </div>
+                    `;
+                } else {
+                    // 5. ANALYTIC / COCKPIT (Sectores e Historial arriba, Métricas al pie)
+                    cardInnerLayoutHtml = `
+                        <div class="flex flex-col gap-2.5 h-full min-h-0 z-10">
+                            ${headerBlockHtml}
+                            ${sectorsHtml}
+                            ${historyBoxHtml}
+                            ${telemetryBodyHtml}
+                        </div>
+                    `;
+                }
+
+                html += `
+                <div id="laneCard-${i}" onclick="triggerNextCheckpoint(${i})" class="mac-window lane-card-box ${paletteClass} p-3.5 md:p-4 flex flex-col h-full min-h-0 relative overflow-hidden transition-all hover:border-white/30 cursor-pointer" style="--lane-hex: ${pal.hex}; border-top: 4px solid ${pal.hex};">
+                    <div class="absolute -top-12 -left-12 w-36 h-36 rounded-full pointer-events-none opacity-20 blur-2xl" style="background: ${pal.hex}"></div>
+                    ${cardInnerLayoutHtml}
                 </div>`;
             }
             container.innerHTML = html;
@@ -1114,6 +2742,7 @@
         function updateDriverName(laneId, newName) {
             if (appState.lanes[laneId] && newName.trim() !== '') {
                 appState.lanes[laneId].name = newName.trim().toUpperCase();
+                saveSeasonToLocalDB();
             }
         }
 
@@ -1187,8 +2816,21 @@
             if (appState.raceStatus === 'STANDBY') { appState.raceStatus = 'RACING'; document.body.classList.add('race-mode-active'); startMasterClock(); }
             if (appState.raceStatus === 'TRACK_CALL') return; 
 
-            const lapSec = 3.5 + Math.random(); 
-            lane.laps++; lane.lastLap = lapSec; lane.history.push(lapSec); lane.lastLapPassTime = performance.now();
+            // Simulación realista de vuelta de slot (con pequeña probabilidad de salida de pista simulada)
+            const hadDeslot = Math.random() < 0.08;
+            const lapSec = hadDeslot ? (6.2 + Math.random() * 2.5) : (3.5 + Math.random() * 0.85); 
+            const prevMean = getDriverMeanLap(lane);
+
+            // Detección inteligente de salida de pista (>2.2s respecto a su media habitual)
+            if ((prevMean > 0 && lapSec > prevMean + 2.2) || hadDeslot) {
+                lane.deslots = (lane.deslots || 0) + 1;
+            }
+
+            lane.laps++; 
+            lane.lastLap = lapSec; 
+            lane.history.push(lapSec); 
+            lane.totalTrackTime = (lane.totalTrackTime || 0) + lapSec;
+            lane.lastLapPassTime = performance.now();
             
             let isPurpleLap = false;
             let isPersonalBest = false;
@@ -1271,8 +2913,7 @@
                     document.getElementById(`giantL${i}`).classList.remove('red-on'); document.getElementById(`giantL${i}`).classList.add('green-on'); 
                     document.getElementById(`f1L${i}`).classList.remove('red-on'); document.getElementById(`f1L${i}`).classList.add('green-on');
                 }
-                centerText.style.fontSize = window.innerWidth < 768 ? '80px' : '150px'; 
-                centerText.textContent = 'GO!'; centerText.style.transform = 'scale(1.1)'; setTimeout(() => centerText.style.transform = 'scale(1)', 150);
+                centerText.textContent = '';
                 
                 speakSpotter(t('tts_go'), 'HIGH'); 
                 playTone(1046.5, 450, 'sawtooth', 0.25);
@@ -1314,13 +2955,13 @@
             appState.clockInterval = setInterval(() => {
                 if (appState.raceStatus !== 'RACING') return;
                 if (appState.raceFormat === 'TIME') {
-                    appState.remainingSeconds = Math.max(0, appState.remainingSeconds - 0.1);
+                    appState.remainingSeconds = Math.max(0, appState.remainingSeconds - 1);
                     
-                    if (Math.abs(appState.remainingSeconds - 60.0) < 0.08 && !appState.announcedOneMin) {
+                    if (appState.remainingSeconds === 60 && !appState.announcedOneMin) {
                         appState.announcedOneMin = true;
                         speakSpotter(f1Text().one_min, 'HIGH');
                     }
-                    if (Math.abs(appState.remainingSeconds - 30.0) < 0.08 && !appState.announcedThirtySec) {
+                    if (appState.remainingSeconds === 30 && !appState.announcedThirtySec) {
                         appState.announcedThirtySec = true;
                         speakSpotter(f1Text().thirty_sec, 'HIGH');
                     }
@@ -1332,14 +2973,28 @@
                     document.body.classList.remove('race-mode-active'); 
                     speakSpotter(t('tts_end'), 'HIGH');
                 }
-            }, 100);
+            }, 1000);
         }
 
         function renderMasterClock() {
             let txt = '';
-            if (appState.raceFormat === 'LAPS') { const maxLaps = Math.max(...Object.values(appState.lanes).map(l => l.laps)); txt = `${maxLaps} / ${appState.targetLaps}`; } 
-            else { const m = Math.floor(appState.remainingSeconds / 60), s = (appState.remainingSeconds % 60).toFixed(1); txt = `${String(m).padStart(2,'0')}:${s.padStart(4,'0')}`; }
-            document.getElementById('masterClock').textContent = txt; document.getElementById('floatingMasterClock').textContent = txt;
+            if (appState.raceFormat === 'LAPS') { 
+                const maxLaps = Math.max(...Object.values(appState.lanes).map(l => l.laps)); 
+                txt = `${maxLaps} / ${appState.targetLaps}`; 
+            } else { 
+                const totalSecs = appState.remainingSeconds;
+                const hours = Math.floor(totalSecs / 3600);
+                const mins = Math.floor((totalSecs % 3600) / 60);
+                const secs = totalSecs % 60;
+                
+                if (hours > 0) {
+                    txt = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                } else {
+                    txt = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                }
+            }
+            document.getElementById('masterClock').textContent = txt; 
+            document.getElementById('floatingMasterClock').textContent = txt;
         }
 
         function toggleFullScreenMode() {
@@ -1361,12 +3016,14 @@
         window.onload = function() { 
             initAllLanesData(); 
             initLangDropdown();
+            initCardStyleDropdowns();
             setSystemTopology(2, 3); 
             setRaceFormat('TIME');
             
             if (window.speechSynthesis) window.speechSynthesis.getVoices();
             
             changeLanguage('es');
+            initLocalDatabase();
         };
     </script>
 </body>
