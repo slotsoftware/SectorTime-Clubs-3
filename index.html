@@ -268,6 +268,32 @@
         .dyn-text-accent { color: var(--data-accent) !important; }
         .dyn-text-muted { color: var(--data-muted) !important; }
 
+        /* =====================================================================
+           PANTALLA PREVIA INTRO VIDEO (fusion.mp4) CON TRANSICIÓN DIFUMINADA
+           ===================================================================== */
+        #introVideoSplash {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: #050608;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            opacity: 1;
+            filter: blur(0px);
+            transform: scale(1);
+            transition: opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1), 
+                        filter 1.8s cubic-bezier(0.22, 1, 0.36, 1), 
+                        transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #introVideoSplash.fade-out-blur {
+            opacity: 0;
+            filter: blur(36px);
+            transform: scale(1.06);
+            pointer-events: none;
+        }
+
         @media print {
             body * { visibility: hidden !important; }
             #printableCalendarSheet, #printableCalendarSheet * { visibility: visible !important; }
@@ -287,6 +313,37 @@
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2.5 md:px-5 md:py-3.5 gap-3">
+
+    <!-- PANTALLA PREVIA DE INTRODUCCIÓN A PANTALLA COMPLETA (fusion.mp4) -->
+    <div id="introVideoSplash">
+        <video id="introFusionVideo" src="fusion.mp4" autoplay muted playsinline class="w-full h-full object-cover"></video>
+
+        <!-- Respaldo visual elegante si fusion.mp4 aún no está en la misma carpeta o durante la previsualización -->
+        <div id="introFallbackVisual" class="hidden absolute inset-0 flex-col items-center justify-center bg-[radial-gradient(circle_at_center,#13213c_0%,#050608_75%)] text-center p-6">
+            <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#0a84ff] to-[#30d158] flex items-center justify-center font-black text-3xl text-black shadow-[0_0_60px_rgba(10,132,255,0.75)] mb-6 animate-pulse">
+                KPR
+            </div>
+            <div class="text-xs font-mono-num uppercase tracking-[0.35em] text-[#5ac8fa] mb-2">🎬 INTRO CINEMÁTICA // fusion.mp4</div>
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight">KRONOS PRO RACE</h1>
+            <p class="text-xs font-bold text-[#94a3b8] mt-3 tracking-widest uppercase">Iniciando sistema en 8 Carriles · Telemetría Modo Experto...</p>
+        </div>
+
+        <!-- Controles flotantes de la pantalla previa (Sonido, Pantalla Completa y Saltar Intro) -->
+        <div class="absolute bottom-7 inset-x-8 flex items-center justify-between z-20 pointer-events-auto">
+            <div class="flex items-center gap-3 bg-black/55 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/15">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-ping"></span>
+                <span class="text-xs font-mono-num font-extrabold text-white tracking-wider">KRONOS OS // FUSION INTRO</span>
+                <button type="button" onclick="unmuteAndFullscreenIntro(event)" id="btnIntroSound" class="ml-2 px-2.5 py-1 rounded-lg bg-[#0a84ff]/25 hover:bg-[#0a84ff] text-[#5ac8fa] hover:text-white border border-[#0a84ff]/40 text-[10px] font-black transition cursor-pointer">
+                    🔊 ACTIVAR AUDIO & PANTALLA COMPLETA
+                </button>
+            </div>
+
+            <button type="button" onclick="finishIntroWithBlurTransition()" class="px-5 py-2.5 mac-window hover:border-[#5ac8fa] text-xs font-black text-white tracking-widest uppercase rounded-2xl transition cursor-pointer flex items-center gap-2 shadow-2xl">
+                <span>ENTRAR A PISTA (8 CARRILES · EXPERTO)</span>
+                <span class="text-[#5ac8fa]">➔</span>
+            </button>
+        </div>
+    </div>
 
     <!-- HOJA OFICIAL PARA IMPRESIÓN Y EXPORTACIÓN PDF DEL CALENDARIO -->
     <div id="printableCalendarSheet" class="hidden bg-[#0b0c10] text-white p-8 font-sans"></div>
@@ -315,10 +372,10 @@
                         <span class="w-3.5 h-3.5 rounded-full bg-[#30d158]"></span>
                     </div>
                     <div class="h-5 w-[1px] bg-white/15 mx-1"></div>
-                    <span id="sessionModalBadge" class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40">SESIÓN</span>
-                    <h2 id="sessionModalTitle" class="text-lg md:text-2xl font-black text-white tracking-tight">CONFIGURACIÓN DE SESIÓN</h2>
+                    <span id="sessionModalBadge" data-i18n="modal_session_badge" class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40">SESIÓN</span>
+                    <h2 id="sessionModalTitle" data-i18n="modal_session_title" class="text-lg md:text-2xl font-black text-white tracking-tight">CONFIGURACIÓN DE SESIÓN</h2>
                 </div>
-                <button onclick="closeSessionModal()" class="px-4 py-1.5 mac-control-pill text-xs font-extrabold text-[#94a3b8] hover:text-white cursor-pointer">
+                <button onclick="closeSessionModal()" data-i18n="close_btn" class="px-4 py-1.5 mac-control-pill text-xs font-extrabold text-[#94a3b8] hover:text-white cursor-pointer">
                     ✕ CERRAR
                 </button>
             </div>
@@ -330,18 +387,74 @@
             <!-- Pie del modal -->
             <div class="px-6 py-4 border-t border-white/10 bg-black/30 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
-                    <span id="dbStatusBadge" class="px-2.5 py-1 rounded-md bg-[#30d158]/15 border border-[#30d158]/40 text-[#30d158] text-[10px] font-black tracking-wider">● DB LOCAL ACTIVA</span>
-                    <div class="text-xs font-bold text-[#94a3b8]" id="sessionModalFooterNote">
+                    <span id="dbStatusBadge" data-i18n="db_active_badge" class="px-2.5 py-1 rounded-md bg-[#30d158]/15 border border-[#30d158]/40 text-[#30d158] text-[10px] font-black tracking-wider">● DB LOCAL ACTIVA</span>
+                    <div class="text-xs font-bold text-[#94a3b8]" id="sessionModalFooterNote" data-i18n="db_sync_footer">
                         KRONOS PRO RACE // BASE DE DATOS INTERNA SINCRONIZADA
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="saveCurrentModalDataAndClose()" class="px-5 py-2.5 btn-silver hover:border-[#30d158] font-bold text-xs rounded-xl cursor-pointer">
+                    <button onclick="saveCurrentModalDataAndClose()" data-i18n="save_device_btn" class="px-5 py-2.5 btn-silver hover:border-[#30d158] font-bold text-xs rounded-xl cursor-pointer">
                         💾 GUARDAR EN DISPOSITIVO Y VOLVER
                     </button>
-                    <button onclick="saveCurrentModalDataAndClose(); startF1Sequence();" class="px-6 py-2.5 btn-neon-green font-black text-xs rounded-xl cursor-pointer flex items-center gap-2">
+                    <button onclick="saveCurrentModalDataAndClose(); startF1Sequence();" data-i18n="start_f1_now_btn" class="px-6 py-2.5 btn-neon-green font-black text-xs rounded-xl cursor-pointer flex items-center gap-2">
                         🚦 INICIAR SALIDA F1 AHORA
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIGURACIÓN DE MOTOR DE VOZ NEURONAL / GEMINI TTS -->
+    <div id="voiceEngineModalOverlay" onclick="if(event.target === this) closeVoiceEngineModal()" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl hidden items-center justify-center p-4">
+        <div class="w-full max-w-2xl mac-window border border-white/25 shadow-[0_30px_90px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden">
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/30">
+                <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">AUDIO IA</span>
+                    <h2 class="text-base md:text-lg font-black text-white">MOTOR DE VOZ UNIVERSAL 100% FIABLE (CLOUD / GEMINI / SISTEMA)</h2>
+                </div>
+                <button onclick="closeVoiceEngineModal()" class="px-3 py-1 mac-control-pill text-xs font-extrabold text-[#94a3b8] hover:text-white cursor-pointer">✕</button>
+            </div>
+            <div class="p-6 flex flex-col gap-4 text-xs text-[#e2e8f0] overflow-y-auto max-h-[75vh]">
+                <div class="mac-group-box p-4 border border-[#0a84ff]/30 bg-[#0a84ff]/5">
+                    <div class="font-black text-[#5ac8fa] text-sm mb-1">¿Por qué cambia la voz de un ordenador a otro?</div>
+                    <p class="text-[#94a3b8] leading-relaxed">
+                        El modo clásico del navegador usa las voces instaladas en cada Windows, Mac o Android. Si quieres que **suene exactamente la misma voz en cualquier ordenador del mundo**, activa debajo el **Motor Cloud Stream** (incluido gratis con conexión a internet) o conecta una clave de **Google Cloud / Gemini / ElevenLabs** con caché en base de datos local.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button type="button" onclick="setVoiceEngineMode('HYBRID')" id="btnEngine-HYBRID" class="mac-group-box p-3.5 text-left border-2 border-[#30d158] cursor-pointer transition">
+                        <div class="text-xs font-black text-[#30d158]">1. HÍBRIDO AUTO (RECOMENDADO)</div>
+                        <p class="text-[11px] text-[#94a3b8] mt-1">Usa voces Neurales/Naturales si están en el PC y si no, descarga la voz Cloud de Google al instante.</p>
+                    </button>
+                    <button type="button" onclick="setVoiceEngineMode('CLOUD')" id="btnEngine-CLOUD" class="mac-group-box p-3.5 text-left border border-white/10 cursor-pointer transition">
+                        <div class="text-xs font-black text-[#5ac8fa]">2. CLOUD STREAM (100% IGUAL)</div>
+                        <p class="text-[11px] text-[#94a3b8] mt-1">Fuerza la misma voz de Google Cloud TTS en todos los ordenadores mediante streaming + caché local.</p>
+                    </button>
+                    <button type="button" onclick="setVoiceEngineMode('API_PRO')" id="btnEngine-API_PRO" class="mac-group-box p-3.5 text-left border border-white/10 cursor-pointer transition">
+                        <div class="text-xs font-black text-[#d982ff]">3. GOOGLE GEMINI / CLOUD API</div>
+                        <p class="text-[11px] text-[#94a3b8] mt-1">Usa las voces oficiales **Journey / Studio** de Google Cloud (las mismas de Gemini) con tu API Key.</p>
+                    </button>
+                </div>
+
+                <div class="mac-group-box p-4 flex flex-col gap-2.5 border border-white/10">
+                    <div class="flex items-center justify-between">
+                        <span class="group-label text-[#d982ff]">OPCIONAL: GOOGLE CLOUD TTS API KEY (VOCES GEMINI STUDIO / JOURNEY)</span>
+                        <span class="text-[10px] font-bold text-[#30d158]">Se guarda en este dispositivo</span>
+                    </div>
+                    <input type="password" id="googleCloudTtsApiKeyInput" placeholder="AIzaSy... (Opcional: Pega tu Google Cloud Text-to-Speech API Key)" onchange="saveVoiceEngineSettings()" class="w-full bg-black/50 border border-white/15 rounded-xl px-3 py-2 text-xs font-mono-num text-white focus:outline-none focus:border-[#0a84ff]"/>
+                    <p class="text-[11px] text-[#94a3b8]">
+                        💡 **Caché Inteligente:** Cada frase generada se guarda en la memoria interna del navegador para que no consuma datos ni sufra retrasos en las siguientes vueltas.
+                    </p>
+                </div>
+            </div>
+            <div class="px-6 py-3.5 border-t border-white/10 bg-black/30 flex items-center justify-between">
+                <button onclick="preloadStandardPhrasesCache()" id="btnPreloadAudioCache" class="px-4 py-2 btn-silver hover:border-[#5ac8fa] text-xs font-black rounded-xl cursor-pointer">
+                    ⚡ PRE-CARGAR FRASES DE SALIDA EN MEMORIA
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="testVoice()" class="px-4 py-2 btn-neon-blue text-xs font-black rounded-xl cursor-pointer">🔊 PROBAR VOZ AHORA</button>
+                    <button onclick="closeVoiceEngineModal()" class="px-5 py-2 btn-neon-green text-xs font-black rounded-xl cursor-pointer">✓ LISTO</button>
                 </div>
             </div>
         </div>
@@ -377,16 +490,16 @@
                 🏁 PARRILLA EN VIVO
             </button>
             <button onclick="switchModuleTab('TELEMETRY')" id="tab-TELEMETRY" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
-                📊 TELEMETRÍA <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#5ac8fa]">PRO</span>
+                <span data-i18n="tab_telemetry">📊 TELEMETRÍA</span> <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#5ac8fa]">PRO</span>
             </button>
             <button onclick="switchModuleTab('CHAMPIONSHIP')" id="tab-CHAMPIONSHIP" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
-                🏆 CAMPEONATO <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#94a3b8]">SOON</span>
+                <span data-i18n="tab_championship">🏆 CAMPEONATO</span> <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#94a3b8]">SOON</span>
             </button>
             <button onclick="switchModuleTab('GARAGE')" id="tab-GARAGE" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
-                🏎️ BOXES / COCHES <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#94a3b8]">SOON</span>
+                <span data-i18n="tab_garage">🏎️ BOXES / COCHES</span> <span class="text-[9px] px-1.5 py-0.2 bg-white/10 rounded text-[#94a3b8]">SOON</span>
             </button>
             <button onclick="switchModuleTab('HARDWARE')" id="tab-HARDWARE" class="px-3.5 py-1.5 rounded-[9px] text-xs font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1.5">
-                🔌 SENSORES / USB <span class="text-[9px] px-1.5 py-0.2 bg-[#30d158]/20 rounded text-[#30d158]">IO</span>
+                <span data-i18n="tab_hardware">🔌 SENSORES / USB</span> <span class="text-[9px] px-1.5 py-0.2 bg-[#30d158]/20 rounded text-[#30d158]">IO</span>
             </button>
         </nav>
 
@@ -403,10 +516,14 @@
             <div class="flex items-center gap-1.5 mac-control-pill px-2.5 py-1">
                 <span class="text-[10px] text-[#94a3b8] font-extrabold" data-i18n="voice_label">VOZ:</span>
                 <select id="headerVoiceSelect" onchange="onVoiceSelectionChange()" class="bg-transparent text-xs font-bold text-[#5ac8fa] focus:outline-none cursor-pointer max-w-[165px] truncate">
-                    <option value="FEMALE" class="bg-[#161820] text-white">MUJER</option>
+                    <option value="CLOUD_UNIFIED" class="bg-[#161820] text-[#30d158]">☁️ GOOGLE CLOUD (100% FIABLE)</option>
+                    <option value="FEMALE" class="bg-[#161820] text-white">MUJER (SISTEMA)</option>
                 </select>
                 <button onclick="testVoice()" data-i18n="test_btn" class="px-2 py-0.5 bg-[#0a84ff]/20 hover:bg-[#0a84ff] text-[#5ac8fa] hover:text-white border border-[#0a84ff]/40 rounded-md text-[10px] font-extrabold transition cursor-pointer">
                     🔊 TEST
+                </button>
+                <button onclick="openVoiceEngineModal()" class="px-1.5 py-0.5 bg-white/10 hover:bg-white/20 text-white rounded-md text-[10px] font-extrabold transition cursor-pointer" title="Configurar Motor de Voz IA 100% Fiable">
+                    ⚙️ IA
                 </button>
             </div>
 
@@ -428,7 +545,7 @@
             <!-- 1. SESIÓN & MODO (3 COLUMNAS XL) -->
             <div class="xl:col-span-3 mac-group-box px-3 py-2 flex items-center justify-between gap-2 border border-white/10">
                 <div class="flex flex-col justify-between h-full">
-                    <span class="group-label text-[#30d158]">1. TIPO DE SESIÓN</span>
+                    <span class="group-label text-[#30d158]" data-i18n="grp_session_type">1. TIPO DE SESIÓN</span>
                     <div class="apple-segmented mt-1">
                         <button onclick="setSessionType('PRACTICE', true)" id="btnSession-PRACTICE" data-i18n="practice" class="px-2.5 py-1 text-[11px] font-extrabold rounded-[8px] btn-neon-green transition cursor-pointer">ENTRENOS</button>
                         <button onclick="setSessionType('CLUB', true)" id="btnSession-CLUB" data-i18n="club" class="px-2.5 py-1 text-[11px] font-bold rounded-[8px] text-[#94a3b8] hover:text-white transition cursor-pointer">CLUB</button>
@@ -437,7 +554,7 @@
                 </div>
                 <div class="h-8 w-[1px] bg-white/10 shrink-0"></div>
                 <div class="flex flex-col justify-between h-full items-end">
-                    <span class="group-label text-[#5ac8fa]">2. FORMATO</span>
+                    <span class="group-label text-[#5ac8fa]" data-i18n="grp_format">2. FORMATO</span>
                     <div class="apple-segmented mt-1">
                         <button onclick="setRaceFormat('TIME')" id="btnMode-TIME" data-i18n="time_mode" class="px-2.5 py-1 text-[11px] font-extrabold rounded-[8px] btn-neon-blue cursor-pointer transition">⏱️ TIEMPO</button>
                         <button onclick="setRaceFormat('LAPS')" id="btnMode-LAPS" data-i18n="laps_mode" class="px-2.5 py-1 text-[11px] font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer transition">🏁 VUELTAS</button>
@@ -448,20 +565,20 @@
             <!-- 2. TOPOLOGÍA DE PISTA (3 COLUMNAS XL) -->
             <div class="xl:col-span-3 mac-group-box px-3 py-2 flex flex-col justify-between border border-white/10">
                 <div class="flex items-center justify-between">
-                    <span class="group-label text-[#f8fafc]">3. TOPOLOGÍA DE PISTA</span>
-                    <span class="text-[9px] font-mono-num text-[#64748b] font-bold">CONFIGURACIÓN FÍSICA</span>
+                    <span class="group-label text-[#f8fafc]" data-i18n="grp_topology">3. TOPOLOGÍA DE PISTA</span>
+                    <span class="text-[9px] font-mono-num text-[#64748b] font-bold" data-i18n="physical_cfg">CONFIGURACIÓN FÍSICA</span>
                 </div>
                 <div class="grid grid-cols-3 gap-1.5 mt-1">
                     <div class="bg-black/40 border border-white/10 rounded-lg px-2 py-1 flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-[#94a3b8]">CARRILES</span>
+                        <span class="text-[10px] font-bold text-[#94a3b8]" data-i18n="lanes_lbl">CARRILES</span>
                         <select id="headerLanesSelect" onchange="setSystemTopology(parseInt(this.value), null)" class="bg-transparent text-xs font-mono-num font-black text-[#5ac8fa] focus:outline-none cursor-pointer">
-                            <option value="1" class="bg-[#12141a]">1</option><option value="2" selected class="bg-[#12141a]">2</option><option value="3" class="bg-[#12141a]">3</option><option value="4" class="bg-[#12141a]">4</option>
-                            <option value="5" class="bg-[#12141a]">5</option><option value="6" class="bg-[#12141a]">6</option><option value="7" class="bg-[#12141a]">7</option><option value="8" class="bg-[#12141a]">8</option>
+                            <option value="1" class="bg-[#12141a]">1</option><option value="2" class="bg-[#12141a]">2</option><option value="3" class="bg-[#12141a]">3</option><option value="4" class="bg-[#12141a]">4</option>
+                            <option value="5" class="bg-[#12141a]">5</option><option value="6" class="bg-[#12141a]">6</option><option value="7" class="bg-[#12141a]">7</option><option value="8" selected class="bg-[#12141a]">8</option>
                             <option value="9" class="bg-[#12141a]">9</option><option value="10" class="bg-[#12141a]">10</option>
                         </select>
                     </div>
                     <div class="bg-black/40 border border-white/10 rounded-lg px-2 py-1 flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-[#94a3b8]">SECT.</span>
+                        <span class="text-[10px] font-bold text-[#94a3b8]" data-i18n="sectors_lbl">SECT.</span>
                         <select id="headerSectorsSelect" onchange="setSystemTopology(null, parseInt(this.value))" class="bg-transparent text-xs font-mono-num font-black text-white focus:outline-none cursor-pointer">
                             <option value="1" class="bg-[#12141a]">1</option>
                             <option value="2" class="bg-[#12141a]">2</option>
@@ -469,7 +586,7 @@
                         </select>
                     </div>
                     <div class="bg-black/40 border border-white/10 rounded-lg px-2 py-1 flex items-center justify-between" title="Longitud de cuerda del carril en metros">
-                        <span class="text-[10px] font-bold text-[#94a3b8]">CUERDA</span>
+                        <span class="text-[10px] font-bold text-[#94a3b8]" data-i18n="length_lbl">CUERDA</span>
                         <div class="flex items-center">
                             <input type="number" min="5" max="200" step="0.5" value="24.5" onchange="setTrackLengthMeters(parseFloat(this.value))" class="w-10 bg-transparent text-xs font-mono-num font-black text-[#30d158] text-right focus:outline-none"/>
                             <span class="text-[9px] font-bold text-[#64748b] ml-0.5">m</span>
@@ -481,7 +598,7 @@
             <!-- 3. TELEMETRÍA HUD & ESTILO (3 COLUMNAS XL) -->
             <div class="xl:col-span-3 mac-group-box px-3 py-2 flex items-center justify-between gap-2 border border-white/10">
                 <div class="flex flex-col justify-between h-full">
-                    <span class="group-label text-[#5ac8fa]">4. TELEMETRÍA HUD</span>
+                    <span class="group-label text-[#5ac8fa]" data-i18n="grp_hud">4. TELEMETRÍA HUD</span>
                     <div class="apple-segmented mt-1">
                         <button onclick="setDataViewLevel('BASIC')" id="btnView-BASIC" data-i18n="view_basic" class="px-2 py-1 text-[11px] font-extrabold rounded-[8px] btn-neon-blue transition cursor-pointer">🔹 BÁSICO</button>
                         <button onclick="setDataViewLevel('MEDIUM')" id="btnView-MEDIUM" data-i18n="view_medium" class="px-2 py-1 text-[11px] font-bold rounded-[8px] text-[#94a3b8] hover:text-white transition cursor-pointer">🔸 MEDIO</button>
@@ -490,7 +607,7 @@
                 </div>
                 <div class="h-8 w-[1px] bg-white/10 shrink-0"></div>
                 <div class="flex flex-col justify-between h-full flex-1 min-w-0">
-                    <span class="group-label text-[#30d158] truncate">5. DISEÑO & COLOR</span>
+                    <span class="group-label text-[#30d158] truncate" data-i18n="grp_style">5. DISEÑO & COLOR</span>
                     <div class="grid grid-cols-2 gap-1.5 mt-1">
                         <div class="relative" id="layoutDropdownContainer">
                             <button type="button" onclick="toggleLayoutDropdown(event)" class="w-full mac-control-pill px-2 py-1 text-[11px] font-extrabold text-white flex items-center justify-between gap-1 cursor-pointer hover:border-[#5ac8fa]">
@@ -513,7 +630,7 @@
             <!-- 4. SEMÁFORO FIA, CRONO MANGA Y SALIDA (3 COLUMNAS XL) -->
             <div class="xl:col-span-3 mac-group-box px-3 py-2 flex items-center justify-between gap-2.5 border border-white/10">
                 <div class="flex flex-col justify-between h-full items-center shrink-0">
-                    <span class="group-label">SEMÁFORO FIA</span>
+                    <span class="group-label" data-i18n="fia_lights_lbl">SEMÁFORO FIA</span>
                     <div class="flex items-center gap-1 bg-black/55 px-2.5 py-1.5 rounded-full border border-white/10 mt-1" id="f1Gantry">
                         <div class="f1-light" id="f1L1"></div>
                         <div class="f1-light" id="f1L2"></div>
@@ -553,7 +670,7 @@
             <div class="w-16 h-16 rounded-2xl btn-neon-blue flex items-center justify-center text-3xl mb-4 shadow-2xl" id="moduleIcon">📊</div>
             <h2 class="text-2xl font-black text-white tracking-tight mb-2" id="moduleTitle">MÓDULO DE EXPANSIÓN KRONOS OS</h2>
             <p class="text-sm text-[#94a3b8] max-w-md mb-6" id="moduleDesc">Espacio reservado en la arquitectura de Kronos Pro OS para futuras actualizaciones de telemetría, gestión de campeonatos y lectura de hardware externo.</p>
-            <button onclick="switchModuleTab('LIVE')" class="px-5 py-2.5 btn-neon-green font-extrabold text-xs rounded-xl cursor-pointer">
+            <button onclick="switchModuleTab('LIVE')" data-i18n="back_live_grid" class="px-5 py-2.5 btn-neon-green font-extrabold text-xs rounded-xl cursor-pointer">
                 VOLVER A PARRILLA EN VIVO
             </button>
         </div>
@@ -581,9 +698,9 @@
             <div class="h-7 w-[1px] bg-white/15 hidden sm:block"></div>
 
             <div class="apple-segmented">
-                <button onclick="setDataViewLevel('BASIC')" id="btnFloatView-BASIC" class="px-3 py-1.5 text-[10px] md:text-xs font-extrabold rounded-[8px] btn-neon-blue cursor-pointer">BÁSICO</button>
-                <button onclick="setDataViewLevel('MEDIUM')" id="btnFloatView-MEDIUM" class="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer">MEDIO</button>
-                <button onclick="setDataViewLevel('EXPERT')" id="btnFloatView-EXPERT" class="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer">EXPERTO</button>
+                <button onclick="setDataViewLevel('BASIC')" id="btnFloatView-BASIC" data-i18n="view_basic" class="px-3 py-1.5 text-[10px] md:text-xs font-extrabold rounded-[8px] btn-neon-blue cursor-pointer">🔹 BÁSICO</button>
+                <button onclick="setDataViewLevel('MEDIUM')" id="btnFloatView-MEDIUM" data-i18n="view_medium" class="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer">🔸 MEDIO</button>
+                <button onclick="setDataViewLevel('EXPERT')" id="btnFloatView-EXPERT" data-i18n="view_expert" class="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-[8px] text-[#94a3b8] hover:text-white cursor-pointer">⚡ EXPERTO</button>
             </div>
 
             <button onclick="cycleCardLayout()" id="btnFloatLayout" class="px-3 py-2 mac-control-pill text-[10px] md:text-xs font-extrabold text-[#5ac8fa] hover:text-white cursor-pointer" title="Cambiar organización del cuadro">
@@ -648,6 +765,27 @@
                 title: "KRONOS PRO RACE", standby: "ESPERA", voice_label: "VOZ:", test_btn: "🔊 TEST",
                 voice_female: "MUJER",
                 track_time: "CRONO MANGA", f1_start: "🚦 SALIDA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 PARRILLA EN VIVO",
+                tab_telemetry: "📊 TELEMETRÍA", tab_championship: "🏆 CAMPEONATO", tab_garage: "🏎️ BOXES / COCHES", tab_hardware: "🔌 SENSORES / USB",
+                grp_session_type: "1. TIPO DE SESIÓN", grp_format: "2. FORMATO", grp_topology: "3. TOPOLOGÍA DE PISTA", physical_cfg: "CONFIGURACIÓN FÍSICA",
+                lanes_lbl: "CARRILES", sectors_lbl: "SECT.", length_lbl: "CUERDA", grp_hud: "4. TELEMETRÍA HUD", grp_style: "5. DISEÑO & COLOR", fia_lights_lbl: "SEMÁFORO FIA",
+                back_live_grid: "VOLVER A PARRILLA EN VIVO", close_btn: "✕ CERRAR", db_active_badge: "● DB LOCAL ACTIVA",
+                db_sync_footer: "KRONOS PRO RACE // BASE DE DATOS INTERNA SINCRONIZADA", save_device_btn: "💾 GUARDAR EN DISPOSITIVO Y VOLVER", start_f1_now_btn: "🚦 INICIAR SALIDA F1 AHORA",
+                modal_session_badge: "SESIÓN", modal_session_title: "CONFIGURACIÓN DE SESIÓN",
+                no_track_records: "SIN REGISTROS EN PISTA", leader_lbl: "LÍDER", waiting_sparkline: "ESPERANDO +2 VUELTAS PARA TELEMETRÍA GRÁFICA",
+                mod_tel_title: "TELEMETRÍA AVANZADA & GRÁFICAS", mod_tel_desc: "Comparativa de ritmo por piloto, curvas de degradación y consistencia por sector.",
+                mod_champ_title: "GESTOR DE CAMPEONATOS & MANGAS", mod_champ_desc: "Rotación automática de carriles y clasificación general por puntos.",
+                mod_gar_title: "BOXES, COCHES & PILOTOS", mod_gar_desc: "Base de datos de pilotos, configuración de motores e historial de récords.",
+                mod_hw_title: "CONECTIVIDAD DS / ARDUINO / PUERTO SERIE", mod_hw_desc: "Enlace directo por WebSerial API con puentes ópticos y sensores de carril.",
+                race_dir_params: "PARÁMETROS DE DIRECCIÓN DE CARRERA", heat_cfg_title: "Configuración de Manga", session_time_lbl: "TIEMPO DE SESIÓN (MIN / HORAS)",
+                endurance_lbl: "⚡ RESISTENCIA:", target_laps_lbl: "META DE VUELTAS (5 HASTA 1000)", custom_lbl: "Personalizado:",
+                local_db_note: "Los pilotos y dorsales cargados proceden de la temporada activa guardada en este dispositivo.", starting_grid_lbl: "PARRILLA DE SALIDA",
+                season_mgr_subtitle: "GESTOR DE CATEGORÍAS, CALENDARIO Y PILOTOS", active_season_lbl: "TEMPORADA ACTIVA", official_time_lbl: "HORA OFICIAL",
+                calendar_ctrl_lbl: "CONTROL DE EVENTOS Y CALENDARIO", calendar_hint_lbl: "Elige un color y pulsa un día", events_word: "eventos",
+                print_btn: "🖨️ IMPRIMIR", pdf_btn: "📄 BAJAR PDF", selected_day_lbl: "📅 DÍA SELECCIONADO:", delete_event_btn: "BORRAR EVENTO", no_event_lbl: "SIN EVENTO ASIGNADO",
+                event_placeholder: "Nombre del evento (ej. GP Nocturno GT...)", save_event_btn: "✓ GUARDAR EVENTO", official_cats_lbl: "CATEGORÍAS OFICIALES", active_word: "ACTIVA",
+                new_cat_placeholder: "Nueva categoría (ej. RALLY, LMP1...)", add_cat_btn: "+ CATEGORÍA",
+                roster_sub: "INSCRIPCIÓN DE PILOTOS, EQUIPOS Y DORSALES", roster_title: "Añadir Piloto a la Base de Datos del Dispositivo", registered_word: "INSCRITOS",
+                number_lbl: "DORSAL", driver_lbl: "PILOTO", team_lbl: "EQUIPO / ESCUDERÍA", add_btn: "+ AÑADIR", send_grid_btn: "🏁 ENVIAR PILOTOS A LA PARRILLA EN VIVO",
                 home: "🏠 INICIO", track_call: "⚠️ TRACK CALL", resume: "🟢 REANUDAR", lane: "CARRIL", laps: "VUELTAS",
                 mean_lap: "VUELTA MEDIA", record: "RÉCORD", finish_line: "META",
                 last_lap_lbl: "ÚLTIMA VUELTA", gap_leader: "GAP LÍDER", opt_lap: "V. ÓPTIMA", consistency: "CONSISTENCIA",
@@ -668,6 +806,27 @@
                 title: "KRONOS PRO RACE", standby: "ESPERA", voice_label: "VEU:", test_btn: "🔊 PROVAR",
                 voice_female: "DONA",
                 track_time: "CRONO MÀNIGA", f1_start: "🚦 SORTIDA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRAELLA EN VIU",
+                tab_telemetry: "📊 TELEMETRIA", tab_championship: "🏆 CAMPIONAT", tab_garage: "🏎️ BOXES / COTXES", tab_hardware: "🔌 SENSORS / USB",
+                grp_session_type: "1. TIPUS DE SESSIÓ", grp_format: "2. FORMAT", grp_topology: "3. TOPOLOGIA DE PISTA", physical_cfg: "CONFIGURACIÓ FÍSICA",
+                lanes_lbl: "CARRILS", sectors_lbl: "SECT.", length_lbl: "CORDA", grp_hud: "4. TELEMETRIA HUD", grp_style: "5. DISSENY I COLOR", fia_lights_lbl: "SEMÀFOR FIA",
+                back_live_grid: "TORNAR A GRAELLA EN VIU", close_btn: "✕ TANCAR", db_active_badge: "● DB LOCAL ACTIVA",
+                db_sync_footer: "KRONOS PRO RACE // BASE DE DADES INTERNA SINCRONITZADA", save_device_btn: "💾 DESAR AL DISPOSITIU I TORNAR", start_f1_now_btn: "🚦 INICIAR SORTIDA F1 ARA",
+                modal_session_badge: "SESSIÓ", modal_session_title: "CONFIGURACIÓ DE SESSIÓ",
+                no_track_records: "SENSE REGISTRES A PISTA", leader_lbl: "LÍDER", waiting_sparkline: "ESPERANT +2 VOLTES PER A TELEMETRIA GRÀFICA",
+                mod_tel_title: "TELEMETRIA AVANÇADA I GRÀFIQUES", mod_tel_desc: "Comparativa de ritme per pilot, corbes de degradació i consistència per sector.",
+                mod_champ_title: "GESTOR DE CAMPIONATS I MÀNIGUES", mod_champ_desc: "Rotació automàtica de carrils i classificació general per punts.",
+                mod_gar_title: "BOXES, COTXES I PILOTS", mod_gar_desc: "Base de dades de pilots, configuració de motors i historial de rècords.",
+                mod_hw_title: "CONNECTIVITAT DS / ARDUINO / PORT SÈRIE", mod_hw_desc: "Enllaç directe per WebSerial API amb ponts òptics i sensors de carril.",
+                race_dir_params: "PARÀMETRES DE DIRECCIÓ DE CURSA", heat_cfg_title: "Configuració de Màniga", session_time_lbl: "TEMPS DE SESSIÓ (MIN / HORES)",
+                endurance_lbl: "⚡ RESISTÈNCIA:", target_laps_lbl: "META DE VOLTES (5 FINS A 1000)", custom_lbl: "Personalitzat:",
+                local_db_note: "Els pilots i dorsals carregats procedeixen de la temporada activa desada en aquest dispositiu.", starting_grid_lbl: "GRAELLA DE SORTIDA",
+                season_mgr_subtitle: "GESTOR DE CATEGORIES, CALENDARI I PILOTS", active_season_lbl: "TEMPORADA ACTIVA", official_time_lbl: "HORA OFICIAL",
+                calendar_ctrl_lbl: "CONTROL D'ESDEVENIMENTS I CALENDARI", calendar_hint_lbl: "Tria un color i prem un dia", events_word: "esdeveniments",
+                print_btn: "🖨️ IMPRIMIR", pdf_btn: "📄 BAIXAR PDF", selected_day_lbl: "📅 DIA SELECCIONAT:", delete_event_btn: "ESBORRAR ESDEVENIMENT", no_event_lbl: "SENSE ESDEVENIMENT",
+                event_placeholder: "Nom de l'esdeveniment (ex. GP Nocturn GT...)", save_event_btn: "✓ DESAR ESDEVENIMENT", official_cats_lbl: "CATEGORIES OFICIALS", active_word: "ACTIVA",
+                new_cat_placeholder: "Nova categoria (ex. RALLY, LMP1...)", add_cat_btn: "+ CATEGORIA",
+                roster_sub: "INSCRIPCIÓ DE PILOTS, EQUIPS I DORSALS", roster_title: "Afegir Pilot a la Base de Dades del Dispositiu", registered_word: "INSCRITS",
+                number_lbl: "DORSAL", driver_lbl: "PILOT", team_lbl: "EQUIP / ESCUDERIA", add_btn: "+ AFEGIR", send_grid_btn: "🏁 ENVIAR PILOTS A LA GRAELLA EN VIU",
                 home: "🏠 INICI", track_call: "⚠️ PISTA TANCADA", resume: "🟢 REPRENDRE", lane: "CARRIL", laps: "VOLTES",
                 mean_lap: "VOLTA MITJANA", record: "RÈCORD", finish_line: "META",
                 last_lap_lbl: "ÚLTIMA VOLTA", gap_leader: "GAP LÍDER", opt_lap: "V. ÒPTIMA", consistency: "CONSISTÈNCIA",
@@ -688,6 +847,27 @@
                 title: "KRONOS PRO RACE", standby: "ITXARON", voice_label: "AHOTSA:", test_btn: "🔊 PROBATU",
                 voice_female: "EMAKUMEA",
                 track_time: "MAHUKA DENBORA", f1_start: "🚦 F1 IRTEERA", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 ZUZENEKO SARETA",
+                tab_telemetry: "📊 TELEMETRIA", tab_championship: "🏆 TXAPELKETA", tab_garage: "🏎️ BOXAK / AUTOAK", tab_hardware: "🔌 SENTSOREAK / USB",
+                grp_session_type: "1. SAIO MOTA", grp_format: "2. FORMATUA", grp_topology: "3. PISTA TOPOLOGIA", physical_cfg: "KONFIGURAZIO FISIKOA",
+                lanes_lbl: "ERREIAK", sectors_lbl: "SEKT.", length_lbl: "LUZERA", grp_hud: "4. TELEMETRIA HUD", grp_style: "5. DISEINUA ETA KOLOREA", fia_lights_lbl: "FIA SEMAFOROA",
+                back_live_grid: "ITZULI ZUZENEKO SARETARA", close_btn: "✕ ITXI", db_active_badge: "● DB LOKALA AKTIBO",
+                db_sync_footer: "KRONOS PRO RACE // BARNE DATU-BASEA SINKRONIZATUTA", save_device_btn: "💾 GORDE GAILUAN ETA ITZULI", start_f1_now_btn: "🚦 HASI F1 IRTEERA ORAIN",
+                modal_session_badge: "SAIOA", modal_session_title: "SAIOAREN KONFIGURAZIOA",
+                no_track_records: "ERREGISTRORIK GABE PISTAN", leader_lbl: "LIDERRA", waiting_sparkline: "+2 ITZULI ITXAROTEN GRAFIKORAKO",
+                mod_tel_title: "TELEMETRIA AURRERATUA ETA GRAFIKOAK", mod_tel_desc: "Gidarien erritmo konparaketa eta sektorekako sendotasuna.",
+                mod_champ_title: "TXAPELKETA ETA MAHUKA KUDEATZAILEA", mod_champ_desc: "Erreien txandakatze automatikoa eta sailkapen orokorra.",
+                mod_gar_title: "BOXAK, AUTOAK ETA GIDARIAK", mod_gar_desc: "Gidarien datu-basea, motorren konfigurazioa eta errekorrak.",
+                mod_hw_title: "DS / ARDUINO / SERIE ATAKA KONEKTIBITATEA", mod_hw_desc: "Lotura zuzena WebSerial API bidez sentsore optikoekin.",
+                race_dir_params: "LASTERKETA ZUZENDARITZAREN PARAMETROAK", heat_cfg_title: "Mahukaren Konfigurazioa", session_time_lbl: "SAIO DENBORA (MIN / ORDUAK)",
+                endurance_lbl: "⚡ IRAUPENA:", target_laps_lbl: "ITZULI HELBURUA (5 - 1000)", custom_lbl: "Pertsonalizatua:",
+                local_db_note: "Kargatutako gidariak gailu honetan gordetako denboraldi aktibokoak dira.", starting_grid_lbl: "IRTEERA SARETA",
+                season_mgr_subtitle: "KATEGORIA, EGUTEGI ETA GIDARIEN KUDEATZAILEA", active_season_lbl: "DENBORALDI AKTIBOA", official_time_lbl: "ORDU OFIZIALA",
+                calendar_ctrl_lbl: "EKITALDI ETA EGUTEGI KONTROLA", calendar_hint_lbl: "Aukeratu kolorea eta sakatu egun bat", events_word: "ekitaldi",
+                print_btn: "🖨️ INPRIMATU", pdf_btn: "📄 JAITSI PDF", selected_day_lbl: "📅 HAUTATUTAKO EGUNA:", delete_event_btn: "EZABATU EKITALDIA", no_event_lbl: "EKITALDIRIK GABE",
+                event_placeholder: "Ekitaldiaren izena...", save_event_btn: "✓ GORDE EKITALDIA", official_cats_lbl: "KATEGORIA OFIZIALAK", active_word: "AKTIBOA",
+                new_cat_placeholder: "Kategoria berria...", add_cat_btn: "+ KATEGORIA",
+                roster_sub: "GIDARI, TALDE ETA DORTSALEN IZEN-EMATEA", roster_title: "Gehitu Gidaria Gailuaren Datu-Basera", registered_word: "IZENA EMANDA",
+                number_lbl: "DORTSALA", driver_lbl: "GIDARIA", team_lbl: "TALDEA", add_btn: "+ GEHITU", send_grid_btn: "🏁 BIDALI GIDARIAK ZUZENEKO SARETARA",
                 home: "🏠 HASIERA", track_call: "⚠️ PISTA ITXITA", resume: "🟢 BERREKIN", lane: "ERREIA", laps: "ITZULIAK",
                 mean_lap: "BATEZ BESTEKOA", record: "ERREKORRA", finish_line: "HELBURUA",
                 last_lap_lbl: "AZKEN ITZULIA", gap_leader: "TARTEA", opt_lap: "I. OPTIMO", consistency: "SENDOTASUNA",
@@ -708,6 +888,27 @@
                 title: "KRONOS PRO RACE", standby: "STANDBY", voice_label: "VOICE:", test_btn: "🔊 TEST",
                 voice_female: "FEMALE",
                 track_time: "HEAT TIME", f1_start: "🚦 F1 START", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 LIVE GRID",
+                tab_telemetry: "📊 TELEMETRY", tab_championship: "🏆 CHAMPIONSHIP", tab_garage: "🏎️ GARAGE / CARS", tab_hardware: "🔌 SENSORS / USB",
+                grp_session_type: "1. SESSION TYPE", grp_format: "2. FORMAT", grp_topology: "3. TRACK TOPOLOGY", physical_cfg: "PHYSICAL SETUP",
+                lanes_lbl: "LANES", sectors_lbl: "SECT.", length_lbl: "LENGTH", grp_hud: "4. TELEMETRY HUD", grp_style: "5. LAYOUT & COLOR", fia_lights_lbl: "FIA LIGHTS",
+                back_live_grid: "BACK TO LIVE GRID", close_btn: "✕ CLOSE", db_active_badge: "● LOCAL DB ACTIVE",
+                db_sync_footer: "KRONOS PRO RACE // INTERNAL DATABASE SYNCHRONIZED", save_device_btn: "💾 SAVE TO DEVICE & RETURN", start_f1_now_btn: "🚦 START F1 SEQUENCE NOW",
+                modal_session_badge: "SESSION", modal_session_title: "SESSION CONFIGURATION",
+                no_track_records: "NO TRACK RECORDS YET", leader_lbl: "LEADER", waiting_sparkline: "WAITING +2 LAPS FOR SPARKLINE TELEMETRY",
+                mod_tel_title: "ADVANCED TELEMETRY & CHARTS", mod_tel_desc: "Driver pace comparison, tire degradation curves and sector consistency.",
+                mod_champ_title: "CHAMPIONSHIP & HEAT MANAGER", mod_champ_desc: "Automatic lane rotation and overall points standings.",
+                mod_gar_title: "GARAGE, CARS & DRIVERS", mod_gar_desc: "Driver database, motor setups and track record history.",
+                mod_hw_title: "DS / ARDUINO / SERIAL PORT CONNECTIVITY", mod_hw_desc: "Direct link via WebSerial API with optical bridges and lane sensors.",
+                race_dir_params: "RACE DIRECTION PARAMETERS", heat_cfg_title: "Heat Configuration", session_time_lbl: "SESSION TIME (MIN / HOURS)",
+                endurance_lbl: "⚡ ENDURANCE:", target_laps_lbl: "TARGET LAPS (5 UP TO 1000)", custom_lbl: "Custom:",
+                local_db_note: "Loaded drivers and numbers come from the active season saved on this device.", starting_grid_lbl: "STARTING GRID",
+                season_mgr_subtitle: "CATEGORY, CALENDAR & DRIVER MANAGER", active_season_lbl: "ACTIVE SEASON", official_time_lbl: "OFFICIAL TIME",
+                calendar_ctrl_lbl: "EVENT & CALENDAR CONTROL", calendar_hint_lbl: "Pick a color and click a day", events_word: "events",
+                print_btn: "🖨️ PRINT", pdf_btn: "📄 DOWNLOAD PDF", selected_day_lbl: "📅 SELECTED DAY:", delete_event_btn: "DELETE EVENT", no_event_lbl: "NO EVENT ASSIGNED",
+                event_placeholder: "Event name (e.g. Night GT GP...)", save_event_btn: "✓ SAVE EVENT", official_cats_lbl: "OFFICIAL CATEGORIES", active_word: "ACTIVE",
+                new_cat_placeholder: "New category (e.g. RALLY, LMP1...)", add_cat_btn: "+ CATEGORY",
+                roster_sub: "DRIVER, TEAM & NUMBER REGISTRATION", roster_title: "Add Driver to Device Database", registered_word: "REGISTERED",
+                number_lbl: "NUMBER", driver_lbl: "DRIVER", team_lbl: "TEAM / SCUDERIA", add_btn: "+ ADD", send_grid_btn: "🏁 SEND DRIVERS TO LIVE GRID",
                 home: "🏠 HOME", track_call: "⚠️ TRACK CALL", resume: "🟢 RESUME", lane: "LANE", laps: "LAPS",
                 mean_lap: "MEAN LAP", record: "RECORD", finish_line: "FINISH",
                 last_lap_lbl: "LAST LAP", gap_leader: "GAP LEADER", opt_lap: "OPTIMAL", consistency: "CONSISTENCY",
@@ -728,6 +929,27 @@
                 title: "KRONOS PRO RACE", standby: "ATTENTE", voice_label: "VOIX:", test_btn: "🔊 TEST",
                 voice_female: "FEMME",
                 track_time: "CHRONO MANCHE", f1_start: "🚦 DÉPART F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRILLE DIRECT",
+                tab_telemetry: "📊 TÉLÉMÉTRIE", tab_championship: "🏆 CHAMPIONNAT", tab_garage: "🏎️ STANDS / VOITURES", tab_hardware: "🔌 CAPTEURS / USB",
+                grp_session_type: "1. TYPE DE SÉANCE", grp_format: "2. FORMAT", grp_topology: "3. TOPOLOGIE PISTE", physical_cfg: "CONFIG. PHYSIQUE",
+                lanes_lbl: "VOIES", sectors_lbl: "SECT.", length_lbl: "LONG.", grp_hud: "4. TÉLÉMÉTRIE HUD", grp_style: "5. DESIGN & COULEUR", fia_lights_lbl: "FEUX FIA",
+                back_live_grid: "RETOUR À LA GRILLE EN DIRECT", close_btn: "✕ FERMER", db_active_badge: "● DB LOCALE ACTIVE",
+                db_sync_footer: "KRONOS PRO RACE // BASE DE DONNÉES INTERNE SYNCHRONISÉE", save_device_btn: "💾 SAUVEGARDER ET RETOURNER", start_f1_now_btn: "🚦 LANCER LE DÉPART F1",
+                modal_session_badge: "SÉANCE", modal_session_title: "CONFIGURATION DE LA SÉANCE",
+                no_track_records: "AUCUN TEMPS ENREGISTRÉ", leader_lbl: "LEADER", waiting_sparkline: "EN ATTENTE DE +2 TOURS POUR GRAPHIQUE",
+                mod_tel_title: "TÉLÉMÉTRIE AVANCÉE & GRAPHIQUES", mod_tel_desc: "Comparaison du rythme par pilote et régularité par secteur.",
+                mod_champ_title: "GESTIONNAIRE DE CHAMPIONNATS", mod_champ_desc: "Rotation automatique des voies et classement général aux points.",
+                mod_gar_title: "STANDS, VOITURES & PILOTES", mod_gar_desc: "Base de données des pilotes, réglages moteurs et records.",
+                mod_hw_title: "CONNECTIVITÉ DS / ARDUINO / PORT SÉRIE", mod_hw_desc: "Liaison directe via WebSerial API avec ponts optiques.",
+                race_dir_params: "PARAMÈTRES DE DIRECTION DE COURSE", heat_cfg_title: "Configuration de Manche", session_time_lbl: "TEMPS DE SÉANCE (MIN / HEURES)",
+                endurance_lbl: "⚡ ENDURANCE:", target_laps_lbl: "OBJECTIF TOURS (5 À 1000)", custom_lbl: "Personnalisé:",
+                local_db_note: "Les pilotes et numéros chargés proviennent de la saison active sauvegardée sur cet appareil.", starting_grid_lbl: "GRILLE DE DÉPART",
+                season_mgr_subtitle: "GESTIONNAIRE DE CATÉGORIES, CALENDRIER & PILOTES", active_season_lbl: "SAISON ACTIVE", official_time_lbl: "HEURE OFFICIELLE",
+                calendar_ctrl_lbl: "CONTRÔLE DES ÉVÉNEMENTS ET CALENDRIER", calendar_hint_lbl: "Choisissez une couleur et cliquez sur un jour", events_word: "événements",
+                print_btn: "🖨️ IMPRIMER", pdf_btn: "📄 TÉLÉCHARGER PDF", selected_day_lbl: "📅 JOUR SÉLECTIONNÉ:", delete_event_btn: "SUPPRIMER", no_event_lbl: "AUCUN ÉVÉNEMENT",
+                event_placeholder: "Nom de l'événement...", save_event_btn: "✓ SAUVEGARDER", official_cats_lbl: "CATÉGORIES OFFICIELLES", active_word: "ACTIVE",
+                new_cat_placeholder: "Nouvelle catégorie...", add_cat_btn: "+ CATÉGORIE",
+                roster_sub: "INSCRIPTION DES PILOTES, ÉQUIPES ET NUMÉROS", roster_title: "Ajouter un Pilote à la Base de Données", registered_word: "INSCRITS",
+                number_lbl: "NUMÉRO", driver_lbl: "PILOTE", team_lbl: "ÉQUIPE / ÉCURIE", add_btn: "+ AJOUTER", send_grid_btn: "🏁 ENVOYER LES PILOTES SUR LA GRILLE",
                 home: "🏠 ACCUEIL", track_call: "⚠️ DRAPEAU JAUNE", resume: "🟢 REPRENDRE", lane: "VOIE", laps: "TOURS",
                 mean_lap: "TOUR MOYEN", record: "RECORD", finish_line: "ARRIVÉE",
                 last_lap_lbl: "DERNIER TOUR", gap_leader: "ÉCART", opt_lap: "T. OPTIMAL", consistency: "RÉGULARITÉ",
@@ -748,6 +970,27 @@
                 title: "KRONOS PRO RACE", standby: "BEREIT", voice_label: "STIMME:", test_btn: "🔊 TEST",
                 voice_female: "FRAU",
                 track_time: "LAUFZEIT", f1_start: "🚦 F1 START", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 LIVE GRID",
+                tab_telemetry: "📊 TELEMETRIE", tab_championship: "🏆 MEISTERSCHAFT", tab_garage: "🏎️ BOXEN / AUTOS", tab_hardware: "🔌 SENSOREN / USB",
+                grp_session_type: "1. SITZUNGSTYP", grp_format: "2. FORMAT", grp_topology: "3. STRECKENLAYOUT", physical_cfg: "STRECKENDATEN",
+                lanes_lbl: "SPUREN", sectors_lbl: "SEKT.", length_lbl: "LÄNGE", grp_hud: "4. TELEMETRIE HUD", grp_style: "5. DESIGN & FARBE", fia_lights_lbl: "FIA AMPEL",
+                back_live_grid: "ZURÜCK ZUM LIVE GRID", close_btn: "✕ SCHLIESSEN", db_active_badge: "● LOKALE DB AKTIV",
+                db_sync_footer: "KRONOS PRO RACE // INTERNE DATENBANK SYNCHRONISIERT", save_device_btn: "💾 SPEICHERN & ZURÜCK", start_f1_now_btn: "🚦 F1-START JETZT BEGINNEN",
+                modal_session_badge: "SITZUNG", modal_session_title: "SITZUNGSKONFIGURATION",
+                no_track_records: "KEINE ZEITEN ERFASST", leader_lbl: "FÜHRENDER", waiting_sparkline: "WARTE AUF +2 RUNDEN FÜR GRAFIK",
+                mod_tel_title: "ERWEITERTE TELEMETRIE & DIAGRAMME", mod_tel_desc: "Rundenzeitenvergleich und Sektorkonstanz pro Fahrer.",
+                mod_champ_title: "MEISTERSCHAFTS- & LAUF-MANAGER", mod_champ_desc: "Automatischer Spurwechsel und Gesamtwertung nach Punkten.",
+                mod_gar_title: "BOXEN, FAHRZEUGE & FAHRER", mod_gar_desc: "Fahrerdatenbank, Motor-Setups und Streckenrekorde.",
+                mod_hw_title: "DS / ARDUINO / SERIELLE SCHNITTSTELLE", mod_hw_desc: "Direkte Verbindung über WebSerial API mit Lichtschranken.",
+                race_dir_params: "RENNLEITUNGSPARAMETER", heat_cfg_title: "Lauf-Konfiguration", session_time_lbl: "LAUFZEIT (MIN / STUNDEN)",
+                endurance_lbl: "⚡ LANGSTRECKE:", target_laps_lbl: "RUNDENZIEL (5 BIS 1000)", custom_lbl: "Benutzerdefiniert:",
+                local_db_note: "Geladene Fahrer und Startnummern stammen aus der auf diesem Gerät gespeicherten Saison.", starting_grid_lbl: "STARTAUFSTELLUNG",
+                season_mgr_subtitle: "KATEGORIE-, KALENDER- & FAHRER-MANAGER", active_season_lbl: "AKTIVE SAISON", official_time_lbl: "OFFIZIELLE ZEIT",
+                calendar_ctrl_lbl: "EVENT- & KALENDERSTEUERUNG", calendar_hint_lbl: "Farbe wählen und Tag anklicken", events_word: "Events",
+                print_btn: "🖨️ DRUCKEN", pdf_btn: "📄 PDF HERUNTERLADEN", selected_day_lbl: "📅 AUSGEWÄHLTER TAG:", delete_event_btn: "EVENT LÖSCHEN", no_event_lbl: "KEIN EVENT",
+                event_placeholder: "Eventname...", save_event_btn: "✓ EVENT SPEICHERN", official_cats_lbl: "OFFIZIELLE KATEGORIEN", active_word: "AKTIV",
+                new_cat_placeholder: "Neue Kategorie...", add_cat_btn: "+ KATEGORIE",
+                roster_sub: "FAHRER-, TEAM- & STARTNUMMERN-REGISTRIERUNG", roster_title: "Fahrer zur Gerätedatenbank hinzufügen", registered_word: "GEMELDET",
+                number_lbl: "NUMMER", driver_lbl: "FAHRER", team_lbl: "TEAM / RENNSTALL", add_btn: "+ HINZUFÜGEN", send_grid_btn: "🏁 FAHRER ANS LIVE GRID SENDEN",
                 home: "🏠 START", track_call: "⚠️ STRECKENSTOPP", resume: "🟢 WEITER", lane: "SPUR", laps: "RUNDEN",
                 mean_lap: "DURCHSCHNITT", record: "REKORD", finish_line: "ZIEL",
                 last_lap_lbl: "LETZTE RUNDE", gap_leader: "ABSTAND", opt_lap: "OPTIMAL", consistency: "KONSTANZ",
@@ -768,6 +1011,27 @@
                 title: "KRONOS PRO RACE", standby: "ATTESA", voice_label: "VOCE:", test_btn: "🔊 PROVA",
                 voice_female: "DONNA",
                 track_time: "TEMPO MANCHE", f1_start: "🚦 PARTENZA F1", auto_sim: "🤖 AUTO-SIM", live_grid: "🏁 GRIGLIA LIVE",
+                tab_telemetry: "📊 TELEMETRIA", tab_championship: "🏆 CAMPIONATO", tab_garage: "🏎️ BOX / AUTO", tab_hardware: "🔌 SENSORI / USB",
+                grp_session_type: "1. TIPO DI SESSIONE", grp_format: "2. FORMATO", grp_topology: "3. TOPOLOGIA PISTA", physical_cfg: "CONFIG. FISICA",
+                lanes_lbl: "CORSIE", sectors_lbl: "SETT.", length_lbl: "SVILUPPO", grp_hud: "4. TELEMETRIA HUD", grp_style: "5. DESIGN & COLORE", fia_lights_lbl: "SEMAFORO FIA",
+                back_live_grid: "TORNA ALLA GRIGLIA LIVE", close_btn: "✕ CHIUDI", db_active_badge: "● DB LOCALE ATTIVO",
+                db_sync_footer: "KRONOS PRO RACE // DATABASE INTERNO SINCRONIZZATO", save_device_btn: "💾 SALVA SUL DISPOSITIVO E TORNA", start_f1_now_btn: "🚦 AVVIA PARTENZA F1 ORA",
+                modal_session_badge: "SESSIONE", modal_session_title: "CONFIGURAZIONE SESSIONE",
+                no_track_records: "NESSUN TEMPO IN PISTA", leader_lbl: "LEADER", waiting_sparkline: "IN ATTESA DI +2 GIRI PER GRAFICO",
+                mod_tel_title: "TELEMETRIA AVANZATA & GRAFICI", mod_tel_desc: "Confronto passo gara per pilota e costanza per settore.",
+                mod_champ_title: "GESTORE CAMPIONATI & MANCHE", mod_champ_desc: "Rotazione automatica delle corsie e classifica generale a punti.",
+                mod_gar_title: "BOX, AUTO & PILOTI", mod_gar_desc: "Database piloti, setup motori e storico record della pista.",
+                mod_hw_title: "CONNETTIVITÀ DS / ARDUINO / PORTA SERIALE", mod_hw_desc: "Collegamento diretto via WebSerial API con ponti ottici.",
+                race_dir_params: "PARAMETRI DIREZIONE GARA", heat_cfg_title: "Configurazione Manche", session_time_lbl: "TEMPO SESSIONE (MIN / ORE)",
+                endurance_lbl: "⚡ ENDURANCE:", target_laps_lbl: "TRAGUARDO GIRI (DA 5 A 1000)", custom_lbl: "Personalizzato:",
+                local_db_note: "I piloti e i numeri caricati provengono dalla stagione attiva salvata su questo dispositivo.", starting_grid_lbl: "GRIGLIA DI PARTENZA",
+                season_mgr_subtitle: "GESTORE CATEGORIE, CALENDARIO E PILOTI", active_season_lbl: "STAGIONE ATTIVA", official_time_lbl: "ORA UFFICIALE",
+                calendar_ctrl_lbl: "CONTROLLO EVENTI E CALENDARIO", calendar_hint_lbl: "Scegli un colore e clicca su un giorno", events_word: "eventi",
+                print_btn: "🖨️ STAMPA", pdf_btn: "📄 SCARICA PDF", selected_day_lbl: "📅 GIORNO SELEZIONATO:", delete_event_btn: "ELIMINA EVENTO", no_event_lbl: "NESSUN EVENTO",
+                event_placeholder: "Nome evento (es. GP Notturno GT...)", save_event_btn: "✓ SALVA EVENTO", official_cats_lbl: "CATEGORIE UFFICIALI", active_word: "ATTIVA",
+                new_cat_placeholder: "Nuova categoria...", add_cat_btn: "+ CATEGORIA",
+                roster_sub: "ISCRIZIONE PILOTI, TEAM E NUMERI", roster_title: "Aggiungi Pilota al Database del Dispositivo", registered_word: "ISCRITTI",
+                number_lbl: "NUMERO", driver_lbl: "PILOTA", team_lbl: "TEAM / SCUDERIA", add_btn: "+ AGGIUNGI", send_grid_btn: "🏁 INVIA PILOTI ALLA GRIGLIA LIVE",
                 home: "🏠 INIZIO", track_call: "⚠️ BANDIERA GIALLA", resume: "🟢 RIPRENDI", lane: "CORSIA", laps: "GIRI",
                 mean_lap: "GIRO MEDIO", record: "RECORD", finish_line: "TRAGUARDO",
                 last_lap_lbl: "ULTIMO GIRO", gap_leader: "DISTACCO", opt_lap: "G. OTTIMALE", consistency: "COSTANZA",
@@ -889,9 +1153,10 @@
         };
 
         const appState = {
-            raceStatus: 'STANDBY', sessionType: 'PRACTICE', raceFormat: 'TIME', targetLaps: 25, activeLanes: 2, numSectors: 3,
-            dataViewLevel: 'BASIC', trackLengthMeters: 24.5,
+            raceStatus: 'STANDBY', sessionType: 'PRACTICE', raceFormat: 'TIME', targetLaps: 25, activeLanes: 8, numSectors: 3,
+            dataViewLevel: 'EXPERT', trackLengthMeters: 24.5,
             cardLayout: 'STANDARD', cardColorPalette: 'NEON',
+            activeTab: 'LIVE',
             heatTotalSeconds: 300, remainingSeconds: 300, overallBestLap: Infinity, overallBestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
             autoDemoTimer: null, pendingAutoSim: false, clockInterval: null, lanes: {},
             currentLeaderId: null, announcedOneMin: false, announcedThirtySec: false, announcedLastLap: false, lastCommentaryTime: 0,
@@ -1153,6 +1418,7 @@
         }
 
         function switchModuleTab(tabId) {
+            appState.activeTab = tabId;
             const tabs = ['LIVE', 'TELEMETRY', 'CHAMPIONSHIP', 'GARAGE', 'HARDWARE'];
             tabs.forEach(id => {
                 const btn = document.getElementById(`tab-${id}`);
@@ -1175,10 +1441,10 @@
                 placeholder.classList.remove('hidden');
                 placeholder.classList.add('flex');
                 const meta = {
-                    TELEMETRY: { icon: '📊', title: 'TELEMETRÍA AVANZADA & GRÁFICAS', desc: 'Comparativa de ritmo por piloto, curvas de degradación y consistencia por sector.' },
-                    CHAMPIONSHIP: { icon: '🏆', title: 'GESTOR DE CAMPEONATOS & MANGAS', desc: 'Rotación automática de carriles y clasificación general por puntos.' },
-                    GARAGE: { icon: '🏎️', title: 'BOXES, COCHES & PILOTOS', desc: 'Base de datos de pilotos, configuración de motores e historial de récords.' },
-                    HARDWARE: { icon: '🔌', title: 'CONECTIVIDAD DS / ARDUINO / PUERTO SERIE', desc: 'Enlace directo por WebSerial API con puentes ópticos y sensores de carril.' }
+                    TELEMETRY: { icon: '📊', title: t('mod_tel_title'), desc: t('mod_tel_desc') },
+                    CHAMPIONSHIP: { icon: '🏆', title: t('mod_champ_title'), desc: t('mod_champ_desc') },
+                    GARAGE: { icon: '🏎️', title: t('mod_gar_title'), desc: t('mod_gar_desc') },
+                    HARDWARE: { icon: '🔌', title: t('mod_hw_title'), desc: t('mod_hw_desc') }
                 }[tabId];
                 if (meta) {
                     document.getElementById('moduleIcon').textContent = meta.icon;
@@ -1237,55 +1503,55 @@
                 const isClub = type === 'CLUB';
                 badge.textContent = isOfficial ? t('official') : (isClub ? t('club') : t('practice'));
                 badge.className = `px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${isOfficial ? 'bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40' : 'bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40'}`;
-                title.textContent = `${badge.textContent} // PANEL CENTRAL DE PISTA`;
+                title.textContent = `${badge.textContent} // ${t('modal_session_title')}`;
                 
                 content.innerHTML = `
                     <div class="md:col-span-7 flex flex-col gap-4">
                         <div class="mac-group-box p-5 flex-1 flex flex-col justify-between">
                             <div>
-                                <span class="group-label text-[#30d158]">PARÁMETROS DE DIRECCIÓN DE CARRERA</span>
-                                <h3 class="text-xl font-black text-white mt-1 mb-4">Configuración de Manga (${appState.seasonConfig.selectedCategory})</h3>
+                                <span class="group-label text-[#30d158]">${t('race_dir_params')}</span>
+                                <h3 class="text-xl font-black text-white mt-1 mb-4">${t('heat_cfg_title')} (${appState.seasonConfig.selectedCategory})</h3>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="mac-control-pill p-4">
-                                        <div class="group-label mb-2">TIEMPO DE SESIÓN (MIN / HORAS)</div>
+                                        <div class="group-label mb-2">${t('session_time_lbl')}</div>
                                         <div class="flex items-center gap-2 flex-wrap mb-2">
                                             <button onclick="adjustHeatTime(300)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===300?'btn-neon-green':'btn-silver'} cursor-pointer">5 MIN</button>
                                             <button onclick="adjustHeatTime(600)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===600?'btn-neon-green':'btn-silver'} cursor-pointer">10 MIN</button>
                                             <button onclick="adjustHeatTime(900)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===900?'btn-neon-green':'btn-silver'} cursor-pointer">15 MIN</button>
                                             <button onclick="adjustHeatTime(1800)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===1800?'btn-neon-green':'btn-silver'} cursor-pointer">30 MIN</button>
-                                            <button onclick="adjustHeatTime(3600)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===3600?'btn-neon-green':'btn-silver'} cursor-pointer">1 HORA</button>
+                                            <button onclick="adjustHeatTime(3600)" class="px-3.5 py-2 rounded-lg text-xs font-black ${appState.heatTotalSeconds===3600?'btn-neon-green':'btn-silver'} cursor-pointer">1 H</button>
                                         </div>
                                         <div class="flex items-center gap-2 flex-wrap pt-2 border-t border-white/10">
-                                            <span class="text-[10px] text-[#ffd60a] font-black">⚡ RESISTENCIA:</span>
-                                            <button onclick="adjustHeatTime(43200)" class="px-3.5 py-1.5 rounded-lg text-xs font-black ${appState.heatTotalSeconds===43200?'btn-neon-blue':'btn-silver'} cursor-pointer">12 HORAS</button>
-                                            <button onclick="adjustHeatTime(86400)" class="px-3.5 py-1.5 rounded-lg text-xs font-black ${appState.heatTotalSeconds===86400?'btn-neon-blue':'btn-silver'} cursor-pointer">24 HORAS</button>
+                                            <span class="text-[10px] text-[#ffd60a] font-black">${t('endurance_lbl')}</span>
+                                            <button onclick="adjustHeatTime(43200)" class="px-3.5 py-1.5 rounded-lg text-xs font-black ${appState.heatTotalSeconds===43200?'btn-neon-blue':'btn-silver'} cursor-pointer">12 H</button>
+                                            <button onclick="adjustHeatTime(86400)" class="px-3.5 py-1.5 rounded-lg text-xs font-black ${appState.heatTotalSeconds===86400?'btn-neon-blue':'btn-silver'} cursor-pointer">24 H</button>
                                         </div>
                                     </div>
                                     <div class="mac-control-pill p-4">
-                                        <div class="group-label mb-2">META DE VUELTAS (5 HASTA 1000)</div>
+                                        <div class="group-label mb-2">${t('target_laps_lbl')}</div>
                                         <div class="flex items-center gap-2 flex-wrap mb-3">
-                                            <button onclick="adjustTargetLaps(25)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===25?'btn-neon-blue':'btn-silver'} cursor-pointer">25 V</button>
-                                            <button onclick="adjustTargetLaps(50)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===50?'btn-neon-blue':'btn-silver'} cursor-pointer">50 V</button>
-                                            <button onclick="adjustTargetLaps(100)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===100?'btn-neon-blue':'btn-silver'} cursor-pointer">100 V</button>
-                                            <button onclick="adjustTargetLaps(250)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===250?'btn-neon-blue':'btn-silver'} cursor-pointer">250 V</button>
-                                            <button onclick="adjustTargetLaps(500)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===500?'btn-neon-blue':'btn-silver'} cursor-pointer">500 V</button>
-                                            <button onclick="adjustTargetLaps(1000)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===1000?'btn-neon-blue':'btn-silver'} cursor-pointer">1000 V</button>
+                                            <button onclick="adjustTargetLaps(25)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===25?'btn-neon-blue':'btn-silver'} cursor-pointer">25</button>
+                                            <button onclick="adjustTargetLaps(50)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===50?'btn-neon-blue':'btn-silver'} cursor-pointer">50</button>
+                                            <button onclick="adjustTargetLaps(100)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===100?'btn-neon-blue':'btn-silver'} cursor-pointer">100</button>
+                                            <button onclick="adjustTargetLaps(250)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===250?'btn-neon-blue':'btn-silver'} cursor-pointer">250</button>
+                                            <button onclick="adjustTargetLaps(500)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===500?'btn-neon-blue':'btn-silver'} cursor-pointer">500</button>
+                                            <button onclick="adjustTargetLaps(1000)" class="px-3 py-2 rounded-lg text-xs font-black ${appState.targetLaps===1000?'btn-neon-blue':'btn-silver'} cursor-pointer">1000</button>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <span class="text-[10px] text-[#94a3b8] font-bold">Personalizado:</span>
+                                            <span class="text-[10px] text-[#94a3b8] font-bold">${t('custom_lbl')}</span>
                                             <input type="number" min="5" max="1000" value="${appState.targetLaps}" onchange="adjustTargetLaps(parseInt(this.value)||25)" class="w-24 bg-black/60 border border-white/15 rounded-lg px-2 py-1 text-xs font-mono-num font-black text-white focus:outline-none focus:border-[#0a84ff]"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="mac-control-pill p-4 mt-4 border border-[#30d158]/30 bg-[#30d158]/5">
-                                <div class="text-xs font-extrabold text-[#30d158] uppercase">BASE DE DATOS LOCAL ACTIVA</div>
-                                <p class="text-xs text-[#94a3b8] mt-1">Los pilotos y dorsales cargados proceden de la temporada activa guardada en este dispositivo.</p>
+                                <div class="text-xs font-extrabold text-[#30d158] uppercase">${t('db_active_badge')}</div>
+                                <p class="text-xs text-[#94a3b8] mt-1">${t('local_db_note')}</p>
                             </div>
                         </div>
                     </div>
                     <div class="md:col-span-5 mac-group-box p-5 flex flex-col">
-                        <span class="group-label text-[#5ac8fa] mb-2">PARRILLA DE SALIDA (${appState.activeLanes} CARRILES)</span>
+                        <span class="group-label text-[#5ac8fa] mb-2">${t('starting_grid_lbl')} (${appState.activeLanes} ${t('lanes_lbl')})</span>
                         <div class="flex-1 overflow-y-auto flex flex-col gap-2.5 pr-1">
                             ${driversInputsHtml}
                         </div>
@@ -1294,7 +1560,7 @@
             } else if (type === 'SEASON') {
                 badge.textContent = t('create_season');
                 badge.className = 'px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40 shadow-[0_0_12px_rgba(10,132,255,0.3)]';
-                title.textContent = `${t('create_season')} // GESTOR DE CATEGORÍAS, CALENDARIO Y PILOTOS`;
+                title.textContent = `${t('create_season')} // ${t('season_mgr_subtitle')}`;
                 renderSeasonModalContent();
                 startSeasonLiveClock();
             }
@@ -1378,12 +1644,12 @@
                 <div class="md:col-span-5 flex flex-col gap-3.5 min-h-0 overflow-y-auto pr-1">
                     <div class="mac-group-box p-3.5 flex items-center justify-between gap-4 border border-white/10">
                         <div class="flex-1 min-w-0">
-                            <span class="group-label text-[#5ac8fa]">TEMPORADA ACTIVA</span>
-                            <input type="text" value="${cfg.name}" onchange="updateSeasonName(this.value)" class="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 mt-1 text-sm font-black text-white focus:outline-none focus:border-[#0a84ff]" placeholder="NOMBRE DE LA TEMPORADA"/>
+                            <span class="group-label text-[#5ac8fa]">${t('active_season_lbl')}</span>
+                            <input type="text" value="${cfg.name}" onchange="updateSeasonName(this.value)" class="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 mt-1 text-sm font-black text-white focus:outline-none focus:border-[#0a84ff]" placeholder="SEASON NAME"/>
                         </div>
                         <div class="text-right shrink-0 bg-black/50 px-3.5 py-2 rounded-2xl border border-white/10">
                             <div class="group-label text-[#30d158] flex items-center justify-end gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping"></span> HORA OFICIAL
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping"></span> ${t('official_time_lbl')}
                             </div>
                             <div id="seasonLiveClock" class="text-xl md:text-2xl font-mono-num font-black text-white tracking-tight leading-none mt-1">00:00:00</div>
                             <div id="seasonLiveDateText" class="text-[10px] font-bold text-[#94a3b8] mt-0.5 uppercase">--/--/----</div>
@@ -1393,15 +1659,15 @@
                     <div class="mac-group-box p-4 flex flex-col gap-3 border border-white/10">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div>
-                                <span class="group-label text-[#5ac8fa]">CONTROL DE EVENTOS Y CALENDARIO</span>
-                                <div class="text-[11px] font-bold text-[#94a3b8]">Elige un color y pulsa un día (${Object.keys(cfg.calendarEvents).length} eventos)</div>
+                                <span class="group-label text-[#5ac8fa]">${t('calendar_ctrl_lbl')}</span>
+                                <div class="text-[11px] font-bold text-[#94a3b8]">${t('calendar_hint_lbl')} (${Object.keys(cfg.calendarEvents).length} ${t('events_word')})</div>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <button type="button" onclick="printSeasonCalendar()" class="px-2.5 py-1 btn-silver hover:border-[#5ac8fa] text-[10px] font-black rounded-lg cursor-pointer flex items-center gap-1" title="Imprimir Calendario">
-                                    🖨️ IMPRIMIR
+                                <button type="button" onclick="printSeasonCalendar()" class="px-2.5 py-1 btn-silver hover:border-[#5ac8fa] text-[10px] font-black rounded-lg cursor-pointer flex items-center gap-1">
+                                    ${t('print_btn')}
                                 </button>
-                                <button type="button" onclick="downloadSeasonCalendarPDF()" id="btnDownloadCalendarPdf" class="px-2.5 py-1 btn-neon-blue text-[10px] font-black rounded-lg cursor-pointer flex items-center gap-1" title="Descargar en PDF">
-                                    📄 BAJAR PDF
+                                <button type="button" onclick="downloadSeasonCalendarPDF()" id="btnDownloadCalendarPdf" class="px-2.5 py-1 btn-neon-blue text-[10px] font-black rounded-lg cursor-pointer flex items-center gap-1">
+                                    ${t('pdf_btn')}
                                 </button>
                             </div>
                         </div>
@@ -1421,34 +1687,34 @@
                         <div class="p-3 rounded-xl bg-black/45 border border-white/10 flex flex-col gap-2" style="border-left: 4px solid ${activeColMeta.hex}">
                             <div class="flex items-center justify-between">
                                 <span class="text-[10px] font-black uppercase tracking-wider" style="color:${activeColMeta.border}">
-                                    📅 DÍA SELECCIONADO: ${formatIsoToShort(selectedIso)}
+                                    ${t('selected_day_lbl')} ${formatIsoToShort(selectedIso)}
                                 </span>
-                                ${activeEvent ? `<button type="button" onclick="removeCalendarEvent('${selectedIso}')" class="text-[10px] font-black text-[#ff453a] hover:underline cursor-pointer">BORRAR EVENTO</button>` : `<span class="text-[10px] font-bold text-[#64748b]">SIN EVENTO ASIGNADO</span>`}
+                                ${activeEvent ? `<button type="button" onclick="removeCalendarEvent('${selectedIso}')" class="text-[10px] font-black text-[#ff453a] hover:underline cursor-pointer">${t('delete_event_btn')}</button>` : `<span class="text-[10px] font-bold text-[#64748b]">${t('no_event_lbl')}</span>`}
                             </div>
                             <div class="flex items-center gap-2">
-                                <input type="text" id="calendarEventTitleInput" value="${activeEvent ? activeEvent.title : ''}" placeholder="Nombre del evento (ej. GP Nocturno GT...)" class="flex-1 bg-black/60 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#0a84ff]"/>
+                                <input type="text" id="calendarEventTitleInput" value="${activeEvent ? activeEvent.title : ''}" placeholder="${t('event_placeholder')}" class="flex-1 bg-black/60 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#0a84ff]"/>
                                 <button type="button" onclick="saveCalendarEventDetails('${selectedIso}')" class="px-3 py-1.5 btn-neon-green text-[11px] font-black rounded-lg cursor-pointer shrink-0">
-                                    ✓ GUARDAR EVENTO
+                                    ${t('save_event_btn')}
                                 </button>
                             </div>
                         </div>
 
                         <div class="max-h-28 overflow-y-auto flex flex-col gap-1 pr-1">
-                            ${sortedEventsList || `<div class="text-[11px] text-[#64748b] font-bold text-center py-2">Pulsa sobre cualquier día del calendario para marcar un evento con el color activo.</div>`}
+                            ${sortedEventsList || `<div class="text-[11px] text-[#64748b] font-bold text-center py-2">${t('calendar_hint_lbl')}</div>`}
                         </div>
                     </div>
 
                     <div class="mac-group-box p-3.5 flex flex-col gap-2 border border-white/10">
                         <div class="flex items-center justify-between">
-                            <span class="group-label text-[#30d158]">CATEGORÍAS OFICIALES</span>
-                            <span class="text-[11px] font-black text-[#5ac8fa]">ACTIVA: ${cfg.selectedCategory}</span>
+                            <span class="group-label text-[#30d158]">${t('official_cats_lbl')}</span>
+                            <span class="text-[11px] font-black text-[#5ac8fa]">${t('active_word')}: ${cfg.selectedCategory}</span>
                         </div>
                         <div class="flex flex-wrap gap-2">
                             ${categoriesHtml}
                         </div>
                         <div class="flex items-center gap-2 mt-1 pt-2 border-t border-white/10">
-                            <input type="text" id="newCustomCatInput" placeholder="Nueva categoría (ej. RALLY, LMP1...)" class="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#0a84ff]"/>
-                            <button type="button" onclick="addCustomCategory()" class="px-3.5 py-1.5 btn-silver hover:border-[#5ac8fa] text-xs font-black rounded-xl cursor-pointer shrink-0">+ CATEGORÍA</button>
+                            <input type="text" id="newCustomCatInput" placeholder="${t('new_cat_placeholder')}" class="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#0a84ff]"/>
+                            <button type="button" onclick="addCustomCategory()" class="px-3.5 py-1.5 btn-silver hover:border-[#5ac8fa] text-xs font-black rounded-xl cursor-pointer shrink-0">${t('add_cat_btn')}</button>
                         </div>
                     </div>
                 </div>
@@ -1457,45 +1723,45 @@
                     <div class="shrink-0">
                         <div class="flex items-center justify-between mb-2">
                             <div>
-                                <span class="group-label text-[#5ac8fa]">INSCRIPCIÓN DE PILOTOS, EQUIPOS Y DORSALES</span>
-                                <h3 class="text-base font-black text-white">Añadir Piloto a la Base de Datos del Dispositivo</h3>
+                                <span class="group-label text-[#5ac8fa]">${t('roster_sub')}</span>
+                                <h3 class="text-base font-black text-white">${t('roster_title')}</h3>
                             </div>
                             <span class="px-2.5 py-1 rounded-lg bg-[#0a84ff]/15 text-[#5ac8fa] border border-[#0a84ff]/30 text-xs font-black">
-                                ${cfg.roster.length} INSCRITOS
+                                ${cfg.roster.length} ${t('registered_word')}
                             </span>
                         </div>
 
                         <div class="grid grid-cols-12 gap-2.5 bg-black/35 p-3 rounded-2xl border border-white/10 mb-4">
                             <div class="col-span-2">
-                                <label class="group-label block mb-1">DORSAL</label>
+                                <label class="group-label block mb-1">${t('number_lbl')}</label>
                                 <input type="text" id="inputPilotDorsal" maxlength="4" placeholder="99" class="w-full bg-black/60 border border-white/15 rounded-xl px-2.5 py-2 text-sm font-mono-num font-black text-[#30d158] text-center focus:outline-none focus:border-[#30d158]"/>
                             </div>
                             <div class="col-span-4">
-                                <label class="group-label block mb-1">PILOTO</label>
-                                <input type="text" id="inputPilotName" placeholder="NOMBRE PILOTO" class="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#0a84ff]"/>
+                                <label class="group-label block mb-1">${t('driver_lbl')}</label>
+                                <input type="text" id="inputPilotName" placeholder="${t('driver_lbl')}" class="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#0a84ff]"/>
                             </div>
                             <div class="col-span-4">
-                                <label class="group-label block mb-1">EQUIPO / ESCUDERÍA</label>
-                                <input type="text" id="inputPilotTeam" placeholder="NOMBRE EQUIPO" class="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs font-bold text-white uppercase focus:outline-none focus:border-[#0a84ff]"/>
+                                <label class="group-label block mb-1">${t('team_lbl')}</label>
+                                <input type="text" id="inputPilotTeam" placeholder="${t('team_lbl')}" class="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs font-bold text-white uppercase focus:outline-none focus:border-[#0a84ff]"/>
                             </div>
                             <div class="col-span-2 flex items-end">
                                 <button type="button" onclick="addDriverToRoster()" class="w-full py-2 btn-neon-green font-black text-xs rounded-xl cursor-pointer transition active:scale-95">
-                                    + AÑADIR
+                                    ${t('add_btn')}
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2 pr-1">
-                        ${rosterListHtml || `<div class="h-full flex items-center justify-center text-xs font-bold text-[#64748b]">NO HAY PILOTOS INSCRITOS. AÑADE EL PRIMERO ARRIBA.</div>`}
+                        ${rosterListHtml || `<div class="h-full flex items-center justify-center text-xs font-bold text-[#64748b]">0 ${t('registered_word')}</div>`}
                     </div>
 
                     <div class="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 shrink-0">
                         <div class="text-[11px] font-semibold text-[#94a3b8]">
-                            💾 Almacenado automáticamente en la Base de Datos Interna (<span class="text-white font-bold">IndexedDB</span>) de este PC, Mac o Tablet.
+                            💾 ${t('local_db_note')} (<span class="text-white font-bold">IndexedDB</span>)
                         </div>
                         <button type="button" onclick="applyRosterToGridAndNotify()" class="px-3.5 py-1.5 btn-neon-blue text-[11px] font-black rounded-lg cursor-pointer">
-                            🏁 ENVIAR PILOTOS A LA PARRILLA EN VIVO
+                            ${t('send_grid_btn')}
                         </button>
                     </div>
                 </div>
@@ -1558,8 +1824,10 @@
         }
 
         function getMonthYearLabel(year, month) {
-            const monthsEs = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-            return `${monthsEs[month]} ${year}`;
+            const localeMap = { es: 'es-ES', ca: 'ca-ES', eu: 'eu-ES', en: 'en-GB', fr: 'fr-FR', de: 'de-DE', it: 'it-IT' };
+            const loc = localeMap[currentLang] || 'es-ES';
+            const dt = new Date(year, month, 1);
+            return dt.toLocaleDateString(loc, { month: 'long', year: 'numeric' });
         }
 
         function buildMinimalistCalendarHtml(year, month) {
@@ -1968,9 +2236,18 @@
 
             const btnFloat = document.getElementById('btnFloatingTrackCall');
             if (appState.raceStatus === 'TRACK_CALL' && btnFloat) {
-                btnFloat.innerHTML = `🟢 ${t('resume')}`;
+                btnFloat.innerHTML = `${t('resume')}`;
             } else if (btnFloat) {
-                btnFloat.innerHTML = `⚠️ ${t('track_call')}`;
+                btnFloat.innerHTML = `${t('track_call')}`;
+            }
+
+            if (appState.activeTab && appState.activeTab !== 'LIVE') {
+                switchModuleTab(appState.activeTab);
+            }
+
+            const modalOverlay = document.getElementById('sessionModalOverlay');
+            if (modalOverlay && !modalOverlay.classList.contains('hidden') && appState.currentModalType) {
+                openSessionModal(appState.currentModalType);
             }
 
             updateVoiceLabels();
@@ -2065,7 +2342,7 @@
             const avg5 = last5.length > 0 ? last5.reduce((a, b) => a + b, 0) / last5.length : 0;
             const deltaBest = (lane.lastLap > 0 && lane.bestLap < Infinity) ? (lane.lastLap - lane.bestLap) : null;
 
-            let gapText = 'LÍDER';
+            let gapText = t('leader_lbl');
             if (leaderLane && leaderLane.id !== lane.id) {
                 if (leaderLane.laps === 0 && lane.laps === 0) {
                     gapText = '--';
@@ -2099,7 +2376,7 @@
 
         function buildSparklineSvg(history, hexColor, bestLap) {
             if (!history || history.length < 2) {
-                return `<div class="h-full flex items-center justify-center text-[10px] font-bold text-[#64748b] tracking-wider">ESPERANDO +2 VUELTAS PARA TELEMETRÍA GRÁFICA</div>`;
+                return `<div class="h-full flex items-center justify-center text-[10px] font-bold text-[#64748b] tracking-wider">${t('waiting_sparkline')}</div>`;
             }
             const recent = history.slice(-10);
             const minV = Math.min(...recent);
@@ -2138,6 +2415,63 @@
         let speechUnlocked = false;
         const speechQueue = [];
         let isSpeakingQueue = false;
+        let currentCloudAudio = null;
+        const ttsAudioMemoryCache = new Map();
+
+        const voiceEngineConfig = {
+            mode: localStorage.getItem('kronos_voice_engine_mode') || 'HYBRID', // 'HYBRID' | 'CLOUD' | 'API_PRO'
+            googleApiKey: localStorage.getItem('kronos_google_tts_key') || ''
+        };
+
+        function openVoiceEngineModal() {
+            const modal = document.getElementById('voiceEngineModalOverlay');
+            const keyInput = document.getElementById('googleCloudTtsApiKeyInput');
+            if (keyInput) keyInput.value = voiceEngineConfig.googleApiKey || '';
+            updateVoiceEngineModalButtons();
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeVoiceEngineModal() {
+            saveVoiceEngineSettings();
+            const modal = document.getElementById('voiceEngineModalOverlay');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function setVoiceEngineMode(mode) {
+            voiceEngineConfig.mode = mode;
+            localStorage.setItem('kronos_voice_engine_mode', mode);
+            const select = document.getElementById('headerVoiceSelect');
+            if (select && (mode === 'CLOUD' || mode === 'API_PRO')) {
+                select.value = 'CLOUD_UNIFIED';
+            }
+            updateVoiceEngineModalButtons();
+        }
+
+        function saveVoiceEngineSettings() {
+            const keyInput = document.getElementById('googleCloudTtsApiKeyInput');
+            if (keyInput) {
+                voiceEngineConfig.googleApiKey = keyInput.value.trim();
+                localStorage.setItem('kronos_google_tts_key', voiceEngineConfig.googleApiKey);
+            }
+        }
+
+        function updateVoiceEngineModalButtons() {
+            ['HYBRID', 'CLOUD', 'API_PRO'].forEach(m => {
+                const btn = document.getElementById(`btnEngine-${m}`);
+                if (!btn) return;
+                if (voiceEngineConfig.mode === m) {
+                    btn.className = 'mac-group-box p-3.5 text-left border-2 border-[#30d158] bg-[#30d158]/10 cursor-pointer transition';
+                } else {
+                    btn.className = 'mac-group-box p-3.5 text-left border border-white/10 hover:border-white/25 cursor-pointer transition';
+                }
+            });
+        }
 
         function unlockMobileAudio() {
             getAudioContext();
@@ -2152,13 +2486,13 @@
         document.addEventListener('click', unlockMobileAudio, { once: true, passive: true });
 
         const NATIVE_SPEAKER_PROFILES = {
-            es: { locale: 'es-ES', FEMALE: { label: 'Elvira', keywords: ['elvira', 'monica', 'mónica', 'laura', 'lucia', 'female', 'mujer'] } },
-            ca: { locale: 'ca-ES', FEMALE: { label: 'Joana', keywords: ['joana', 'montserrat', 'nuria', 'female', 'dona'] } },
-            eu: { locale: 'eu-ES', FEMALE: { label: 'Amaia', keywords: ['amaia', 'ane', 'female', 'emakumea'] } },
-            en: { locale: 'en-GB', FEMALE: { label: 'Sonia', keywords: ['sonia', 'kate', 'serena', 'hazel', 'female'] } },
-            fr: { locale: 'fr-FR', FEMALE: { label: 'Denise', keywords: ['denise', 'amelie', 'amélie', 'female', 'femme'] } },
-            de: { locale: 'de-DE', FEMALE: { label: 'Katja', keywords: ['katja', 'anna', 'female', 'frau'] } },
-            it: { locale: 'it-IT', FEMALE: { label: 'Elsa', keywords: ['elsa', 'alice', 'federica', 'female', 'donna'] } }
+            es: { locale: 'es-ES', cloudVoice: 'es-ES-Neural2-A', FEMALE: { label: 'Elvira', keywords: ['elvira', 'monica', 'mónica', 'laura', 'lucia', 'paulina', 'helena', 'google español', 'female', 'mujer'] } },
+            ca: { locale: 'ca-ES', cloudVoice: 'ca-ES-Standard-A', FEMALE: { label: 'Joana', keywords: ['joana', 'montserrat', 'nuria', 'female', 'dona'] } },
+            eu: { locale: 'eu-ES', cloudVoice: 'eu-ES-Standard-A', FEMALE: { label: 'Amaia', keywords: ['amaia', 'ane', 'female', 'emakumea'] } },
+            en: { locale: 'en-GB', cloudVoice: 'en-GB-Neural2-A', FEMALE: { label: 'Sonia', keywords: ['sonia', 'kate', 'serena', 'hazel', 'libby', 'google uk', 'female'] } },
+            fr: { locale: 'fr-FR', cloudVoice: 'fr-FR-Neural2-A', FEMALE: { label: 'Denise', keywords: ['denise', 'amelie', 'amélie', 'thomas', 'google français', 'female', 'femme'] } },
+            de: { locale: 'de-DE', cloudVoice: 'de-DE-Neural2-C', FEMALE: { label: 'Katja', keywords: ['katja', 'anna', 'hedda', 'google deutsch', 'female', 'frau'] } },
+            it: { locale: 'it-IT', cloudVoice: 'it-IT-Neural2-A', FEMALE: { label: 'Elsa', keywords: ['elsa', 'alice', 'federica', 'cosimo', 'google italiano', 'female', 'donna'] } }
         };
 
         function loadSystemVoices() {
@@ -2189,8 +2523,8 @@
             });
 
             matching.sort((a, b) => {
-                let scoreA = (/natural|neural/i.test(a.name) ? 50 : 0);
-                let scoreB = (/natural|neural/i.test(b.name) ? 50 : 0);
+                let scoreA = (/natural|neural|online/i.test(a.name) ? 60 : 0) + (/google|microsoft|apple/i.test(a.name) ? 20 : 0);
+                let scoreB = (/natural|neural|online/i.test(b.name) ? 60 : 0) + (/google|microsoft|apple/i.test(b.name) ? 20 : 0);
                 return scoreB - scoreA;
             });
             return matching;
@@ -2221,7 +2555,10 @@
             const localFemale = findStrictLocalVoice(currentLang);
             const cleanName = (v, fallback) => v ? v.name.replace(/Microsoft |Google |Apple |Online |\(Natural\) |Desktop /gi, '').split('-')[0].trim() : fallback;
 
-            let optionsHtml = `<option value="FEMALE" class="bg-[#161820] text-white">${cleanName(localFemale, profile.FEMALE.label)} (${t('voice_female')})</option>`;
+            let optionsHtml = `
+                <option value="CLOUD_UNIFIED" class="bg-[#161820] text-[#30d158]">☁️ GOOGLE CLOUD IA (100% IGUAL)</option>
+                <option value="FEMALE" class="bg-[#161820] text-white">${cleanName(localFemale, profile.FEMALE.label)} (${t('voice_female')})</option>
+            `;
 
             langVoices.forEach(v => {
                 if (localFemale && v.name === localFemale.name) return;
@@ -2231,12 +2568,20 @@
             select.innerHTML = optionsHtml;
             if (previousValue && Array.from(select.options).some(o => o.value === previousValue)) {
                 select.value = previousValue;
+            } else if (voiceEngineConfig.mode === 'CLOUD' || voiceEngineConfig.mode === 'API_PRO') {
+                select.value = 'CLOUD_UNIFIED';
             } else {
                 select.value = 'FEMALE';
             }
         }
 
         function onVoiceSelectionChange() {
+            const select = document.getElementById('headerVoiceSelect');
+            if (select && select.value === 'CLOUD_UNIFIED') {
+                voiceEngineConfig.mode = voiceEngineConfig.googleApiKey ? 'API_PRO' : 'CLOUD';
+            } else {
+                voiceEngineConfig.mode = 'HYBRID';
+            }
             testVoice();
         }
 
@@ -2251,12 +2596,90 @@
             return findStrictLocalVoice(currentLang);
         }
 
+        async function playGoogleCloudNeuralAPI(text, langCode) {
+            const profile = NATIVE_SPEAKER_PROFILES[langCode] || NATIVE_SPEAKER_PROFILES['es'];
+            const cacheKey = `API_${langCode}_${text}`;
+            if (ttsAudioMemoryCache.has(cacheKey)) {
+                return playBase64OrUrlAudio(ttsAudioMemoryCache.get(cacheKey));
+            }
+            const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(voiceEngineConfig.googleApiKey)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    input: { text },
+                    voice: { languageCode: profile.locale, name: profile.cloudVoice },
+                    audioConfig: { audioEncoding: 'MP3', speakingRate: 1.10 }
+                })
+            });
+            if (!response.ok) throw new Error('Google TTS API error');
+            const data = await response.json();
+            if (!data.audioContent) throw new Error('No audioContent');
+            const dataUrl = `data:audio/mp3;base64,${data.audioContent}`;
+            ttsAudioMemoryCache.set(cacheKey, dataUrl);
+            return playBase64OrUrlAudio(dataUrl);
+        }
+
+        function playCloudStreamTTS(text, langCode) {
+            const tlMap = { es: 'es', ca: 'ca', eu: 'eu', en: 'en', fr: 'fr', de: 'de', it: 'it' };
+            const tl = tlMap[langCode] || 'es';
+            const url = `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+            return playBase64OrUrlAudio(url);
+        }
+
+        function playBase64OrUrlAudio(srcUrl) {
+            return new Promise((resolve, reject) => {
+                try {
+                    if (currentCloudAudio) {
+                        currentCloudAudio.pause();
+                        currentCloudAudio = null;
+                    }
+                    const audio = new Audio(srcUrl);
+                    currentCloudAudio = audio;
+                    audio.playbackRate = 1.08;
+                    audio.onended = () => { currentCloudAudio = null; resolve(true); };
+                    audio.onerror = (err) => { currentCloudAudio = null; reject(err); };
+                    audio.play().catch(reject);
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        }
+
+        async function preloadStandardPhrasesCache() {
+            const btn = document.getElementById('btnPreloadAudioCache');
+            if (btn) btn.textContent = '⏳ CARGANDO VOCES EN CACHÉ...';
+            const phrases = [
+                ...t('nums').filter(Boolean),
+                t('tts_go'),
+                t('tts_pause'),
+                t('tts_resume'),
+                t('tts_end'),
+                t('tts_test')
+            ];
+            for (const ph of phrases) {
+                try {
+                    if (voiceEngineConfig.googleApiKey) {
+                        await playGoogleCloudNeuralAPI(ph, currentLang).catch(() => {});
+                        if (currentCloudAudio) currentCloudAudio.pause();
+                    }
+                } catch (e) {}
+            }
+            if (btn) btn.textContent = '✓ FRASES CARGADAS EN DISPOSITIVO';
+            setTimeout(() => {
+                if (btn) btn.textContent = '⚡ PRE-CARGAR FRASES DE SALIDA EN MEMORIA';
+            }, 2500);
+        }
+
         function speakSpotter(text, priority = 'NORMAL') {
             if (!text) return;
 
             if (priority === 'HIGH') {
                 speechQueue.length = 0;
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
+                if (currentCloudAudio) {
+                    currentCloudAudio.pause();
+                    currentCloudAudio = null;
+                }
                 isSpeakingQueue = false;
             } else {
                 if (speechQueue.length >= 2) return;
@@ -2266,13 +2689,42 @@
             processSpeechQueue();
         }
 
-        function processSpeechQueue() {
+        async function processSpeechQueue() {
             if (isSpeakingQueue || speechQueue.length === 0) return;
             isSpeakingQueue = true;
 
             const item = speechQueue.shift();
+            const select = document.getElementById('headerVoiceSelect');
+            const selectedVal = select ? select.value : 'FEMALE';
+            const forceCloud = selectedVal === 'CLOUD_UNIFIED' || voiceEngineConfig.mode === 'CLOUD' || voiceEngineConfig.mode === 'API_PRO';
             const localVoice = resolveSelectedVoice();
 
+            const finishTurn = () => {
+                isSpeakingQueue = false;
+                setTimeout(processSpeechQueue, 120);
+            };
+
+            // 1. Si hay API Key de Google Cloud (Voces Gemini / Neural2) y está activo
+            if (voiceEngineConfig.googleApiKey && (forceCloud || !localVoice)) {
+                try {
+                    await playGoogleCloudNeuralAPI(item.text, currentLang);
+                    return finishTurn();
+                } catch (e) {
+                    // Continúa al siguiente método si falla
+                }
+            }
+
+            // 2. Si el usuario eligió "GOOGLE CLOUD IA (100% IGUAL)" o el PC no tiene voz nativa para ese idioma (ej. Euskera/Catalán en otro PC)
+            if (forceCloud || !localVoice) {
+                try {
+                    await playCloudStreamTTS(item.text, currentLang);
+                    return finishTurn();
+                } catch (e) {
+                    // Si está offline, cae automáticamente al sintetizador del sistema
+                }
+            }
+
+            // 3. Sintetizador nativo del sistema operativo (Offline 0ms latencia)
             if (window.speechSynthesis) {
                 const ut = new SpeechSynthesisUtterance(item.text);
                 if (localVoice) {
@@ -2286,18 +2738,12 @@
                 ut.rate = 1.12;
                 ut.volume = 1.0;
 
-                ut.onend = () => {
-                    isSpeakingQueue = false;
-                    setTimeout(processSpeechQueue, 150);
-                };
-                ut.onerror = () => {
-                    isSpeakingQueue = false;
-                    setTimeout(processSpeechQueue, 150);
-                };
+                ut.onend = finishTurn;
+                ut.onerror = finishTurn;
 
                 window.speechSynthesis.speak(ut);
             } else {
-                isSpeakingQueue = false;
+                finishTurn();
             }
         }
 
@@ -2320,8 +2766,16 @@
         }
 
         function setSystemTopology(newLanes, newSectors) {
-            if (newLanes) appState.activeLanes = newLanes;
-            if (newSectors) appState.numSectors = newSectors;
+            if (newLanes) {
+                appState.activeLanes = newLanes;
+                const selLanes = document.getElementById('headerLanesSelect');
+                if (selLanes) selLanes.value = String(newLanes);
+            }
+            if (newSectors) {
+                appState.numSectors = newSectors;
+                const selSec = document.getElementById('headerSectorsSelect');
+                if (selSec) selSec.value = String(newSectors);
+            }
             renderLanesGrid(); 
         }
         
@@ -2399,7 +2853,7 @@
                 }
 
                 if (!historyHtml) {
-                    historyHtml = `<div class="h-full flex items-center justify-center text-xs font-semibold text-[#64748b] tracking-widest uppercase">SIN REGISTROS EN PISTA</div>`;
+                    historyHtml = `<div class="h-full flex items-center justify-center text-xs font-semibold text-[#64748b] tracking-widest uppercase">${t('no_track_records')}</div>`;
                 }
 
                 let sectorsHtml = '';
@@ -2987,17 +3441,102 @@
         
         function resetRaceSession() { location.reload(); }
 
+        let introTransitionTriggered = false;
+
+        function unmuteAndFullscreenIntro(e) {
+            if (e) e.stopPropagation();
+            const vid = document.getElementById('introFusionVideo');
+            const btn = document.getElementById('btnIntroSound');
+            if (vid) {
+                vid.muted = false;
+                vid.volume = 1.0;
+                vid.play().catch(() => {});
+            }
+            if (btn) {
+                btn.textContent = '🔊 AUDIO ACTIVO';
+                btn.className = 'ml-2 px-2.5 py-1 rounded-lg bg-[#30d158]/25 text-[#30d158] border border-[#30d158]/40 text-[10px] font-black';
+            }
+            if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+        }
+
+        function finishIntroWithBlurTransition() {
+            if (introTransitionTriggered) return;
+            introTransitionTriggered = true;
+
+            // Aseguramos 8 carriles y modo EXPERTO al revelar la aplicación
+            setSystemTopology(8, 3);
+            setDataViewLevel('EXPERT');
+
+            const splash = document.getElementById('introVideoSplash');
+            const vid = document.getElementById('introFusionVideo');
+
+            if (splash) {
+                splash.classList.add('fade-out-blur');
+                setTimeout(() => {
+                    if (vid) vid.pause();
+                    splash.style.display = 'none';
+                }, 1850);
+            }
+        }
+
+        function initIntroVideoSplash() {
+            const vid = document.getElementById('introFusionVideo');
+            const fallback = document.getElementById('introFallbackVisual');
+            if (!vid) return;
+
+            // Cuando termina el vídeo fusion.mp4, se difumina abriendo la app en 8 carriles y modo experto
+            vid.onended = () => {
+                finishIntroWithBlurTransition();
+            };
+
+            // Empezar a difuminar suavemente en los últimos 0.6 segundos del vídeo si tiene duración conocida
+            vid.ontimeupdate = () => {
+                if (vid.duration && vid.duration > 1.5 && (vid.duration - vid.currentTime <= 0.6)) {
+                    finishIntroWithBlurTransition();
+                }
+            };
+
+            // Si fusion.mp4 no se encuentra en la carpeta (ej. en el entorno de vista previa), muestra la intro visual y difumina a los 3.2s
+            vid.onerror = () => {
+                vid.classList.add('hidden');
+                if (fallback) {
+                    fallback.classList.remove('hidden');
+                    fallback.classList.add('flex');
+                }
+                setTimeout(() => {
+                    finishIntroWithBlurTransition();
+                }, 3200);
+            };
+
+            const playPromise = vid.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    // Si el navegador bloquea autoplay, reintenta en mute
+                    vid.muted = true;
+                    vid.play().catch(() => {
+                        vid.onerror();
+                    });
+                });
+            }
+        }
+
         window.onload = function() { 
             initAllLanesData(); 
             initLangDropdown();
             initCardStyleDropdowns();
-            setSystemTopology(2, 3); 
+            
+            // Inicializamos directamente con 8 carriles, 3 sectores y telemetría en modo EXPERTO
+            setSystemTopology(8, 3); 
+            setDataViewLevel('EXPERT');
             setRaceFormat('TIME');
             
             if (window.speechSynthesis) window.speechSynthesis.getVoices();
             
             changeLanguage('es');
             initLocalDatabase();
+            initIntroVideoSplash();
         };
     </script>
 </body>
