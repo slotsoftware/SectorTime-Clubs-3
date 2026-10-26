@@ -215,6 +215,62 @@
             text-transform: uppercase !important;
         }
 
+        /* ==================== ESCALADO FLUIDO AUTOMÁTICO POR TAMAÑO DE CUADRO (CONTAINER QUERIES) ==================== */
+        .pilot-card-cq {
+            container-type: size;
+        }
+        .well-cq {
+            container-type: size;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+        /* Números gigantes auto-escalables que llenan la celda según su ancho y alto real */
+        .fluid-num-hero {
+            font-size: clamp(2.2rem, min(26cqw, 52cqh), 9.5rem);
+            line-height: 0.92;
+            letter-spacing: -0.04em;
+        }
+        .fluid-num-xl {
+            font-size: clamp(1.6rem, min(20cqw, 44cqh), 7rem);
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+        }
+        .fluid-num-lg {
+            font-size: clamp(1.25rem, min(18cqw, 40cqh), 5.2rem);
+            line-height: 0.96;
+            letter-spacing: -0.025em;
+        }
+        .fluid-label {
+            font-size: clamp(0.68rem, min(6.5cqw, 14cqh), 1.35rem);
+            line-height: 1.05;
+        }
+        .fluid-sub {
+            font-size: clamp(0.72rem, min(7.2cqw, 15cqh), 1.5rem);
+            line-height: 1.05;
+        }
+        .fluid-sector-num {
+            font-size: clamp(1.05rem, min(14cqw, 58cqh), 3.2rem);
+            line-height: 1;
+        }
+        .fluid-sector-lbl {
+            font-size: clamp(0.68rem, min(5.5cqw, 36cqh), 1.25rem);
+            line-height: 1;
+        }
+        .fluid-header-name {
+            font-size: clamp(1.1rem, min(4.2cqw, 7cqh), 2.5rem);
+            line-height: 1.05;
+        }
+        .fluid-header-badge {
+            font-size: clamp(0.75rem, min(2.6cqw, 4.8cqh), 1.35rem);
+            line-height: 1;
+        }
+        .fluid-list-item {
+            font-size: clamp(0.75rem, min(7.5cqw, 16cqh), 1.45rem);
+            line-height: 1.15;
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 99px; }
@@ -373,6 +429,15 @@
                 <i class="fa-solid fa-flag-checkered"></i>
                 <span>IR A PISTA EN VIVO</span>
             </button>
+        </div>
+
+        <!-- Contenedor Principal con Scroll de los 3 Pasos de Crear Carrera -->
+        <div class="flex-1 overflow-y-auto min-h-0 pr-1">
+
+            <!-- PASO 1: PARÁMETROS DE CARRERA Y CONTROLES MANUALES -->
+            <div id="wizard-step-1" class="max-w-7xl mx-auto space-y-3 pb-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+
                     <!-- BLOQUE 1: CARRILES (1 a 10), SECTORES Y CUERDA DE PISTA (METROS) -->
                     <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
                         <div class="space-y-2">
@@ -1695,21 +1760,49 @@
                     osc1.start(now); osc2.start(now); sub.start(now);
                     osc1.stop(now + duration); osc2.stop(now + duration); sub.stop(now + duration);
                 } else if (stage === 'GREEN') {
-                    const duration = 0.78;
-                    const freqs = [880, 1318.5, 1760];
-                    freqs.forEach((freq, idx) => {
+                    // BOCINAZO DE SALIDA DE CIRCUITO (AIR HORN TRIPLE DE ALTA POTENCIA)
+                    const duration = 1.45;
+                    const hornFreqs = [311.13, 392.00, 466.16, 622.25, 155.56]; // Acorde de bocina neumática de camión/circuito con subgrave
+                    
+                    // Filtro resonante de trompeta/bocina
+                    const hornFilter = c.createBiquadFilter();
+                    hornFilter.type = 'lowpass';
+                    hornFilter.frequency.setValueAtTime(2400, now);
+                    hornFilter.Q.setValueAtTime(3.2, now);
+
+                    // Saturación cálida (WaveShaper) para darle cuerpo de bocina real
+                    const shaper = c.createWaveShaper();
+                    const curve = new Float32Array(4096);
+                    for (let i = 0; i < 4096; i++) {
+                        const x = (i * 2) / 4096 - 1;
+                        curve[i] = Math.tanh(x * 3.2);
+                    }
+                    shaper.curve = curve;
+
+                    const masterHornGain = c.createGain();
+                    masterHornGain.gain.setValueAtTime(0.01, now);
+                    masterHornGain.gain.linearRampToValueAtTime(1.0, now + 0.035); // Ataque explosivo de aire
+                    masterHornGain.gain.setValueAtTime(0.98, now + duration - 0.22);
+                    masterHornGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                    hornFilter.connect(shaper);
+                    shaper.connect(masterHornGain);
+                    masterHornGain.connect(compressor);
+
+                    hornFreqs.forEach((freq, idx) => {
                         const osc = c.createOscillator();
-                        const gain = c.createGain();
-                        osc.type = idx % 2 === 0 ? 'sawtooth' : 'square';
-                        osc.frequency.setValueAtTime(freq, now);
-                        osc.frequency.exponentialRampToValueAtTime(freq * 1.03, now + duration);
+                        const oscGain = c.createGain();
+                        osc.type = idx === 4 ? 'triangle' : 'sawtooth';
 
-                        gain.gain.setValueAtTime(0.95 / freqs.length, now);
-                        gain.gain.setValueAtTime(0.90 / freqs.length, now + duration * 0.8);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                        // Ligero efecto de presión de aire al arrancar la bocina + vibrato natural
+                        osc.frequency.setValueAtTime(freq * 0.96, now);
+                        osc.frequency.exponentialRampToValueAtTime(freq, now + 0.06);
+                        osc.frequency.setValueAtTime(freq + (idx % 2 === 0 ? 1.5 : -1.5), now + 0.4);
 
-                        osc.connect(gain);
-                        gain.connect(compressor);
+                        oscGain.gain.setValueAtTime(idx === 4 ? 0.55 : 0.42, now);
+                        osc.connect(oscGain);
+                        oscGain.connect(hornFilter);
+
                         osc.start(now);
                         osc.stop(now + duration);
                     });
@@ -3493,6 +3586,107 @@
             saveLocalDatabase();
         }
 
+        // Generador de Gráfica SVG de Telemetría (Barras coloreadas + Curva de evolución + Línea de Vuelta Media)
+        function buildLapSparklineSVG(history, bestLap, worstLap, meanLap, accentHex) {
+            if (!history || history.length === 0) {
+                return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase tracking-wider" style="font-size:clamp(0.7rem, min(5cqw, 16cqh), 1.15rem);">
+                    <i class="fa-solid fa-chart-line mr-2 opacity-60"></i>ESPERANDO VUELTAS PARA GRÁFICA EN VIVO...
+                </div>`;
+            }
+            const recent = history.slice(-14);
+            const minV = Math.min(...recent);
+            const maxV = Math.max(...recent);
+            const span = Math.max(0.15, maxV - minV);
+            const w = 320, h = 90, padX = 10, padY = 14;
+            const plotW = w - padX * 2;
+            const plotH = h - padY * 2;
+
+            // Barras verticales de cada vuelta (verde=récord, roja=más lenta, azul/plata=normal)
+            const barSlotW = plotW / Math.max(1, recent.length);
+            const barW = Math.max(6, Math.min(22, barSlotW * 0.62));
+
+            const barsSvg = recent.map((val, idx) => {
+                const xCenter = padX + (idx + 0.5) * barSlotW;
+                // Invertido para que vueltas más rápidas (menor tiempo) tengan barra alta de rendimiento o línea clara
+                const norm = (val - minV) / span;
+                const y = padY + norm * plotH;
+                const barH = Math.max(6, h - padY - y);
+                const isBest = val === bestLap;
+                const isWorst = recent.length > 2 && val === worstLap;
+                const fill = isBest ? '#30d158' : (isWorst ? '#ff453a' : (accentHex || '#5ac8fa'));
+                return `<rect x="${(xCenter - barW / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${barH.toFixed(1)}" rx="3" fill="${fill}" fill-opacity="0.32" stroke="${fill}" stroke-width="1"/>`;
+            }).join('');
+
+            // Puntos de la polilínea de tiempos
+            const pts = recent.map((val, idx) => {
+                const x = padX + (idx + 0.5) * barSlotW;
+                const norm = (val - minV) / span;
+                const y = padY + norm * plotH;
+                return { x, y, val, lapNum: history.length - recent.length + idx + 1 };
+            });
+
+            const polyPoints = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+            const meanNorm = Math.max(0, Math.min(1, (meanLap - minV) / span));
+            const meanY = (padY + meanNorm * plotH).toFixed(1);
+
+            const dotsSvg = pts.map((p, i) => {
+                const prevVal = i > 0 ? pts[i - 1].val : null;
+                const improved = prevVal !== null ? p.val <= prevVal : true;
+                const dotColor = p.val === bestLap ? '#30d158' : (p.val === worstLap && recent.length > 2 ? '#ff453a' : (improved ? '#30d158' : '#ff453a'));
+                return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.8" fill="${dotColor}" stroke="#090b10" stroke-width="1.4"/>
+                        <text x="${p.x.toFixed(1)}" y="${Math.max(10, p.y - 5).toFixed(1)}" text-anchor="middle" fill="#f8fafc" font-size="8.2" font-family="JetBrains Mono" font-weight="800">${p.val.toFixed(3)}</text>`;
+            }).join('');
+
+            return `
+            <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                <!-- Línea de Vuelta Media -->
+                <line x1="${padX}" y1="${meanY}" x2="${w - padX}" y2="${meanY}" stroke="#ffd60a" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.8"/>
+                ${barsSvg}
+                <polyline fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="${polyPoints}"/>
+                ${dotsSvg}
+            </svg>`;
+        }
+
+        // Generador de Lista de Vueltas con Flechas Verdes (▼ mejora) y Rojas (▲ empeora) sin 's' y con 3 decimales
+        function buildLapHistoryListHtml(history, bestLap, worstLap, maxItems = 6) {
+            if (!history || history.length === 0) {
+                return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase text-center px-2" style="font-size:clamp(0.7rem, min(5.5cqw, 16cqh), 1.1rem);">
+                    TOCA EL CUADRO PARA REGISTRAR VUELTAS
+                </div>`;
+            }
+            const items = [];
+            const startIdx = Math.max(0, history.length - maxItems);
+            for (let i = history.length - 1; i >= startIdx; i--) {
+                const tLap = history[i];
+                const prevLap = i > 0 ? history[i - 1] : null;
+                const diff = prevLap !== null ? (tLap - prevLap) : 0;
+                const isBest = tLap === bestLap;
+                const isWorst = history.length > 2 && tLap === worstLap;
+
+                let arrowBadge = `<span class="text-slate-400 font-black">●</span>`;
+                if (prevLap !== null) {
+                    if (diff <= 0) {
+                        arrowBadge = `<span class="text-[#30d158] font-black">▼ ${diff.toFixed(3)}</span>`;
+                    } else {
+                        arrowBadge = `<span class="text-[#ff453a] font-black">▲ +${diff.toFixed(3)}</span>`;
+                    }
+                }
+
+                const rowColor = isBest
+                    ? 'bg-[#30d158]/20 text-[#30d158] border-[#30d158]/40'
+                    : (isWorst ? 'bg-[#ff453a]/15 text-[#ff8a84] border-[#ff453a]/35' : 'bg-white/5 text-white border-white/10');
+
+                items.push(`
+                    <div class="flex items-center justify-between px-2 py-0.5 rounded-lg border font-mono-num fluid-list-item ${rowColor}">
+                        <span class="font-black">V${i + 1} ${isBest ? '★' : (isWorst ? '⚠' : '')}</span>
+                        <span class="font-black">${tLap.toFixed(3)}</span>
+                        ${arrowBadge}
+                    </div>
+                `);
+            }
+            return `<div class="w-full h-full flex flex-col justify-between gap-1 overflow-y-auto pr-0.5">${items.join('')}</div>`;
+        }
+
         function renderLanesGrid() {
             const container = document.getElementById('lanesGridContainer');
             if (!container || state.heats.length === 0) return;
@@ -3505,10 +3699,6 @@
             const standings = getHeatStandingsMap(heat);
             const trackLen = state.trackLengthMeters || 28;
             const scaleFactor = state.scaleFactor || 32;
-
-            // Buscar al líder actual de la manga para calcular diferencias de tiempo/ritmo
-            const sortedHeat = [...assignments].sort((x, y) => (y.laps - x.laps) || (x.bestLap - y.bestLap));
-            const leaderAss = sortedHeat[0] || null;
 
             let cols = 1, rows = 1;
             if (n === 1) { cols = 1; rows = 1; }
@@ -3532,230 +3722,359 @@
                 const themeObj = PILOT_CARD_THEMES[themeIdx] || PILOT_CARD_THEMES[0];
                 const accentHex = themeObj.hex || pal.hex;
 
-                // Cálculos matemáticos derivados exclusivamente del Tiempo y la Velocidad (V = d / t)
+                // Cálculos completos con 3 decimales (milésimas) y sin letra 's'
                 const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
+                const prevLapVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
                 const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
+                const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
                 const meanLapVal = getDriverMeanLap(a);
 
-                const lastLapStr = lastLapVal > 0 ? lastLapVal.toFixed(2) + 's' : '--.--s';
-                const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(2) + 's' : '--.--s';
-                const meanLapStr = meanLapVal > 0 ? meanLapVal.toFixed(2) + 's' : '--.--s';
+                const lastLapStr = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
+                const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
+                const worstLapStr = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
+                const meanLapStr = meanLapVal > 0 ? meanLapVal.toFixed(3) : '--.---';
+
+                // Flechas verdes (▼ si baja tiempo y mejora) y rojas (▲ si sube tiempo y empeora) con 3 decimales y sin 's'
+                const lapDiffPrev = (lastLapVal > 0 && prevLapVal > 0) ? (lastLapVal - prevLapVal) : 0;
+                const trendVsPrevArrow = (lastLapVal > 0 && prevLapVal > 0)
+                    ? (lapDiffPrev <= 0
+                        ? `<span class="text-[#30d158] font-black ml-1" title="Mejora ${lapDiffPrev.toFixed(3)} vs vuelta anterior">▼${lapDiffPrev.toFixed(3)}</span>`
+                        : `<span class="text-[#ff453a] font-black ml-1" title="Empeora +${lapDiffPrev.toFixed(3)} vs vuelta anterior">▲+${lapDiffPrev.toFixed(3)}</span>`)
+                    : `<span class="text-slate-400 font-bold ml-1">●</span>`;
+
+                const trendMainIconOnly = (lastLapVal > 0 && prevLapVal > 0)
+                    ? (lapDiffPrev <= 0
+                        ? `<span class="text-[#30d158] font-black ml-1">▼</span>`
+                        : `<span class="text-[#ff453a] font-black ml-1">▲</span>`)
+                    : '';
+
+                const paceDelta = (lastLapVal > 0 && meanLapVal > 0) ? (lastLapVal - meanLapVal) : 0;
+                const trendVsMeanHtml = (lastLapVal > 0 && meanLapVal > 0)
+                    ? (paceDelta <= 0
+                        ? `<span class="text-[#30d158] font-black">▼ ${paceDelta.toFixed(3)}</span>`
+                        : `<span class="text-[#ff453a] font-black">▲ +${paceDelta.toFixed(3)}</span>`)
+                    : `<span class="text-slate-400 font-bold">0.000</span>`;
+
+                // Desviación estándar (σ) con 3 decimales y Consistencia (%)
+                let stdDev = 0;
+                if (a.history.length >= 2 && meanLapVal > 0) {
+                    const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanLapVal, 2), 0) / a.history.length;
+                    stdDev = Math.sqrt(variance);
+                }
+                const stdDevStr = `±${stdDev.toFixed(3)}`;
+                const consistencyPct = (bestLapVal > 0 && meanLapVal > 0)
+                    ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanLapVal)) * 100)))
+                    : 100;
 
                 // Velocidades en km/h: v = (metros / segundos) * 3.6
                 const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
                 const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
                 const avgSpeedKmh = meanLapVal > 0 ? (trackLen / meanLapVal) * 3.6 : 0;
                 const scaleSpeedKmh = curSpeedKmh * scaleFactor;
-                const speedMetersPerSec = lastLapVal > 0 ? (trackLen / lastLapVal) : 0;
 
                 const curSpeedStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(1) : '0.0';
                 const maxSpeedStr = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
                 const avgSpeedStr = avgSpeedKmh > 0 ? avgSpeedKmh.toFixed(1) : '0.0';
                 const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
-                const mpsStr = speedMetersPerSec > 0 ? speedMetersPerSec.toFixed(2) : '0.00';
 
-                // Distancia recorrida (km), Tiempo rodando acumulado y Proyección de vueltas al final de la manga
+                // Distancia recorrida y Proyección de vueltas
                 const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
-                const totalTimeRunSec = a.history.reduce((acc, v) => acc + v, 0);
                 const projectedLaps = meanLapVal > 0
                     ? Math.round(a.laps + (state.timeRemaining / meanLapVal))
                     : a.laps;
 
-                // Delta de ritmo respecto a su propia vuelta media (negativo = viene mejorando ritmo)
-                const paceDelta = (lastLapVal > 0 && meanLapVal > 0) ? (lastLapVal - meanLapVal) : 0;
-                const paceDeltaStr = (lastLapVal > 0 && meanLapVal > 0)
-                    ? `${paceDelta <= 0 ? '' : '+'}${paceDelta.toFixed(2)}s`
-                    : '0.00s';
-
-                // Índice de Regularidad en % basado en tiempos (Mejor Vuelta / Vuelta Media)
-                const consistencyPct = (bestLapVal > 0 && meanLapVal > 0)
-                    ? Math.min(100, Math.max(50, Math.round((bestLapVal / meanLapVal) * 100)))
-                    : 100;
-
-                // Sectores de alta visibilidad (si están activos 2 o 3 sectores)
+                // Sectores de alta visibilidad con 3 decimales y sin 's'
                 const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'text-white';
-                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(2) + 's' : '--.--';
-                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(2) + 's' : '--.--';
-                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(2) + 's' : '--.--';
+                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(3) : '--.---';
+                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(3) : '--.---';
+                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(3) : '--.---';
                 const curSec = a.currentSector || 1;
 
                 let compactSectorsHtml = '';
                 if (sCount >= 2) {
                     const activeBox = (idx) => curSec === idx ? 'border-2 border-white bg-white/15' : '';
                     compactSectorsHtml = `
-                        <div class="grid grid-cols-${sCount} gap-2 pt-1.5 shrink-0">
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well px-3 py-1.5 flex items-center justify-between ${activeBox(1)}">
-                                <span class="text-xs font-black text-slate-200">SECTOR 1</span>
-                                <span class="text-base lg:text-xl font-mono-num font-black ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                        <div class="grid grid-cols-${sCount} gap-1.5 h-[16%] min-h-[34px] max-h-[64px] pt-1.5 shrink-0">
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well well-cq px-3 py-1 !flex-row items-center justify-between ${activeBox(1)}">
+                                <span class="fluid-sector-lbl font-black text-slate-200">SECTOR 1</span>
+                                <span class="fluid-sector-num font-mono-num font-black ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
                             </div>
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well px-3 py-1.5 flex items-center justify-between ${activeBox(2)}">
-                                <span class="text-xs font-black text-slate-200">${sCount === 2 ? t('finish_line') : 'SECTOR 2'}</span>
-                                <span class="text-base lg:text-xl font-mono-num font-black ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well well-cq px-3 py-1 !flex-row items-center justify-between ${activeBox(2)}">
+                                <span class="fluid-sector-lbl font-black text-slate-200">${sCount === 2 ? t('finish_line') : 'SECTOR 2'}</span>
+                                <span class="fluid-sector-num font-mono-num font-black ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
                             </div>
                             ${sCount === 3 ? `
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well px-3 py-1.5 flex items-center justify-between ${activeBox(3)}">
-                                <span class="text-xs font-black text-slate-200">${t('finish_line')}</span>
-                                <span class="text-base lg:text-xl font-mono-num font-black ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well well-cq px-3 py-1 !flex-row items-center justify-between ${activeBox(3)}">
+                                <span class="fluid-sector-lbl font-black text-slate-200">${t('finish_line')}</span>
+                                <span class="fluid-sector-num font-mono-num font-black ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
                             </div>` : ''}
                         </div>`;
                 }
 
-                // Construcción de los 3 niveles de cuadro estilo Crear Carrera (Mac Studio Silver) con números extra grandes
+                // Construcción de los 3 niveles de cuadro estilo Crear Carrera (Mac Studio Silver)
                 let bodyLayoutHtml = '';
 
                 if (layoutMode === 1) {
-                    // ==================== 1. CUADRO BÁSICO (NÚMEROS GIGANTES PARA LECTURA INMEDIATA) ====================
-                    // Solo 3 bloques enormes ocupando el 100% del cuadro: Vueltas, Tiempo Última Vuelta (+ Récord) y Velocidad Actual
+                    // ==================== 1. CUADRO BÁSICO (NÚMEROS GIGANTES + FLECHA VERDE/ROJA + VUELTA MEDIA, RÉCORD Y VELOCIDAD) ====================
                     bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-12 gap-2.5 min-h-0">
-                            <!-- Bloque Izquierdo: VUELTAS GIGANTES -->
-                            <div class="col-span-4 mac-silver-well p-3 flex flex-col justify-between items-center text-center h-full border border-white/20">
-                                <span class="text-xs lg:text-sm font-black tracking-wider text-slate-200 uppercase">VUELTAS</span>
-                                <span class="text-5xl md:text-6xl lg:text-7xl font-mono-num font-black text-white leading-none my-auto">${a.laps}</span>
-                                <span class="text-xs font-mono-num font-extrabold text-slate-300 bg-white/10 px-2.5 py-0.5 rounded-full">${a.nextAction}</span>
-                            </div>
-
-                            <!-- Bloque Central: TIEMPO ÚLTIMA VUELTA + MEJOR TIEMPO -->
-                            <div class="col-span-4 mac-silver-well p-3 flex flex-col justify-between items-center text-center h-full border border-white/20">
-                                <span class="text-xs lg:text-sm font-black tracking-wider text-slate-200 uppercase">ÚLTIMO TIEMPO</span>
-                                <span class="text-3xl md:text-4xl lg:text-5xl font-mono-num font-black text-white leading-none my-auto">${lastLapStr}</span>
-                                <div class="w-full pt-1.5 border-t border-white/15 flex items-center justify-between px-1">
-                                    <span class="text-xs font-black text-[#30d158]">RÉCORD:</span>
-                                    <span class="text-sm lg:text-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
+                        <div class="flex-1 grid grid-cols-12 gap-2 min-h-0 h-full">
+                            <!-- Bloque Izquierdo: VUELTAS GIGANTES + PROYECCIÓN + REGULARIDAD -->
+                            <div class="col-span-4 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
+                                <div class="w-full flex items-center justify-between px-1">
+                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">VUELTAS</span>
+                                    <span class="fluid-label font-mono-num font-black text-[#d982ff]">${consistencyPct}% REG</span>
+                                </div>
+                                <div class="flex-1 flex items-center justify-center w-full min-h-0">
+                                    <span class="fluid-num-hero font-mono-num font-black text-white">${a.laps}</span>
+                                </div>
+                                <div class="w-full pt-1 border-t border-white/15 flex items-center justify-between px-1">
+                                    <span class="fluid-label font-bold text-slate-300">META EST:</span>
+                                    <span class="fluid-sub font-mono-num font-black text-[#ffd60a]">${projectedLaps}V (${a.nextAction})</span>
                                 </div>
                             </div>
 
-                            <!-- Bloque Derecho: VELOCIDAD REAL Y ESCALA 1:32 -->
-                            <div class="col-span-4 mac-silver-well p-3 flex flex-col justify-between items-center text-center h-full border border-white/20">
-                                <span class="text-xs lg:text-sm font-black tracking-wider text-[#5ac8fa] uppercase">VELOCIDAD</span>
-                                <div class="my-auto flex flex-col items-center">
-                                    <span class="text-3xl md:text-4xl lg:text-5xl font-mono-num font-black text-[#5ac8fa] leading-none">${curSpeedStr}</span>
-                                    <span class="text-xs font-black text-slate-300 mt-1">KM/H REAL</span>
+                            <!-- Bloque Central: ÚLTIMA VUELTA CON FLECHA VERDE/ROJA + VUELTA MEDIA + RÉCORD Y LENTA -->
+                            <div class="col-span-5 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
+                                <div class="w-full flex items-center justify-between px-1">
+                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">ÚLTIMA VUELTA</span>
+                                    <span class="fluid-label font-mono-num">${trendVsPrevArrow}</span>
                                 </div>
-                                <div class="w-full pt-1.5 border-t border-white/15 flex items-center justify-between px-1">
-                                    <span class="text-xs font-bold text-slate-300">ESCALA:</span>
-                                    <span class="text-sm lg:text-base font-mono-num font-black text-[#ffd60a]">${scaleSpeedStr} km/h</span>
+                                <div class="flex-1 flex items-center justify-center w-full min-h-0">
+                                    <span class="fluid-num-xl font-mono-num font-black text-white">${lastLapStr}${trendMainIconOnly}</span>
+                                </div>
+                                <div class="w-full pt-1 border-t border-white/15 grid grid-cols-3 gap-1 text-center">
+                                    <div>
+                                        <div class="fluid-label font-black text-[#30d158]">RÉCORD</div>
+                                        <div class="fluid-sub font-mono-num font-black text-[#30d158]">${bestLapStr}</div>
+                                    </div>
+                                    <div class="border-x border-white/10">
+                                        <div class="fluid-label font-black text-slate-200">MEDIA</div>
+                                        <div class="fluid-sub font-mono-num font-black text-white">${meanLapStr}</div>
+                                    </div>
+                                    <div>
+                                        <div class="fluid-label font-black text-[#ff453a]">LENTA</div>
+                                        <div class="fluid-sub font-mono-num font-black text-[#ff8a84]">${worstLapStr}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bloque Derecho: VELOCIDAD KM/H + ESCALA 1:32 + MEDIA -->
+                            <div class="col-span-3 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
+                                <span class="fluid-label font-black tracking-wider text-[#5ac8fa] uppercase w-full">VEL. KM/H</span>
+                                <div class="flex-1 flex items-center justify-center w-full min-h-0">
+                                    <span class="fluid-num-xl font-mono-num font-black text-[#5ac8fa]">${curSpeedStr}</span>
+                                </div>
+                                <div class="w-full pt-1 border-t border-white/15 flex items-center justify-between px-1">
+                                    <span class="fluid-label font-bold text-slate-300">1:${scaleFactor}:</span>
+                                    <span class="fluid-sub font-mono-num font-black text-[#ffd60a]">${scaleSpeedStr} km/h</span>
                                 </div>
                             </div>
                         </div>
                         ${compactSectorsHtml}
                     `;
                 } else if (layoutMode === 2) {
-                    // ==================== 2. CUADRO MEDIO (TIEMPOS Y VELOCIDADES MEDIAS / PUNTA + PROYECCIÓN) ====================
-                    // 6 Cajas grandes de alto contraste en cuadrícula 3x2 ocupando el 100% del espacio
+                    // ==================== 2. CUADRO MEDIO (MÉTRICAS CLAVE + VUELTA MEDIA/LENTA + CONSISTENCIA + LISTA DE TIEMPOS CON FLECHAS) ====================
                     bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-3 grid-rows-2 gap-2 min-h-0">
-                            <!-- Fila 1: Datos de Tiempo y Vueltas -->
-                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-black text-slate-200 uppercase">VUELTAS</span>
-                                    <span class="text-xs font-mono-num font-black text-[#ffd60a]" title="Proyección de vueltas al acabar el tiempo">EST: ${projectedLaps}V</span>
+                        <div class="flex-1 grid grid-cols-12 gap-2 min-h-0 h-full">
+                            <!-- Izquierda (8 cols): 6 Paneles Auto-Escalables con Media, Lenta, Récord, Consistencia y Velocidades -->
+                            <div class="col-span-8 grid grid-cols-3 grid-rows-2 gap-1.5 lg:gap-2 min-h-0 h-full">
+                                <!-- 1. Vueltas y Proyección -->
+                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-slate-200 uppercase">VUELTAS</span>
+                                        <span class="fluid-label font-mono-num font-black text-[#ffd60a]">EST ${projectedLaps}V</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-xl font-mono-num font-black text-white">${a.laps}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
+                                        <span class="fluid-label text-slate-300">DIST:</span>
+                                        <span class="fluid-label font-mono-num font-black text-white">${totalDistKm} km</span>
+                                    </div>
                                 </div>
-                                <div class="text-4xl lg:text-5xl font-mono-num font-black text-white leading-none my-auto">${a.laps}</div>
+
+                                <!-- 2. Última Vuelta + Flecha Verde/Roja vs Anterior -->
+                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-slate-200 uppercase">ÚLTIMA</span>
+                                        <span class="fluid-label font-mono-num">${trendVsPrevArrow}</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-white">${lastLapStr}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
+                                        <span class="fluid-label text-slate-300">VS MEDIA:</span>
+                                        <span class="fluid-label font-mono-num">${trendVsMeanHtml}</span>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Vuelta Media + Consistencia (%) -->
+                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-[#5ac8fa] uppercase">V. MEDIA</span>
+                                        <span class="fluid-label font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
+                                        <span class="fluid-label text-slate-300">DESV:</span>
+                                        <span class="fluid-label font-mono-num font-black text-[#d982ff]">${stdDevStr}</span>
+                                    </div>
+                                </div>
+
+                                <!-- 4. Récord Personal (Mejor Vuelta) -->
+                                <div class="mac-silver-well well-cq p-2 h-full border border-[#30d158]/40">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-[#30d158] uppercase">▼ RÉCORD</span>
+                                        <span class="fluid-label font-mono-num font-bold text-[#30d158]">MEJOR</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
+                                        <span class="fluid-label text-slate-300">PUNTA:</span>
+                                        <span class="fluid-label font-mono-num font-black text-[#30d158]">${maxSpeedStr} km/h</span>
+                                    </div>
+                                </div>
+
+                                <!-- 5. Vuelta Más Lenta -->
+                                <div class="mac-silver-well well-cq p-2 h-full border border-[#ff453a]/35">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-[#ff453a] uppercase">▲ MÁS LENTA</span>
+                                        <span class="fluid-label font-mono-num font-bold text-[#ff8a84]">PEOR</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#ff8a84]">${worstLapStr}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
+                                        <span class="fluid-label text-slate-300">RANGO:</span>
+                                        <span class="fluid-label font-mono-num font-black text-white">${bestLapVal > 0 ? (worstLapVal - bestLapVal).toFixed(3) : '0.000'}</span>
+                                    </div>
+                                </div>
+
+                                <!-- 6. Velocidad Actual y Escala 1:32 -->
+                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-[#ffd60a] uppercase">VELOCIDAD</span>
+                                        <span class="fluid-label font-mono-num font-bold text-slate-200">KM/H</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#ffd60a]">${curSpeedStr}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
+                                        <span class="fluid-label text-slate-300">1:${scaleFactor}:</span>
+                                        <span class="fluid-label font-mono-num font-black text-white">${scaleSpeedStr} km/h</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-black text-slate-200 uppercase">ÚLTIMA VUELTA</span>
-                                    <span class="text-xs font-mono-num font-black ${paceDelta <= 0 ? 'text-[#30d158]' : 'text-[#ff9f0a]'}">${paceDeltaStr}</span>
+                            <!-- Derecha (4 cols): LISTA DE TIEMPOS EN VIVO CON FLECHAS VERDES (▼) Y ROJAS (▲) -->
+                            <div class="col-span-4 mac-silver-well well-cq p-2 h-full border border-white/20">
+                                <div class="flex items-center justify-between border-b border-white/15 pb-1 mb-1 shrink-0">
+                                    <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-list-ol mr-1 text-[#5ac8fa]"></i>HISTORIAL VUELTAS</span>
+                                    <span class="fluid-label font-mono-num font-black text-[#30d158]">▼MEJORA <span class="text-[#ff453a]">▲PEOR</span></span>
                                 </div>
-                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-white leading-none my-auto">${lastLapStr}</div>
-                            </div>
-
-                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-[#30d158]/40">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-black text-[#30d158] uppercase">MEJOR CRONO</span>
-                                    <span class="text-xs font-mono-num font-bold text-slate-300">MEDIA: ${meanLapStr}</span>
+                                <div class="flex-1 min-h-0 overflow-hidden">
+                                    ${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 6)}
                                 </div>
-                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-[#30d158] leading-none my-auto">${bestLapStr}</div>
-                            </div>
-
-                            <!-- Fila 2: Datos derivados de Velocidad y Distancia -->
-                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-black text-[#5ac8fa] uppercase">VEL. ACTUAL</span>
-                                    <span class="text-xs font-mono-num font-bold text-slate-300">KM/H</span>
-                                </div>
-                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-[#5ac8fa] leading-none my-auto">${curSpeedStr} <span class="text-sm text-slate-300">km/h</span></div>
-                            </div>
-
-                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-black text-slate-200 uppercase">VEL. MEDIA / MÁX</span>
-                                    <span class="text-xs font-mono-num font-black text-[#30d158]">MÁX ${maxSpeedStr}</span>
-                                </div>
-                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-white leading-none my-auto">${avgSpeedStr} <span class="text-sm text-slate-300">km/h</span></div>
-                            </div>
-
-                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-black text-[#ffd60a] uppercase">VEL. ESCALA 1:32</span>
-                                    <span class="text-xs font-mono-num font-bold text-slate-300">DIST: ${totalDistKm} km</span>
-                                </div>
-                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-[#ffd60a] leading-none my-auto">${scaleSpeedStr} <span class="text-sm text-slate-300">km/h</span></div>
                             </div>
                         </div>
                         ${compactSectorsHtml}
                     `;
                 } else {
-                    // ==================== 3. CUADRO EXPERTO (INGENIERÍA COMPLETA DE TIEMPO Y VELOCIDAD) ====================
-                    // 8 Módulos grandes en cuadrícula 4x2 con todas las métricas cinemáticas de tiempo y velocidad
+                    // ==================== 3. CUADRO EXPERTO (PANELES DE TELEMETRÍA + GRÁFICA SVG EN VIVO + LISTA DE VUELTAS CON FLECHAS) ====================
                     bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-4 grid-rows-2 gap-2 min-h-0">
-                            <!-- 1. Vueltas y Meta Estimada por Ritmo -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-slate-200 uppercase">1. VUELTAS / PROYECCIÓN</span>
-                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-white leading-none my-auto">${a.laps} <span class="text-base text-[#ffd60a]">→ ${projectedLaps}V</span></div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-300">Rodado: ${totalTimeRunSec.toFixed(1)}s</span>
+                        <div class="flex-1 flex flex-col gap-1.5 lg:gap-2 min-h-0 h-full">
+                            <!-- Fila Superior (52% alto): 6 Celdas con todos los Tiempos, Flechas, Consistencia y Velocidades -->
+                            <div class="h-[52%] grid grid-cols-6 gap-1.5 min-h-0">
+                                <!-- 1. Vueltas y Estimación -->
+                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-slate-200">VUELTAS</span>
+                                        <span class="fluid-label font-mono-num font-black text-[#ffd60a]">→${projectedLaps}V</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-white">${a.laps}</span>
+                                    </div>
+                                    <span class="fluid-label font-mono-num font-bold text-slate-300 text-center border-t border-white/10 pt-0.5">${totalDistKm} km</span>
+                                </div>
+
+                                <!-- 2. Última Vuelta + Flecha Verde/Roja -->
+                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-slate-200">ÚLTIMA</span>
+                                        <span class="fluid-label font-mono-num">${trendMainIconOnly}</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-white">${lastLapStr}</span>
+                                    </div>
+                                    <span class="fluid-label font-mono-num text-center border-t border-white/10 pt-0.5">${trendVsPrevArrow}</span>
+                                </div>
+
+                                <!-- 3. Vuelta Media + Delta vs Media -->
+                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
+                                    <span class="fluid-label font-black text-[#5ac8fa]">V. MEDIA</span>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span>
+                                    </div>
+                                    <span class="fluid-label font-mono-num text-center border-t border-white/10 pt-0.5">${trendVsMeanHtml}</span>
+                                </div>
+
+                                <!-- 4. Récord vs Vuelta Más Lenta -->
+                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-[#30d158]/40">
+                                    <span class="fluid-label font-black text-[#30d158]">▼RÉCORD / ▲LENTA</span>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
+                                    </div>
+                                    <span class="fluid-label font-mono-num font-black text-[#ff8a84] text-center border-t border-white/10 pt-0.5">▲ Lenta: ${worstLapStr}</span>
+                                </div>
+
+                                <!-- 5. Consistencia (%) y Desviación Estándar (±σ) -->
+                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
+                                    <span class="fluid-label font-black text-[#d982ff]">CONSISTENCIA</span>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span>
+                                    </div>
+                                    <span class="fluid-label font-mono-num font-bold text-slate-200 text-center border-t border-white/10 pt-0.5">Desv: ${stdDevStr}</span>
+                                </div>
+
+                                <!-- 6. Velocidad Real, Media y Escala 1:32 -->
+                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
+                                    <div class="flex items-center justify-between">
+                                        <span class="fluid-label font-black text-[#ffd60a]">VEL. KM/H</span>
+                                        <span class="fluid-label font-mono-num text-slate-300">M:${avgSpeedStr}</span>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center min-h-0">
+                                        <span class="fluid-num-lg font-mono-num font-black text-[#ffd60a]">${curSpeedStr}</span>
+                                    </div>
+                                    <span class="fluid-label font-mono-num font-bold text-white text-center border-t border-white/10 pt-0.5">1:${scaleFactor}: ${scaleSpeedStr} km/h</span>
+                                </div>
                             </div>
 
-                            <!-- 2. Último Tiempo y Diferencia vs Media -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-slate-200 uppercase">2. ÚLTIMA VUELTA</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none my-auto">${lastLapStr}</div>
-                                <span class="text-[11px] font-mono-num font-black ${paceDelta <= 0 ? 'text-[#30d158]' : 'text-[#ff9f0a]'}">Delta Media: ${paceDeltaStr}</span>
-                            </div>
+                            <!-- Fila Inferior (48% alto): GRÁFICA TELEMÉTRICA EN VIVO (7 cols) + LISTA DE TIEMPOS CON FLECHAS (5 cols) -->
+                            <div class="h-[48%] grid grid-cols-12 gap-1.5 min-h-0">
+                                <!-- Gráfica de Evolución de Tiempos con Línea Amarilla de Media -->
+                                <div class="col-span-7 mac-silver-well well-cq p-2 h-full border border-white/20">
+                                    <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
+                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-chart-area mr-1 text-[#30d158]"></i>GRÁFICA DE RITMO Y EVOLUCIÓN</span>
+                                        <span class="fluid-label font-mono-num font-bold text-[#ffd60a]">--- MEDIA ${meanLapStr}</span>
+                                    </div>
+                                    <div class="flex-1 min-h-0 w-full">
+                                        ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanLapVal, accentHex)}
+                                    </div>
+                                </div>
 
-                            <!-- 3. Récord Personal y Tiempo Medio por Vuelta -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-[#30d158]/40">
-                                <span class="text-[11px] font-black text-[#30d158] uppercase">3. RÉCORD / MEDIA</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#30d158] leading-none my-auto">${bestLapStr}</div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-200">Media: ${meanLapStr}</span>
-                            </div>
-
-                            <!-- 4. Velocidad Instantánea (km/h y m/s) -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-[#5ac8fa] uppercase">4. VEL. ACTUAL</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#5ac8fa] leading-none my-auto">${curSpeedStr} <span class="text-xs">km/h</span></div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-200">Paso: ${mpsStr} m/s</span>
-                            </div>
-
-                            <!-- 5. Velocidad Punta y Velocidad Media -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-slate-200 uppercase">5. VEL. MÁX / MEDIA</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none my-auto">${maxSpeedStr} <span class="text-xs text-[#30d158]">máx</span></div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-300">Vel. Media: ${avgSpeedStr} km/h</span>
-                            </div>
-
-                            <!-- 6. Velocidad a Escala 1:32 -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-[#ffd60a] uppercase">6. VEL. ESCALA 1:${scaleFactor}</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#ffd60a] leading-none my-auto">${scaleSpeedStr} <span class="text-xs">km/h</span></div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-300">Cuerda: ${trackLen}m</span>
-                            </div>
-
-                            <!-- 7. Distancia Total Recorrida -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-slate-200 uppercase">7. DISTANCIA TOTAL</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none my-auto">${totalDistKm} <span class="text-xs">km</span></div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-300">${Math.round(a.laps * trackLen)} metros</span>
-                            </div>
-
-                            <!-- 8. Consistencia de Ritmo y Velocidad -->
-                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
-                                <span class="text-[11px] font-black text-[#d982ff] uppercase">8. REGULARIDAD RITMO</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#d982ff] leading-none my-auto">${consistencyPct}%</div>
-                                <span class="text-[11px] font-mono-num font-bold text-slate-300">${a.nextAction}</span>
+                                <!-- Lista de Tiempos Vuelta a Vuelta con Flechas Verdes y Rojas -->
+                                <div class="col-span-5 mac-silver-well well-cq p-2 h-full border border-white/20">
+                                    <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
+                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-stopwatch mr-1 text-[#5ac8fa]"></i>LISTA DE TIEMPOS</span>
+                                        <span class="fluid-label font-mono-num font-black text-[#30d158]">▼ <span class="text-[#ff453a]">▲</span></span>
+                                    </div>
+                                    <div class="flex-1 min-h-0 overflow-hidden">
+                                        ${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 5)}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         ${compactSectorsHtml}
@@ -3774,17 +4093,17 @@
                 `).join('');
 
                 return `
-                <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver p-3 lg:p-3.5 flex flex-col justify-between h-full min-h-0 relative overflow-hidden cursor-pointer" style="background: ${themeObj.bg}; border-top: 5px solid ${pal.hex};">
-                    <!-- Cabecera estilo Crear Carrera (Mac Studio Silver) con Letras Grandes para Usuarios Mayores -->
-                    <div class="flex justify-between items-center gap-2 pb-2 shrink-0 z-10 border-b border-white/15">
+                <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq p-2.5 lg:p-3 flex flex-col justify-between h-full min-h-0 relative overflow-hidden cursor-pointer" style="background: ${themeObj.bg}; border-top: 5px solid ${pal.hex};">
+                    <!-- Cabecera estilo Crear Carrera (Mac Studio Silver) con Letras Auto-Escalables -->
+                    <div class="flex justify-between items-center gap-2 pb-1.5 shrink-0 z-10 border-b border-white/15">
                         <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <span class="px-2.5 py-1 rounded-xl text-xs lg:text-sm font-black uppercase shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">
+                            <span class="px-2.5 py-1 rounded-xl fluid-header-badge font-black uppercase shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">
                                 C${a.lane}
                             </span>
-                            <span class="px-2.5 py-1 rounded-xl text-xs lg:text-sm font-black shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white border border-white/20'}">
+                            <span class="px-2.5 py-1 rounded-xl fluid-header-badge font-black shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white border border-white/20'}">
                                 P${pos}
                             </span>
-                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-lg md:text-xl lg:text-2xl tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white"/>
+                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black fluid-header-name tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white"/>
                         </div>
 
                         <!-- Selector de los 3 Niveles (BÁSICO / MEDIO / EXPERTO) + Color + Auditoría -->
@@ -3800,8 +4119,8 @@
                         </div>
                     </div>
 
-                    <!-- Cuerpo Principal Ocupando el 100% del Cuadro sin Espacios Vacíos -->
-                    <div class="flex-1 flex flex-col justify-between min-h-0 pt-2 z-10">
+                    <!-- Cuerpo Principal Ocupando el 100% del Cuadro con Auto-Escalado CSS Container Queries -->
+                    <div class="flex-1 flex flex-col justify-between min-h-0 pt-1.5 z-10">
                         ${bodyLayoutHtml}
                     </div>
                 </div>`;
