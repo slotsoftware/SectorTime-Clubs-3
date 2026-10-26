@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
@@ -436,6 +437,69 @@
 
             <!-- PASO 1: PARÁMETROS DE CARRERA Y CONTROLES MANUALES -->
             <div id="wizard-step-1" class="max-w-7xl mx-auto space-y-3 pb-2">
+
+                <!-- BLOQUE 0: DATOS OFICIALES DEL EVENTO, FECHA Y GESTOR DE CATEGORÍAS DEL CLUB (GUARDADO EN DISPOSITIVO) -->
+                <div class="mac-studio-silver p-4 space-y-3 border border-[#5ac8fa]/40">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/15 pb-2.5">
+                        <div class="flex items-center gap-2.5">
+                            <span class="bg-gradient-to-b from-[#5ac8fa] to-[#0a84ff] text-slate-950 w-7 h-7 rounded-xl flex items-center justify-center font-black shadow">
+                                <i class="fa-solid fa-calendar-check text-xs"></i>
+                            </span>
+                            <div>
+                                <div class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
+                                <div class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="active-event-header-pill" class="px-3 py-1 rounded-full text-[11px] font-mono-num font-black bg-[#0a84ff]/25 text-[#5ac8fa] border border-[#5ac8fa]/40">
+                                GRAN PREMIO CLUB · GT
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+                        <!-- Nombre del Evento -->
+                        <div class="lg:col-span-4 mac-silver-well p-3 space-y-1.5">
+                            <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
+                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i>NOMBRE DEL EVENTO / CAMPEONATO:
+                            </label>
+                            <input type="text" id="event-name-input" placeholder="Ej: CAMPEONATO SOCIAL SLOT CLUB" oninput="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#5ac8fa]"/>
+                        </div>
+
+                        <!-- Fecha del Evento -->
+                        <div class="lg:col-span-3 mac-silver-well p-3 space-y-1.5">
+                            <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
+                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i>FECHA DE LA CARRERA:
+                            </label>
+                            <input type="date" id="event-date-input" onchange="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-mono-num font-black text-white focus:outline-none focus:border-[#5ac8fa]"/>
+                        </div>
+
+                        <!-- Gestor de Categorías del Club (Añadir / Seleccionar / Borrar) -->
+                        <div class="lg:col-span-5 mac-silver-well p-3 space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <label class="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
+                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i>CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):
+                                </label>
+                                <button type="button" onclick="restoreDefaultClubCategories()" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer" title="Restaurar GT, DTM, CLÁSICOS, F1, CAMIONES">
+                                    RESTAURAR BASE
+                                </button>
+                            </div>
+
+                            <!-- Chips de Categorías (GT, DTM, CLÁSICOS, F1, CAMIONES...) -->
+                            <div id="club-categories-chips" class="flex flex-wrap gap-1.5"></div>
+
+                            <!-- Input para Añadir Nueva Categoría -->
+                            <div class="flex items-center gap-1.5 pt-1">
+                                <input type="text" id="new-club-category-input" placeholder="Nueva categoría (ej: RALLY, LMP, GRUPO C, NINCO...)" onkeydown="if(event.key==='Enter') addClubCategoryFromInput()" class="flex-1 bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
+                                <button type="button" onclick="addClubCategoryFromInput()" class="px-3 py-1.5 rounded-lg btn-neon-green text-[10px] font-black cursor-pointer shrink-0 flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>AÑADIR CATEGORÍA</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
 
                     <!-- BLOQUE 1: CARRILES (1 a 10), SECTORES Y CUERDA DE PISTA (METROS) -->
@@ -656,18 +720,22 @@
             <div id="wizard-step-2" class="hidden max-w-5xl mx-auto space-y-4 pb-2">
                 <div class="mac-studio-silver p-5 space-y-3.5">
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                        <div class="sm:col-span-5">
+                        <div class="sm:col-span-4">
                             <label data-i18n="lbl_driver_name" class="block text-[11px] font-extrabold text-slate-300 mb-1 uppercase tracking-wider">Nombre del Piloto / Equipo</label>
                             <input type="text" id="new-driver-name" placeholder="ALBERT, JUAN, MARTA..." onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-white">
                         </div>
-                        <div class="sm:col-span-4">
-                            <label data-i18n="lbl_driver_car" class="block text-[11px] font-extrabold text-slate-300 mb-1 uppercase tracking-wider">Coche / Categoría</label>
-                            <input type="text" id="new-driver-car" placeholder="Scaleauto GT3" onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-white">
+                        <div class="sm:col-span-3">
+                            <label class="block text-[11px] font-extrabold text-[#5ac8fa] mb-1 uppercase tracking-wider">Categoría del Club</label>
+                            <select id="new-driver-category-select" onchange="syncCarInputWithCategory()" class="w-full bg-black/60 border border-[#5ac8fa]/40 rounded-xl px-3 py-2.5 text-sm font-black text-white focus:outline-none focus:border-white"></select>
                         </div>
-                        <div class="sm:col-span-3 flex items-end">
-                            <button onclick="addDriverFromInput()" class="w-full mac-silver-active py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm transition flex items-center justify-center space-x-2 cursor-pointer">
+                        <div class="sm:col-span-3">
+                            <label data-i18n="lbl_driver_car" class="block text-[11px] font-extrabold text-slate-300 mb-1 uppercase tracking-wider">Coche / Modelo</label>
+                            <input type="text" id="new-driver-car" placeholder="Scaleauto / NSR / Slot.it" onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-white">
+                        </div>
+                        <div class="sm:col-span-2 flex items-end">
+                            <button onclick="addDriverFromInput()" class="w-full mac-silver-active py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm transition flex items-center justify-center space-x-1.5 cursor-pointer">
                                 <i class="fa-solid fa-user-plus"></i>
-                                <span data-i18n="btn_add_driver">Añadir Piloto</span>
+                                <span data-i18n="btn_add_driver">Añadir</span>
                             </button>
                         </div>
                     </div>
@@ -676,6 +744,9 @@
                         <div class="flex flex-wrap gap-2">
                             <button onclick="loadPdfExampleDrivers()" class="text-xs font-bold mac-silver-btn px-3.5 py-1.5 rounded-xl transition cursor-pointer">
                                 <i class="fa-solid fa-users mr-1.5 text-slate-300"></i><span data-i18n="btn_load_pdf">Cargar 6 Pilotos Oficiales de Ejemplo</span>
+                            </button>
+                            <button onclick="loadCursaPreparadaPdfScenario()" class="text-xs font-black bg-[#0a84ff]/25 hover:bg-[#0a84ff]/40 text-[#5ac8fa] border border-[#5ac8fa]/50 px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                                <i class="fa-solid fa-file-pdf mr-1.5 text-[#ffd60a]"></i><span>CARGAR ESCENARIO "CURSA PREPARADA" (MANGA 1 Y 2 · 12 PILOTOS + ROGER)</span>
                             </button>
                             <button onclick="simulatePoleSession()" class="text-xs font-bold mac-silver-btn px-3.5 py-1.5 rounded-xl transition cursor-pointer">
                                 <i class="fa-solid fa-bolt mr-1.5 text-amber-300"></i><span data-i18n="btn_sim_pole">Simular Pole</span>
@@ -711,21 +782,107 @@
                 <div class="mac-studio-silver p-4 flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <span data-i18n="step3_badge" class="text-[10px] font-extrabold uppercase tracking-widest text-slate-300">PASO 3 DE 3 · ARQUITECTURA DE MANGAS MAC STUDIO</span>
-                        <h2 data-i18n="step3_title" class="text-xl font-black text-white">Distribución de Mangas y Rotación de Carriles</h2>
+                        <h2 data-i18n="step3_title" class="text-xl font-black text-white">Distribución de Mangas, Grupos y Rotación de Carriles</h2>
                         <p id="step3-subtitle" class="text-slate-300 text-xs font-mono-num mt-0.5"></p>
                     </div>
-                    <div class="flex items-center space-x-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <button onclick="goToWizardStep(2)" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-arrow-left mr-1.5"></i><span data-i18n="btn_back">Volver</span>
+                        </button>
+                        <button onclick="loadCursaPreparadaPdfScenario()" class="px-3.5 py-2.5 rounded-xl text-xs font-black bg-[#ffd60a]/20 hover:bg-[#ffd60a]/35 text-[#ffd60a] border border-[#ffd60a]/45 cursor-pointer">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>DEMO PDF: MANGA 1 (6) + MANGA 2 (6 + D1 ROGER)
                         </button>
                         <button onclick="rebuildHeats(); renderWizardStep3();" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-rotate mr-1.5"></i><span data-i18n="btn_recalc">Recalcular / Sortear</span>
                         </button>
-                        <button onclick="switchMainTab('race')" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
+                        <button onclick="promptPreRaceCheckModal(1)" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-flag-checkered"></i>
                             <span data-i18n="btn_go_track">IR A PARRILLA Y PISTA EN VIVO</span>
                         </button>
                     </div>
+                </div>
+
+                <!-- ==================== GESTOR INTERACTIVO "-CURSA PREPARADA-" (CAMBIOS EN VIVO SIN ROMPER LA CARRERA) ==================== -->
+                <div class="mac-studio-silver p-5 space-y-4 border-2 border-[#5ac8fa]/40">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 pb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl btn-neon-blue flex items-center justify-center text-base font-black">
+                                <i class="fa-solid fa-people-arrows"></i>
+                            </span>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-sm md:text-base font-black text-white uppercase tracking-tight">-CURSA PREPARADA- · GESTOR DE CAMBIOS EN MANGAS (P-1..P-6 y DESCANS D-1)</h3>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-mono-num font-black bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">ROTACIÓN ACTIVA</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-0.5">
+                                    Permite retirar un piloto que se marcha (ej. <b>RAÚL</b>), mover un piloto de Manga 2 a Manga 1, intercambiar dos pilotos (ej. <b>PAU ↔ JP</b>) o añadir a última hora un piloto en <b>D-1 Descans</b> (ej. <b>ROGER</b> entra por P-1 cuando <b>PAU</b> acaba en P-2 y <b>LLUIS</b> pasa a P-2).
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-bold text-slate-300">ORDEN DE ROTACIÓN DEL CLUB:</span>
+                            <input type="text" id="cursa-prep-wheel-input" value="1, 3, 5, 6, 4, 2" onchange="updateCursaPrepWheel(this.value)" class="w-36 bg-black/75 border border-[#5ac8fa]/50 rounded-xl px-3 py-1.5 font-mono-num text-xs font-black text-[#5ac8fa] text-center focus:outline-none focus:border-white"/>
+                            <button onclick="updateCursaPrepWheel(document.getElementById('cursa-prep-wheel-input').value)" class="px-3 py-1.5 rounded-xl mac-silver-btn text-[11px] font-black cursor-pointer">APLICAR RUEDA</button>
+                        </div>
+                    </div>
+
+                    <!-- Barra de 3 Herramientas Rápidas del Documento PDF -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                        <!-- Caso 1 y 2: Intercambiar o Mover Piloto entre Mangas (ej. PAU <-> JP o pasar 1 piloto de M2 a M1) -->
+                        <div class="mac-silver-well p-3 space-y-2">
+                            <div class="text-[11px] font-black text-[#5ac8fa] uppercase flex items-center justify-between">
+                                <span><i class="fa-solid fa-right-left mr-1.5"></i>1. INTERCAMBIAR PILOTOS (EJ: PAU ↔ JP)</span>
+                                <span class="text-[9px] text-slate-400">RESTO IGUAL</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <select id="swap-pilot-a" class="bg-black/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-bold text-white"></select>
+                                <select id="swap-pilot-b" class="bg-black/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-bold text-white"></select>
+                            </div>
+                            <button onclick="swapTwoPilotsBetweenGroups()" class="w-full py-1.5 rounded-lg btn-neon-blue text-[11px] font-black cursor-pointer">
+                                INTERCAMBIAR DE MANGA / PISTA AHORA
+                            </button>
+                        </div>
+
+                        <!-- Caso 3: Llega tarde un piloto no inscrito (ej. ROGER) e inscribirlo en la Manga que queramos (o en D-1 si está llena) -->
+                        <div class="mac-silver-well p-3 space-y-2">
+                            <div class="text-[11px] font-black text-[#30d158] uppercase flex items-center justify-between">
+                                <span><i class="fa-solid fa-user-plus mr-1.5"></i>2. LLEGA TARDE PILOTO NUEVO (EJ: ROGER)</span>
+                                <span class="text-[9px] text-slate-400">AUTO PISTA O D-1</span>
+                            </div>
+                            <div class="grid grid-cols-12 gap-1.5">
+                                <input type="text" id="late-pilot-name" placeholder="ROGER" class="col-span-5 bg-black/80 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
+                                <select id="late-pilot-group" class="col-span-4 bg-black/80 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-bold text-white"></select>
+                                <button onclick="addLateArrivalPilot()" class="col-span-3 rounded-lg btn-neon-green text-[11px] font-black cursor-pointer">
+                                    + INSCRIBIR
+                                </button>
+                            </div>
+                            <div class="text-[10px] text-slate-400 leading-tight">
+                                Si la manga ya tiene las pistas llenas, entra como <b>D-1 (Descans)</b> y empieza por <b>Pista 1</b> en el siguiente turno.
+                            </div>
+                        </div>
+
+                        <!-- Caso 4: Simulador Visual de la Rotación con Descanso (Rueda 1->3->5->6->4->2 + D-1) -->
+                        <div class="mac-silver-well p-3 space-y-2">
+                            <div class="text-[11px] font-black text-[#ffd60a] uppercase flex items-center justify-between">
+                                <span><i class="fa-solid fa-arrows-rotate mr-1.5"></i>3. PROBAR ROTACIÓN DE PISTAS Y DESCANS (D-1)</span>
+                                <span id="cursa-wheel-badge" class="text-[10px] font-mono-num text-white">1→3→5→6→4→2</span>
+                            </div>
+                            <p class="text-[10px] text-slate-300 leading-tight">
+                                Comprueba cómo al rotar un turno en una manga con <b>D-1 (Roger)</b>: el piloto del último eslabón de la rueda (<b>P-2 Pau</b>) pasa a <b>Descans (D-1)</b>, <b>Roger</b> entra por <b>P-1</b> y <b>Lluis (P-4)</b> pasa a <b>P-2</b>.
+                            </p>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button onclick="simulateGroupWheelStep(0)" class="py-1.5 rounded-lg mac-silver-btn text-[10px] font-black cursor-pointer">
+                                    ROTAR 1 TURNO MANGA 1
+                                </button>
+                                <button onclick="simulateGroupWheelStep(1)" class="py-1.5 rounded-lg bg-[#ffd60a]/25 hover:bg-[#ffd60a]/40 text-[#ffd60a] border border-[#ffd60a]/50 text-[10px] font-black cursor-pointer">
+                                    ROTAR 1 TURNO MANGA 2 (D-1)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pizarra Visual de MANGA - 1 y MANGA - 2 idéntica al esquema del documento PDF -->
+                    <div id="cursa-preparada-boards" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1"></div>
                 </div>
 
                 <!-- AVISO / MATRIZ DE EQUIDAD PILOTO vs CARRIL -->
@@ -798,6 +955,10 @@
                 <button onclick="toggleAutoSim()" id="btnAutoDemo" class="px-3 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-car-burst text-[#5ac8fa]"></i>
                     <span id="btnAutoSimText">SIMULADOR: OFF</span>
+                </button>
+                <button onclick="openLivePreHeatModificationModal()" class="px-3 py-2 bg-[#0a84ff]/25 hover:bg-[#0a84ff]/45 text-[#5ac8fa] border border-[#5ac8fa]/50 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase" title="Modificar pilotos de mangas pendientes o añadir piloto que llega tarde">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <span>CAMBIOS MANGAS (YES/NO)</span>
                 </button>
                 <button onclick="toggleTrackCall()" id="btn-track-call" class="px-3 py-2 bg-[#ff9f0a] hover:bg-[#ffb340] text-black font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -903,13 +1064,17 @@
         <div class="mac-window p-4 flex flex-wrap items-center justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#ffd60a]"><i class="fa-solid fa-barcode mr-1"></i>TELEMETRÍA MÓVIL & LECTOR DE CÓDIGOS DE BARRAS / QR</span>
-                    <span id="qr-sync-badge" class="text-[10px] font-black px-2 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">LECTURA ALTA DENSIDAD ACTIVA</span>
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#ffd60a]"><i class="fa-solid fa-tower-broadcast mr-1"></i>TELEMETRÍA MÓVIL EN VIVO (P2P WEBRTC) & QR / BARCODE</span>
+                    <span id="qr-sync-badge" class="text-[10px] font-black px-2 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">SALA EN VIVO ACTIVA</span>
                 </div>
-                <h2 data-i18n="qr_title" class="text-xl md:text-2xl font-black text-white mt-0.5">QR y Códigos de Barras para Pilotos en Curso</h2>
-                <p data-i18n="qr_desc" class="text-xs text-[#94a3b8]">Escanea con la cámara o pistola lectora tu Código de Barras CODE-128 o QR para que el móvil te cante tus tiempos, quién va delante y detrás tuyo, y guardar tus datos.</p>
+                <h2 data-i18n="qr_title" class="text-xl md:text-2xl font-black text-white mt-0.5">QR y Códigos de Barras con Voz y Datos en Tiempo Real al Móvil</h2>
+                <p data-i18n="qr_desc" class="text-xs text-[#94a3b8]">Escanea el QR con el móvil del piloto: incluye datos instantáneos en el QR + conexión directa en vivo para cantar cada vuelta, récord y rivales en el teléfono.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+                <button onclick="forceBroadcastLiveStateToMobiles()" class="px-3.5 py-2 btn-neon-purple rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer" title="Enviar datos ahora a todos los móviles conectados">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <span id="connected-mobiles-count">MÓVILES EN VIVO: 0</span>
+                </button>
                 <button onclick="toggleCameraBarcodeScanner()" id="btn-camera-scanner" class="px-4 py-2 btn-neon-green rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-camera"></i>
                     <span id="btn-camera-scanner-text">ESCANEAR CON CÁMARA</span>
@@ -921,6 +1086,31 @@
                 <button onclick="switchMainTab('race')" class="px-4 py-2 btn-neon-blue rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-gauge-high"></i>
                     <span>VOLVER A PISTA EN VIVO</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de Enlace para Móviles Externos (URL Pública / IP Red WiFi Local + Sala WebRTC) -->
+        <div class="mac-studio-silver p-3.5 flex flex-wrap items-center justify-between gap-3 border border-[#30d158]/40">
+            <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl btn-neon-green flex items-center justify-center text-sm font-black">
+                    <i class="fa-solid fa-wifi"></i>
+                </span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black text-white uppercase">CONEXIÓN DE VOZ Y DATOS AL MÓVIL DEL PILOTO</span>
+                        <span id="live-room-code-pill" class="px-2 py-0.5 rounded text-[10px] font-mono-num font-black bg-[#0a84ff]/30 text-[#5ac8fa] border border-[#5ac8fa]/50">SALA: KPR-CLUB</span>
+                    </div>
+                    <div class="text-[11px] text-slate-300">
+                        El código QR lleva incrustados los datos del piloto y el código de sala en vivo para recibir tiempos y voz automáticamente en su teléfono.
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-1 min-w-[260px] max-w-xl">
+                <span class="text-[10px] font-extrabold text-[#ffd60a] shrink-0">URL BASE QR:</span>
+                <input type="text" id="custom-qr-host-url" placeholder="URL pública o IP WiFi (ej: https://tu-web.com)" onchange="updateCustomQrHostUrl(this.value)" class="flex-1 bg-black/75 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-mono-num text-white focus:outline-none focus:border-[#5ac8fa]" />
+                <button onclick="regenerateAllQrCards()" class="px-3 py-1.5 rounded-xl mac-silver-active text-[10px] font-black cursor-pointer shrink-0">
+                    ACTUALIZAR QR
                 </button>
             </div>
         </div>
@@ -987,6 +1177,29 @@
 
             <!-- Cuerpo de Telemetría en Tiempo Real del Piloto -->
             <div class="p-4 space-y-3 overflow-y-auto flex-1">
+                <!-- BANNER DE DESBLOQUEO DE VOZ OBLIGATORIO EN IPHONE (iOS) Y ANDROID -->
+                <div id="mob-audio-unlock-banner" onclick="unlockMobileVoiceAndAudio()" class="p-3 rounded-2xl bg-gradient-to-r from-[#30d158] to-[#0a84ff] text-slate-950 flex items-center justify-between gap-3 cursor-pointer shadow-[0_0_25px_rgba(48,209,88,0.5)] animate-pulse">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-9 h-9 rounded-xl bg-black/20 flex items-center justify-center text-lg font-black text-white shrink-0">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </span>
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-tight text-slate-950">🔊 TOCA AQUÍ PARA ACTIVAR EL SPOTTER DE VOZ EN TU MÓVIL</div>
+                            <div class="text-[10px] font-bold text-slate-900">iPhone y Android requieren 1 toque en pantalla para permitir que el móvil hable en cada vuelta</div>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-black text-[#30d158] text-[10px] font-black shrink-0">ACTIVAR</span>
+                </div>
+
+                <!-- Barra de Estado de Conexión en Vivo con Pista -->
+                <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/60 border border-white/10 text-[10px]">
+                    <div class="flex items-center gap-1.5">
+                        <span id="mob-live-conn-dot" class="w-2 h-2 rounded-full bg-[#30d158] animate-pulse"></span>
+                        <span id="mob-live-conn-text" class="font-black text-slate-200 uppercase">SINCRONIZADO EN VIVO CON PISTA</span>
+                    </div>
+                    <span id="mob-event-cat-badge" class="font-mono-num font-bold text-[#5ac8fa]">GT · EN VIVO</span>
+                </div>
+
                 <!-- Radar de Rivales: Piloto Delante y Piloto Detrás -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div class="mac-group-box p-2.5 border-l-4 border-[#ff9f0a]">
@@ -1058,6 +1271,75 @@
                     <i class="fa-solid fa-mobile-screen-button text-[#5ac8fa]"></i>
                     <span>GUARDAR TELEMETRÍA JSON</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL OFICIAL YES / NO: "¿DESEA REALIZAR ALGÚN CAMBIO ANTES DE EMPEZAR LA MANGA?" ==================== -->
+    <div id="preHeatYesNoModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden items-center justify-center p-3">
+        <div class="mac-studio-silver w-full max-w-4xl border-2 border-[#5ac8fa]/60 p-5 space-y-4 max-h-[92vh] overflow-y-auto shadow-[0_0_70px_rgba(10,132,255,0.4)]">
+            <!-- Pregunta principal con botones YES / NO estilo documento PDF -->
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-black/60 p-4 rounded-2xl border border-white/15">
+                <div class="space-y-1">
+                    <div id="yesno-modal-badge" class="text-[10px] font-black tracking-widest text-[#ffd60a] uppercase">CONTROL PRE-MANGA · DIRECCIÓN DE CARRERA</div>
+                    <h3 id="yesno-modal-question" class="text-base md:text-lg font-black text-white">
+                        La carrera ya está creada/lista para empezar: ¿Desea realizar algún cambio?
+                    </h3>
+                    <p id="yesno-modal-sub" class="text-xs text-slate-300">
+                        Sempre que es pugui, YES-NO: Puedes quitar un piloto (ej. Raúl), cambiar pilotos de manga (Pau ↔ JP) o inscribir a un piloto que llega tarde (ej. Roger en D-1).
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    <button onclick="handlePreHeatDecision('YES')" id="btn-decision-yes" class="px-6 py-3 rounded-2xl font-black text-sm border-2 border-[#5ac8fa] bg-[#0a84ff]/25 hover:bg-[#0a84ff] text-white shadow-[0_0_20px_rgba(10,132,255,0.4)] transition cursor-pointer">
+                        YES (HACER CAMBIOS)
+                    </button>
+                    <button onclick="handlePreHeatDecision('NO')" id="btn-decision-no" class="px-6 py-3 rounded-2xl font-black text-sm btn-neon-green transition cursor-pointer">
+                        NO (EMPEZAR MANGA ▶)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel desplegable cuando se pulsa YES para editar en vivo antes de empezar la manga -->
+            <div id="yesno-editor-container" class="hidden space-y-4 pt-2 border-t border-white/15">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Añadir piloto que llega tarde -->
+                    <div class="mac-silver-well p-3 space-y-2">
+                        <div class="text-xs font-black text-[#30d158] uppercase">
+                            <i class="fa-solid fa-user-plus mr-1.5"></i>Inscribir Piloto que llega tarde (ej: ROGER)
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="modal-late-pilot-name" placeholder="Nombre (ej: ROGER)" class="flex-1 bg-black/80 border border-white/20 rounded-xl px-3 py-2 text-xs font-black text-white uppercase"/>
+                            <select id="modal-late-pilot-group" class="bg-black/80 border border-white/20 rounded-xl px-2.5 py-2 text-xs font-bold text-white"></select>
+                            <button onclick="addLateArrivalPilotFromModal()" class="px-3.5 py-2 rounded-xl btn-neon-green text-xs font-black cursor-pointer">
+                                + AÑADIR
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Intercambiar 2 pilotos entre mangas -->
+                    <div class="mac-silver-well p-3 space-y-2">
+                        <div class="text-xs font-black text-[#5ac8fa] uppercase">
+                            <i class="fa-solid fa-right-left mr-1.5"></i>Intercambiar Pilotos de Manga (ej: PAU ↔ JP)
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select id="modal-swap-a" class="flex-1 bg-black/80 border border-white/20 rounded-xl px-2 py-2 text-xs font-bold text-white"></select>
+                            <span class="text-xs font-black text-[#ffd60a]">↔</span>
+                            <select id="modal-swap-b" class="flex-1 bg-black/80 border border-white/20 rounded-xl px-2 py-2 text-xs font-bold text-white"></select>
+                            <button onclick="swapPilotsFromModal()" class="px-3.5 py-2 rounded-xl btn-neon-blue text-xs font-black cursor-pointer">
+                                CAMBIAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pizarras en vivo dentro del modal -->
+                <div id="modal-cursa-boards" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+                <div class="flex justify-end gap-3 pt-2 border-t border-white/10">
+                    <button onclick="closePreHeatModalAndGoTrack()" class="px-7 py-2.5 rounded-xl btn-neon-green font-black text-xs cursor-pointer">
+                        ✓ CAMBIOS APLICADOS · CONTINUAR A PISTA
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1439,11 +1721,25 @@
 
         const POINTS_TABLE = [10, 8, 6, 5, 4, 3, 2, 1, 0, 0];
 
+        const DEFAULT_CLUB_CATEGORIES = ['GT', 'DTM', 'CLÁSICOS', 'F1', 'CAMIONES'];
+
+        function getTodayFormattedISO() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
         // Estado Global Unificado
         let state = {
             lang: 'es',
             mainTab: 'race',
             wizardStep: 1,
+            eventName: 'CAMPEONATO SOCIAL SLOT CLUB',
+            eventDate: getTodayFormattedISO(),
+            clubCategories: [...DEFAULT_CLUB_CATEGORIES],
+            activeClubCategory: 'GT',
             sessionType: 'CLUB',
             lanesCount: 4,
             numSectors: 3,
@@ -1461,6 +1757,8 @@
             globalThemeIndex: 0,
             laneLayoutModes: {},
             laneThemeIndices: {},
+            raceGroups: [], // Grupos de pilotos (MANGA 1, MANGA 2...) con soporte P-1..P-N y descansos D-1, D-2
+            pendingPreHeatNumber: 1,
             drivers: [],
             heats: [],
             currentHeatIndex: 0,
@@ -1486,19 +1784,211 @@
         let activeUtterance = null;
         let activeMobileDriverId = null;
         let mobileSpotterVoiceEnabled = true;
+        let mobileAudioUnlocked = false;
+        let customQrBaseUrl = '';
+
+        // ==================== MOTOR P2P EN TIEMPO REAL (WEBRTC PEERJS + BROADCAST LOCAL) ENTRE PC/TABLET Y MÓVILES ====================
+        let roomCodeId = localStorage.getItem('krono_live_room_code') || ('KPR' + Math.floor(1000 + Math.random() * 9000));
+        localStorage.setItem('krono_live_room_code', roomCodeId);
+
+        let hostPeer = null;
+        let clientPeer = null;
+        let hostConnections = [];
+        let clientConnToHost = null;
+        let isMobileClientMode = false;
+
         let raceBroadcastChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('krono_pro_live_telemetry') : null;
 
         if (raceBroadcastChannel) {
             raceBroadcastChannel.onmessage = (ev) => {
-                if (ev.data && ev.data.type === 'LAP_UPDATE' && activeMobileDriverId) {
-                    loadLocalDatabase().then(() => {
-                        updateMobileCompanionModalUI();
-                        if (ev.data.driverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
-                            speakMobileDriverStatusNow();
-                        }
-                    });
+                if (ev.data && ev.data.type === 'LIVE_STATE_SYNC' && activeMobileDriverId) {
+                    applyIncomingLiveTelemetryPacket(ev.data);
                 }
             };
+        }
+
+        function buildCompactLivePacket(triggerDriverId = null, lapSec = null) {
+            return {
+                type: 'LIVE_STATE_SYNC',
+                ts: Date.now(),
+                triggerDriverId,
+                lapSec,
+                eventName: state.eventName,
+                eventDate: state.eventDate,
+                activeClubCategory: state.activeClubCategory,
+                currentHeatIndex: state.currentHeatIndex,
+                timeRemaining: state.timeRemaining,
+                raceStatus: state.raceStatus,
+                drivers: state.drivers,
+                heats: state.heats.map(h => ({
+                    ...h,
+                    assignments: h.assignments.map(a => ({
+                        ...a,
+                        bestLap: serializeNumber(a.bestLap),
+                        bestSectors: {
+                            1: serializeNumber(a.bestSectors?.[1]),
+                            2: serializeNumber(a.bestSectors?.[2]),
+                            3: serializeNumber(a.bestSectors?.[3])
+                        }
+                    }))
+                }))
+            };
+        }
+
+        function applyIncomingLiveTelemetryPacket(packet) {
+            if (!packet) return;
+            if (packet.eventName) state.eventName = packet.eventName;
+            if (packet.eventDate) state.eventDate = packet.eventDate;
+            if (packet.activeClubCategory) state.activeClubCategory = packet.activeClubCategory;
+            if (typeof packet.currentHeatIndex === 'number') state.currentHeatIndex = packet.currentHeatIndex;
+            if (typeof packet.timeRemaining === 'number') state.timeRemaining = packet.timeRemaining;
+            if (packet.raceStatus) state.raceStatus = packet.raceStatus;
+            if (Array.isArray(packet.drivers) && packet.drivers.length > 0) state.drivers = packet.drivers;
+            if (Array.isArray(packet.heats) && packet.heats.length > 0) {
+                state.heats = packet.heats.map(h => ({
+                    ...h,
+                    assignments: (h.assignments || []).map(a => ({
+                        ...a,
+                        bestLap: deserializeNumber(a.bestLap),
+                        bestSectors: {
+                            1: deserializeNumber(a.bestSectors?.[1]),
+                            2: deserializeNumber(a.bestSectors?.[2]),
+                            3: deserializeNumber(a.bestSectors?.[3])
+                        }
+                    }))
+                }));
+            }
+
+            if (activeMobileDriverId) {
+                updateMobileCompanionModalUI();
+                // Si el paquete corresponde a una vuelta nueva de este piloto, el móvil la canta inmediatamente
+                if (packet.triggerDriverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
+                    speakMobileDriverStatusNow();
+                }
+            }
+        }
+
+        function initHostRealtimeServer() {
+            if (typeof Peer === 'undefined' || isMobileClientMode) return;
+            const peerId = `krono-race-room-${roomCodeId.toLowerCase()}`;
+            const pill = document.getElementById('live-room-code-pill');
+            if (pill) pill.textContent = `SALA EN VIVO: ${roomCodeId}`;
+
+            try {
+                if (hostPeer) hostPeer.destroy();
+                hostPeer = new Peer(peerId);
+
+                hostPeer.on('open', () => {
+                    const badge = document.getElementById('qr-sync-badge');
+                    if (badge) badge.textContent = `SALA ${roomCodeId} EN LÍNEA ✓`;
+                });
+
+                hostPeer.on('connection', (conn) => {
+                    hostConnections.push(conn);
+                    updateConnectedMobilesBadge();
+
+                    conn.on('open', () => {
+                        updateConnectedMobilesBadge();
+                        // Enviar estado completo al móvil recién conectado
+                        conn.send(buildCompactLivePacket(null, null));
+                    });
+
+                    conn.on('close', () => {
+                        hostConnections = hostConnections.filter(c => c !== conn);
+                        updateConnectedMobilesBadge();
+                    });
+                });
+            } catch (e) {}
+        }
+
+        function updateConnectedMobilesBadge() {
+            const openCount = hostConnections.filter(c => c && c.open).length;
+            const el = document.getElementById('connected-mobiles-count');
+            if (el) el.textContent = `MÓVILES EN VIVO: ${openCount}`;
+        }
+
+        function forceBroadcastLiveStateToMobiles(triggerDriverId = null, lapSec = null) {
+            const packet = buildCompactLivePacket(triggerDriverId, lapSec);
+            if (raceBroadcastChannel) {
+                try { raceBroadcastChannel.postMessage(packet); } catch (e) {}
+            }
+            hostConnections.forEach(conn => {
+                if (conn && conn.open) {
+                    try { conn.send(packet); } catch (e) {}
+                }
+            });
+        }
+
+        function connectMobileClientToHostRoom(targetRoomCode) {
+            if (typeof Peer === 'undefined' || !targetRoomCode) return;
+            isMobileClientMode = true;
+            const connText = document.getElementById('mob-live-conn-text');
+            const connDot = document.getElementById('mob-live-conn-dot');
+            if (connText) connText.textContent = `CONECTANDO A SALA ${targetRoomCode}...`;
+
+            try {
+                if (clientPeer) clientPeer.destroy();
+                clientPeer = new Peer();
+
+                clientPeer.on('open', () => {
+                    const hostPeerId = `krono-race-room-${targetRoomCode.toLowerCase()}`;
+                    clientConnToHost = clientPeer.connect(hostPeerId, { reliable: true });
+
+                    clientConnToHost.on('open', () => {
+                        if (connText) connText.textContent = `CONECTADO EN VIVO A PISTA (${targetRoomCode})`;
+                        if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#30d158] animate-ping';
+                    });
+
+                    clientConnToHost.on('data', (data) => {
+                        if (data && data.type === 'LIVE_STATE_SYNC') {
+                            applyIncomingLiveTelemetryPacket(data);
+                        }
+                    });
+
+                    clientConnToHost.on('close', () => {
+                        if (connText) connText.textContent = `MODO AUTÓNOMO QR (RECONECTANDO...)`;
+                        if (connDot) connDot.className = 'w-2 h-2 rounded-full bg-[#ff9f0a]';
+                    });
+                });
+            } catch (e) {}
+        }
+
+        // Desbloqueo explícito de Voz y Audio en iPhone (iOS Safari) y Android Chrome
+        function unlockMobileVoiceAndAudio() {
+            mobileAudioUnlocked = true;
+            mobileSpotterVoiceEnabled = true;
+
+            try {
+                const ctx = getAudioContext();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+                playTone(1046, 90, 'sine', 0.5);
+            } catch (e) {}
+
+            if ('speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.resume();
+                } catch (e) {}
+            }
+
+            const banner = document.getElementById('mob-audio-unlock-banner');
+            if (banner) {
+                banner.className = "p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer";
+                banner.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-sm"></i>
+                        <span class="text-xs font-black uppercase">SPOTTER DE VOZ ACTIVO EN ESTE MÓVIL (CANTANDO CADA VUELTA)</span>
+                    </div>
+                    <span class="text-[10px] font-mono-num font-bold underline">PROBAR VOZ</span>
+                `;
+            }
+
+            const btn = document.getElementById('mob-voice-btn');
+            const txt = document.getElementById('mob-voice-status');
+            if (btn) btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer";
+            if (txt) txt.textContent = "VOZ ON";
+
+            speakMobileDriverStatusNow();
         }
 
         // ==================== MOTOR DE BASE DE DATOS LOCAL (IndexedDB) POR DISPOSITIVO ====================
@@ -1542,9 +2032,6 @@
 
         async function saveLocalDatabase() {
             try {
-                const db = await openLocalDatabase();
-                if (!db) return;
-
                 const voiceSelect = document.getElementById('headerVoiceSelect');
                 const snapshot = {
                     id: 'krono_device_profile',
@@ -1553,6 +2040,10 @@
                     lang: state.lang,
                     mainTab: state.mainTab,
                     wizardStep: state.wizardStep,
+                    eventName: state.eventName || 'CAMPEONATO SOCIAL SLOT CLUB',
+                    eventDate: state.eventDate || getTodayFormattedISO(),
+                    clubCategories: Array.isArray(state.clubCategories) && state.clubCategories.length > 0 ? state.clubCategories : [...DEFAULT_CLUB_CATEGORIES],
+                    activeClubCategory: state.activeClubCategory || 'GT',
                     sessionType: state.sessionType,
                     lanesCount: state.lanesCount,
                     numSectors: state.numSectors,
@@ -1570,6 +2061,7 @@
                     globalThemeIndex: state.globalThemeIndex,
                     laneLayoutModes: state.laneLayoutModes,
                     laneThemeIndices: state.laneThemeIndices,
+                    raceGroups: state.raceGroups,
                     drivers: state.drivers,
                     currentHeatIndex: state.currentHeatIndex,
                     timeRemaining: state.timeRemaining,
@@ -1593,79 +2085,107 @@
                     }))
                 };
 
+                // Respaldo inmediato en localStorage del dispositivo (Tablet, PC o Mac)
+                try {
+                    localStorage.setItem('krono_device_profile_backup', JSON.stringify(snapshot));
+                } catch (e) {}
+
+                const db = await openLocalDatabase();
+                if (!db) return;
+
                 const tx = db.transaction(LOCAL_STORE_NAME, 'readwrite');
                 tx.objectStore(LOCAL_STORE_NAME).put(snapshot);
                 tx.oncomplete = () => {
                     const badge = document.getElementById('local-db-status');
                     if (badge) {
-                        badge.textContent = 'GUARDADO';
+                        badge.textContent = 'GUARDADO ✓';
                         setTimeout(() => { badge.textContent = 'DB LOCAL OK'; }, 900);
                     }
                 };
             } catch (e) {}
         }
 
+        function applySnapshotToState(data) {
+            if (!data || !Array.isArray(data.drivers) || data.drivers.length === 0) return false;
+            state.lang = data.lang || 'es';
+            state.mainTab = data.mainTab || 'race';
+            state.wizardStep = data.wizardStep || 1;
+            state.eventName = data.eventName || 'CAMPEONATO SOCIAL SLOT CLUB';
+            state.eventDate = data.eventDate || getTodayFormattedISO();
+            state.clubCategories = (Array.isArray(data.clubCategories) && data.clubCategories.length > 0)
+                ? data.clubCategories
+                : [...DEFAULT_CLUB_CATEGORIES];
+            state.activeClubCategory = data.activeClubCategory || state.clubCategories[0] || 'GT';
+            state.sessionType = data.sessionType || 'CLUB';
+            state.lanesCount = data.lanesCount || 4;
+            state.numSectors = data.numSectors || 3;
+            state.trackLengthMeters = data.trackLengthMeters || 28;
+            state.scaleFactor = data.scaleFactor || 32;
+            state.durationSeconds = data.durationSeconds || 180;
+            state.durationLabel = data.durationLabel || '3 Min ★';
+            state.durationCategory = data.durationCategory || 'CLUB';
+            state.targetLaps = data.targetLaps || 'infinity';
+            state.heatMode = data.heatMode || 'auto';
+            state.rotationMode = data.rotationMode || 'club_odd_even';
+            state.customLaneSequence = Array.isArray(data.customLaneSequence) ? data.customLaneSequence : [1, 3, 4, 2];
+            state.scoringMethod = data.scoringMethod || 'laps';
+            state.globalCardLayout = [1, 2, 3].includes(data.globalCardLayout) ? data.globalCardLayout : 1;
+            state.globalThemeIndex = data.globalThemeIndex || 0;
+            state.laneLayoutModes = data.laneLayoutModes || {};
+            state.laneThemeIndices = data.laneThemeIndices || {};
+            state.raceGroups = Array.isArray(data.raceGroups) ? data.raceGroups : [];
+            state.drivers = data.drivers;
+            state.currentHeatIndex = data.currentHeatIndex || 0;
+            state.timeRemaining = typeof data.timeRemaining === 'number' ? data.timeRemaining : state.durationSeconds;
+            state.overallBestLap = deserializeNumber(data.overallBestLap);
+            state.overallBestSectors = {
+                1: deserializeNumber(data.overallBestSectors?.[1]),
+                2: deserializeNumber(data.overallBestSectors?.[2]),
+                3: deserializeNumber(data.overallBestSectors?.[3])
+            };
+            state.heats = (data.heats || []).map(h => ({
+                ...h,
+                assignments: (h.assignments || []).map(a => ({
+                    ...a,
+                    bestLap: deserializeNumber(a.bestLap),
+                    bestSectors: {
+                        1: deserializeNumber(a.bestSectors?.[1]),
+                        2: deserializeNumber(a.bestSectors?.[2]),
+                        3: deserializeNumber(a.bestSectors?.[3])
+                    }
+                }))
+            }));
+
+            const voiceSelect = document.getElementById('headerVoiceSelect');
+            if (voiceSelect && data.voicePref) voiceSelect.value = data.voicePref;
+            return true;
+        }
+
         async function loadLocalDatabase() {
             try {
                 const db = await openLocalDatabase();
-                if (!db) return false;
-                return new Promise((resolve) => {
-                    const tx = db.transaction(LOCAL_STORE_NAME, 'readonly');
-                    const req = tx.objectStore(LOCAL_STORE_NAME).get('krono_device_profile');
-                    req.onsuccess = () => {
-                        const data = req.result;
-                        if (!data || !Array.isArray(data.drivers) || data.drivers.length === 0) {
-                            resolve(false);
-                            return;
-                        }
-                        state.lang = data.lang || 'es';
-                        state.mainTab = data.mainTab || 'race';
-                        state.wizardStep = data.wizardStep || 1;
-                        state.sessionType = data.sessionType || 'CLUB';
-                        state.lanesCount = data.lanesCount || 4;
-                        state.numSectors = data.numSectors || 3;
-                        state.trackLengthMeters = data.trackLengthMeters || 28;
-                        state.scaleFactor = data.scaleFactor || 32;
-                        state.durationSeconds = data.durationSeconds || 180;
-                        state.durationLabel = data.durationLabel || '3 Min ★';
-                        state.durationCategory = data.durationCategory || 'CLUB';
-                        state.targetLaps = data.targetLaps || 'infinity';
-                        state.heatMode = data.heatMode || 'auto';
-                        state.rotationMode = data.rotationMode || 'club_odd_even';
-                        state.customLaneSequence = Array.isArray(data.customLaneSequence) ? data.customLaneSequence : [1, 3, 4, 2];
-                        state.scoringMethod = data.scoringMethod || 'laps';
-                        state.globalCardLayout = [1, 2, 3].includes(data.globalCardLayout) ? data.globalCardLayout : 1;
-                        state.globalThemeIndex = data.globalThemeIndex || 0;
-                        state.laneLayoutModes = data.laneLayoutModes || {};
-                        state.laneThemeIndices = data.laneThemeIndices || {};
-                        state.drivers = data.drivers;
-                        state.currentHeatIndex = data.currentHeatIndex || 0;
-                        state.timeRemaining = typeof data.timeRemaining === 'number' ? data.timeRemaining : state.durationSeconds;
-                        state.overallBestLap = deserializeNumber(data.overallBestLap);
-                        state.overallBestSectors = {
-                            1: deserializeNumber(data.overallBestSectors?.[1]),
-                            2: deserializeNumber(data.overallBestSectors?.[2]),
-                            3: deserializeNumber(data.overallBestSectors?.[3])
+                if (db) {
+                    const loadedFromIdb = await new Promise((resolve) => {
+                        const tx = db.transaction(LOCAL_STORE_NAME, 'readonly');
+                        const req = tx.objectStore(LOCAL_STORE_NAME).get('krono_device_profile');
+                        req.onsuccess = () => {
+                            if (applySnapshotToState(req.result)) {
+                                resolve(true);
+                            } else {
+                                resolve(false);
+                            }
                         };
-                        state.heats = (data.heats || []).map(h => ({
-                            ...h,
-                            assignments: (h.assignments || []).map(a => ({
-                                ...a,
-                                bestLap: deserializeNumber(a.bestLap),
-                                bestSectors: {
-                                    1: deserializeNumber(a.bestSectors?.[1]),
-                                    2: deserializeNumber(a.bestSectors?.[2]),
-                                    3: deserializeNumber(a.bestSectors?.[3])
-                                }
-                            }))
-                        }));
-
-                        const voiceSelect = document.getElementById('headerVoiceSelect');
-                        if (voiceSelect && data.voicePref) voiceSelect.value = data.voicePref;
-                        resolve(true);
-                    };
-                    req.onerror = () => resolve(false);
-                });
+                        req.onerror = () => resolve(false);
+                    });
+                    if (loadedFromIdb) return true;
+                }
+                // Fallback por si el navegador limpió IndexedDB pero mantiene localStorage
+                const rawBackup = localStorage.getItem('krono_device_profile_backup');
+                if (rawBackup) {
+                    const parsed = JSON.parse(rawBackup);
+                    if (applySnapshotToState(parsed)) return true;
+                }
+                return false;
             } catch (e) {
                 return false;
             }
@@ -1675,12 +2195,17 @@
             stopAllTimers();
             state.raceStatus = 'STANDBY';
             try {
+                localStorage.removeItem('krono_device_profile_backup');
                 const db = await openLocalDatabase();
                 if (db) {
                     const tx = db.transaction(LOCAL_STORE_NAME, 'readwrite');
                     tx.objectStore(LOCAL_STORE_NAME).delete('krono_device_profile');
                 }
             } catch (e) {}
+            state.eventName = 'CAMPEONATO SOCIAL SLOT CLUB';
+            state.eventDate = getTodayFormattedISO();
+            state.clubCategories = [...DEFAULT_CLUB_CATEGORIES];
+            state.activeClubCategory = 'GT';
             state.lanesCount = 4;
             state.numSectors = 3;
             state.durationSeconds = 180;
@@ -2134,10 +2659,111 @@
 
         function buildDriverShareableUrl(driverId) {
             const ctx = getDriverLiveTelemetryContext(driverId);
-            const baseUrl = window.location.href.split('?')[0].split('#')[0];
+            const defaultBase = window.location.href.split('?')[0].split('#')[0];
+            const baseUrl = (customQrBaseUrl && customQrBaseUrl.trim()) ? customQrBaseUrl.trim() : defaultBase;
             if (!ctx) return baseUrl;
-            // URL ultra corta para que el QR tenga módulos grandes y se lea al instante desde cualquier móvil
-            return `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}`;
+
+            // Empaquetamos una instantánea ultraligera en Base64 URL-safe para que aunque el móvil esté en 4G/5G fuera del WiFi, cargue todos los datos del piloto al instante
+            const ass = ctx.assignment;
+            const miniSnap = {
+                id: ctx.driver.id,
+                n: ctx.driver.name,
+                c: ctx.driver.car,
+                cat: ctx.driver.category || state.activeClubCategory || 'GT',
+                ev: state.eventName || 'CLUB',
+                dt: state.eventDate || '',
+                h: ctx.heatNumber,
+                th: state.heats.length || 1,
+                l: ass ? ass.lane : 0,
+                p: ctx.position || 1,
+                lp: ass ? ass.laps : 0,
+                ll: ass && ass.lastLap > 0 ? +ass.lastLap.toFixed(3) : 0,
+                bl: ctx.careerBestLap < Infinity ? +ctx.careerBestLap.toFixed(3) : 0,
+                ml: ass && getDriverMeanLap(ass) > 0 ? +getDriverMeanLap(ass).toFixed(3) : 0,
+                tl: ctx.totalCareerLaps || 0,
+                ah: ctx.ahead ? `${ctx.ahead.driverName} (C${ctx.ahead.lane})` : '',
+                ga: ctx.gapAheadText || '',
+                bh: ctx.behind ? `${ctx.behind.driverName} (C${ctx.behind.lane})` : '',
+                gb: ctx.gapBehindText || '',
+                hs: ass ? ass.history.slice(-8).map(x => +x.toFixed(3)) : []
+            };
+
+            let encodedSnap = '';
+            try {
+                encodedSnap = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(miniSnap)))));
+            } catch (e) {}
+
+            return `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}&room=${encodeURIComponent(roomCodeId)}&snap=${encodedSnap}`;
+        }
+
+        function updateCustomQrHostUrl(val) {
+            customQrBaseUrl = String(val || '').trim();
+            try { localStorage.setItem('krono_custom_qr_url', customQrBaseUrl); } catch (e) {}
+            renderDriversQRView();
+        }
+
+        function regenerateAllQrCards() {
+            const inp = document.getElementById('custom-qr-host-url');
+            if (inp) customQrBaseUrl = inp.value.trim();
+            renderDriversQRView();
+        }
+
+        function hydrateStateFromUrlSnapshot(encodedSnap) {
+            if (!encodedSnap) return null;
+            try {
+                const jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(encodedSnap))));
+                const snap = JSON.parse(jsonStr);
+                if (!snap || !snap.id) return null;
+
+                state.eventName = snap.ev || state.eventName;
+                state.eventDate = snap.dt || state.eventDate;
+                state.activeClubCategory = snap.cat || state.activeClubCategory;
+
+                // Asegurar que el piloto existe en memoria del móvil
+                let drv = state.drivers.find(d => d.id === snap.id);
+                if (!drv) {
+                    drv = { id: snap.id, name: snap.n || 'PILOTO', category: snap.cat || 'GT', car: snap.c || 'Slot GT', poleLap: snap.bl || 8.500 };
+                    state.drivers.unshift(drv);
+                } else {
+                    drv.name = snap.n || drv.name;
+                    drv.car = snap.c || drv.car;
+                }
+
+                // Reconstruir manga actual con los datos del QR para que el móvil los vea y los cante aunque aún esté conectando por WebRTC
+                const laneNum = snap.l || 1;
+                const assignmentObj = {
+                    lane: laneNum,
+                    laneInfo: LANE_PALETTE[laneNum] || LANE_PALETTE[1],
+                    driverId: drv.id,
+                    driverName: drv.name,
+                    driverCar: drv.car,
+                    nextAction: '→ EN PISTA',
+                    laps: snap.lp || 0,
+                    lastLap: snap.ll || 0,
+                    bestLap: snap.bl > 0 ? snap.bl : Infinity,
+                    history: Array.isArray(snap.hs) ? snap.hs : [],
+                    currentSector: 1,
+                    sectorAccum: 0,
+                    lastCheckpointTime: 0,
+                    lastSectors: { 1: null, 2: null, 3: null },
+                    prevSectors: { 1: null, 2: null, 3: null },
+                    bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
+                    sectorColors: { 1: '', 2: '', 3: '' },
+                    lastLapPassTime: 0
+                };
+
+                state.currentHeatIndex = 0;
+                state.heats = [{
+                    heatNumber: snap.h || 1,
+                    status: 'RACING',
+                    assignments: [assignmentObj],
+                    marshals: []
+                }];
+
+                return snap.id;
+            } catch (e) {
+                return null;
+            }
         }
 
         function processScannedCode(rawCode) {
@@ -2145,11 +2771,15 @@
             const clean = String(rawCode).trim();
             if (!clean) return;
 
-            // 1. Si es una URL con ?pilot=
+            // 1. Si es una URL con ?pilot= (y opcionalmente &snap= y &room=)
             if (clean.includes('pilot=')) {
                 try {
                     const urlObj = new URL(clean, window.location.origin);
                     const pId = urlObj.searchParams.get('pilot');
+                    const snapParam = urlObj.searchParams.get('snap');
+                    const roomParam = urlObj.searchParams.get('room');
+                    if (snapParam) hydrateStateFromUrlSnapshot(snapParam);
+                    if (roomParam) connectMobileClientToHostRoom(roomParam);
                     if (pId) {
                         const found = state.drivers.find(d => d.id === pId);
                         if (found) {
@@ -2258,6 +2888,15 @@
             if (state.drivers.length === 0) loadPdfExampleDrivers();
             if (state.heats.length === 0) rebuildHeats();
 
+            const urlInp = document.getElementById('custom-qr-host-url');
+            if (urlInp && !urlInp.value) {
+                const savedUrl = localStorage.getItem('krono_custom_qr_url') || window.location.href.split('?')[0].split('#')[0];
+                urlInp.value = savedUrl;
+                customQrBaseUrl = savedUrl;
+            }
+            const pill = document.getElementById('live-room-code-pill');
+            if (pill) pill.textContent = `SALA EN VIVO: ${roomCodeId}`;
+
             grid.innerHTML = state.drivers.map((drv, idx) => {
                 const ctx = getDriverLiveTelemetryContext(drv.id);
                 const ass = ctx ? ctx.assignment : null;
@@ -2343,8 +2982,8 @@
                         qrContainer.innerHTML = '';
                         new QRCode(qrContainer, {
                             text: shareUrl,
-                            width: 96,
-                            height: 96,
+                            width: 112,
+                            height: 112,
                             colorDark: "#000000",
                             colorLight: "#ffffff",
                             correctLevel: QRCode.CorrectLevel.L
@@ -2430,6 +3069,11 @@
             document.getElementById('mob-pos-badge').textContent = ctx.position ? `P${ctx.position}` : 'BOX';
             document.getElementById('mob-heat-label').textContent = `MANGA ${ctx.heatNumber}/${state.heats.length}`;
             document.getElementById('mob-next-lane').textContent = ass ? ass.nextAction : 'EN PISTA PRÓX. MANGA';
+
+            const catBadge = document.getElementById('mob-event-cat-badge');
+            if (catBadge) {
+                catBadge.textContent = `${state.eventName || 'CLUB'} · ${ctx.driver.category || state.activeClubCategory || 'GT'}`;
+            }
 
             // Delante y Detrás
             document.getElementById('mob-ahead-name').textContent = ctx.ahead ? `${ctx.ahead.driverName} (C${ctx.ahead.lane})` : 'ERES EL LÍDER (P1)';
@@ -2551,17 +3195,137 @@
             const blob = new Blob([JSON.stringify({
                 app: "KRONO PRO RACE · by Albert Closa",
                 exportedAt: new Date().toISOString(),
+                eventName: state.eventName,
+                eventDate: state.eventDate,
+                activeClubCategory: state.activeClubCategory,
+                clubCategories: state.clubCategories,
                 drivers: state.drivers,
                 heats: state.heats
             }, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Carrera_Completa_KronoProRace.json`;
+            a.download = `Carrera_${(state.eventName || 'KronoProRace').replace(/\s+/g, '_')}_${state.eventDate || ''}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        // ==================== GESTIÓN DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB (GT, DTM, CLÁSICOS, F1, CAMIONES...) ====================
+        function updateEventMetadata() {
+            const nameInp = document.getElementById('event-name-input');
+            const dateInp = document.getElementById('event-date-input');
+            if (nameInp) state.eventName = nameInp.value.trim().toUpperCase() || 'CAMPEONATO SOCIAL SLOT CLUB';
+            if (dateInp && dateInp.value) state.eventDate = dateInp.value;
+            updateEventHeaderBadges();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function selectClubCategory(catName) {
+            if (!catName) return;
+            state.activeClubCategory = catName;
+            renderClubCategoriesManager();
+            updateEventHeaderBadges();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function addClubCategoryFromInput() {
+            const inp = document.getElementById('new-club-category-input');
+            if (!inp) return;
+            const clean = inp.value.trim().toUpperCase();
+            if (!clean) return;
+            if (!Array.isArray(state.clubCategories)) state.clubCategories = [...DEFAULT_CLUB_CATEGORIES];
+            if (!state.clubCategories.includes(clean)) {
+                state.clubCategories.push(clean);
+            }
+            state.activeClubCategory = clean;
+            inp.value = '';
+            renderClubCategoriesManager();
+            updateEventHeaderBadges();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function deleteClubCategory(catName, ev) {
+            if (ev) ev.stopPropagation();
+            if (!Array.isArray(state.clubCategories)) return;
+            state.clubCategories = state.clubCategories.filter(c => c !== catName);
+            if (state.clubCategories.length === 0) {
+                state.clubCategories = ['LIBRE'];
+            }
+            if (state.activeClubCategory === catName) {
+                state.activeClubCategory = state.clubCategories[0];
+            }
+            renderClubCategoriesManager();
+            updateEventHeaderBadges();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function restoreDefaultClubCategories() {
+            state.clubCategories = [...DEFAULT_CLUB_CATEGORIES];
+            if (!state.clubCategories.includes(state.activeClubCategory)) {
+                state.activeClubCategory = state.clubCategories[0];
+            }
+            renderClubCategoriesManager();
+            updateEventHeaderBadges();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function syncCarInputWithCategory() {
+            const sel = document.getElementById('new-driver-category-select');
+            const carInp = document.getElementById('new-driver-car');
+            if (sel && carInp && !carInp.value.trim()) {
+                carInp.placeholder = `Coche ${sel.value} (ej: Scaleauto / Slot.it)`;
+            }
+        }
+
+        function renderClubCategoriesManager() {
+            const chipsContainer = document.getElementById('club-categories-chips');
+            if (!Array.isArray(state.clubCategories) || state.clubCategories.length === 0) {
+                state.clubCategories = [...DEFAULT_CLUB_CATEGORIES];
+            }
+            if (!state.activeClubCategory || !state.clubCategories.includes(state.activeClubCategory)) {
+                state.activeClubCategory = state.clubCategories[0];
+            }
+
+            if (chipsContainer) {
+                chipsContainer.innerHTML = state.clubCategories.map(cat => {
+                    const isActive = cat === state.activeClubCategory;
+                    const safeCat = cat.replace(/'/g, "\\'");
+                    return `
+                    <div onclick="selectClubCategory('${safeCat}')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black transition cursor-pointer ${isActive ? 'mac-silver-active' : 'mac-silver-btn'}">
+                        <span>${isActive ? '★ ' : ''}${cat}</span>
+                        <button type="button" onclick="deleteClubCategory('${safeCat}', event)" class="w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${isActive ? 'bg-black/20 text-slate-900 hover:bg-[#ff453a] hover:text-white' : 'bg-white/10 text-slate-300 hover:bg-[#ff453a] hover:text-white'} transition cursor-pointer" title="Borrar categoría ${cat}">
+                            ✕
+                        </button>
+                    </div>`;
+                }).join('');
+            }
+
+            // Sincronizar selector de categoría en Paso 2 (Inscribir Pilotos)
+            const drvCatSel = document.getElementById('new-driver-category-select');
+            if (drvCatSel) {
+                drvCatSel.innerHTML = state.clubCategories.map(cat =>
+                    `<option value="${cat}" class="bg-[#12151e] text-white" ${cat === state.activeClubCategory ? 'selected' : ''}>${cat}</option>`
+                ).join('');
+            }
+        }
+
+        function updateEventHeaderBadges() {
+            const nameInp = document.getElementById('event-name-input');
+            const dateInp = document.getElementById('event-date-input');
+            if (nameInp && document.activeElement !== nameInp) nameInp.value = state.eventName || 'CAMPEONATO SOCIAL SLOT CLUB';
+            if (dateInp && document.activeElement !== dateInp) dateInp.value = state.eventDate || getTodayFormattedISO();
+
+            const pill = document.getElementById('active-event-header-pill');
+            if (pill) {
+                pill.textContent = `${state.eventName || 'EVENTO CLUB'} · ${state.eventDate || ''} · CAT: ${state.activeClubCategory || 'GT'}`;
+            }
         }
 
         function goToWizardStep(step) {
@@ -2580,6 +3344,7 @@
             if (step === 2) renderDriversList();
             if (step === 3) {
                 if (state.drivers.length === 0) loadPdfExampleDrivers();
+                if (!state.raceGroups || state.raceGroups.length === 0) syncDriversToRaceGroups();
                 rebuildHeats();
                 renderWizardStep3();
             }
@@ -2606,12 +3371,683 @@
                 }
                 return arr;
             }
+            // Rueda Oficial Club Impares subiendo -> Pares bajando (Para 6 pistas: 1 -> 3 -> 5 -> 6 -> 4 -> 2)
             let odds = [], evens = [];
             for (let i = 1; i <= count; i++) {
                 if (i % 2 !== 0) odds.push(i);
                 else evens.unshift(i);
             }
             return [...odds, ...evens];
+        }
+
+        // ==================== MOTOR "-CURSA PREPARADA-" (GRUPOS MANGA 1 / MANGA 2, CAMBIOS Y DESCANS D-1) ====================
+        function syncDriversToRaceGroups() {
+            const lanes = state.lanesCount || 6;
+            if (!state.drivers || state.drivers.length === 0) {
+                state.raceGroups = [];
+                return;
+            }
+            const totalDrivers = state.drivers.length;
+            const numGroups = Math.max(1, Math.ceil(totalDrivers / lanes));
+            const groups = [];
+
+            for (let g = 0; g < numGroups; g++) {
+                const slice = state.drivers.slice(g * lanes, (g + 1) * lanes);
+                const slots = [];
+                for (let l = 1; l <= lanes; l++) {
+                    const drv = slice[l - 1] || null;
+                    slots.push({
+                        type: 'LANE',
+                        lane: l,
+                        label: `P-${l}`,
+                        driverId: drv ? drv.id : null
+                    });
+                }
+                groups.push({
+                    groupNumber: g + 1,
+                    title: `MANGA - ${g + 1}`,
+                    turnIndex: 0,
+                    slots,
+                    restQueue: [] // D-1, D-2...
+                });
+            }
+            state.raceGroups = groups;
+        }
+
+        // Carga el escenario exacto de la imagen en catalán (4.pdf: 6 carriles, 5 min, Manga 1 y Manga 2 con orden 1->3->5->6->4->2)
+        function loadCursaPreparadaPdfScenario() {
+            stopAllTimers();
+            state.raceStatus = 'STANDBY';
+            state.lanesCount = 6;
+            state.durationSeconds = 300;
+            state.durationLabel = '5 Min ★';
+            state.timeRemaining = 300;
+            state.rotationMode = 'club_odd_even';
+            state.customLaneSequence = [1, 3, 5, 6, 4, 2];
+
+            state.drivers = [
+                // MANGA - 1
+                { id: 'cp_albert', name: 'ALBERT', car: 'Scaleauto GT3', poleLap: 8.310 },
+                { id: 'cp_raul',   name: 'RAÚL',   car: 'Slot.it GT3',   poleLap: 8.350 },
+                { id: 'cp_txema',  name: 'TXEMA',  car: 'NSR GT3',       poleLap: 8.390 },
+                { id: 'cp_miquel', name: 'MIQUEL', car: 'Scaleauto GT3', poleLap: 8.420 },
+                { id: 'cp_jp',     name: 'JP',     car: 'Slot.it GT3',   poleLap: 8.460 },
+                { id: 'cp_victor', name: 'VICTOR', car: 'NSR GT3',       poleLap: 8.490 },
+                // MANGA - 2
+                { id: 'cp_joaquim', name: 'JOAQUIM', car: 'Scaleauto GT3', poleLap: 8.520 },
+                { id: 'cp_pau',     name: 'PAU',     car: 'Slot.it GT3',   poleLap: 8.550 },
+                { id: 'cp_josep',   name: 'JOSEP',   car: 'NSR GT3',       poleLap: 8.590 },
+                { id: 'cp_lluis',   name: 'LLUIS',   car: 'Scaleauto GT3', poleLap: 8.630 },
+                { id: 'cp_manel',   name: 'MANEL',   car: 'Slot.it GT3',   poleLap: 8.670 },
+                { id: 'cp_alfons',  name: 'ALFONS',  car: 'NSR GT3',       poleLap: 8.710 }
+            ];
+
+            syncDriversToRaceGroups();
+            const lateInput = document.getElementById('late-pilot-name');
+            if (lateInput) lateInput.value = 'ROGER';
+            const wheelInp = document.getElementById('cursa-prep-wheel-input');
+            if (wheelInp) wheelInp.value = '1, 3, 5, 6, 4, 2';
+
+            rebuildHeats();
+            renderWizardStep1();
+            renderDriversList();
+            goToWizardStep(3);
+            saveLocalDatabase();
+        }
+
+        function updateCursaPrepWheel(rawStr) {
+            if (!rawStr) return;
+            const parts = String(rawStr)
+                .split(/[\s,.\-;>→]+/)
+                .map(x => parseInt(x.trim(), 10))
+                .filter(n => !isNaN(n) && n >= 1 && n <= state.lanesCount);
+            if (parts.length === 0) return;
+            const unique = [...new Set(parts)];
+            for (let i = 1; i <= state.lanesCount; i++) {
+                if (!unique.includes(i)) unique.push(i);
+            }
+            state.customLaneSequence = unique;
+            state.rotationMode = 'custom';
+            rebuildHeats();
+            renderWizardStep3();
+            saveLocalDatabase();
+        }
+
+        // Quitar piloto de su manga (Ej: RAÚL se tiene que ir) dejando a todos los demás exactamente igual
+        function removePilotFromGroupSlot(groupIdx, slotType, indexInGroup) {
+            const grp = state.raceGroups[groupIdx];
+            if (!grp) return;
+            let removedId = null;
+
+            if (slotType === 'LANE') {
+                const slot = grp.slots[indexInGroup];
+                if (!slot || !slot.driverId) return;
+                removedId = slot.driverId;
+                // Si hay alguien esperando en D-1, puede cubrir la vacante o dejar el carril libre
+                if (grp.restQueue.length > 0) {
+                    slot.driverId = grp.restQueue.shift();
+                } else {
+                    slot.driverId = null;
+                }
+            } else if (slotType === 'REST') {
+                removedId = grp.restQueue.splice(indexInGroup, 1)[0];
+            }
+
+            if (removedId) {
+                state.drivers = state.drivers.filter(d => d.id !== removedId);
+            }
+            rebuildHeatsFromRaceGroups();
+            renderWizardStep3();
+            renderLiveRaceView();
+            updatePreHeatModalUI();
+            saveLocalDatabase();
+        }
+
+        // Mover un piloto de una manga a otra (Ej: de Manga 2 a Manga 1 para quedar 6 + 6)
+        function movePilotToAnotherGroup(fromGroupIdx, slotType, indexInGroup, targetGroupIdx) {
+            const fromGrp = state.raceGroups[fromGroupIdx];
+            const toGrp = state.raceGroups[targetGroupIdx];
+            if (!fromGrp || !toGrp || fromGroupIdx === targetGroupIdx) return;
+
+            let movingDriverId = null;
+            if (slotType === 'LANE') {
+                movingDriverId = fromGrp.slots[indexInGroup].driverId;
+                if (!movingDriverId) return;
+                fromGrp.slots[indexInGroup].driverId = fromGrp.restQueue.length > 0 ? fromGrp.restQueue.shift() : null;
+            } else {
+                movingDriverId = fromGrp.restQueue.splice(indexInGroup, 1)[0];
+            }
+
+            // Buscar primera pista vacía en el grupo destino; si está lleno (6 pilotos), entra como D-1 (Descans)
+            const emptySlot = toGrp.slots.find(s => !s.driverId);
+            if (emptySlot) {
+                emptySlot.driverId = movingDriverId;
+            } else {
+                toGrp.restQueue.push(movingDriverId);
+            }
+
+            rebuildHeatsFromRaceGroups();
+            renderWizardStep3();
+            renderLiveRaceView();
+            updatePreHeatModalUI();
+            saveLocalDatabase();
+        }
+
+        // Intercambiar dos pilotos directamente (Ej: PAU quiere correr en Manga 1 y JP en Manga 2)
+        function executeSwapBetweenTwoDrivers(driverIdA, driverIdB) {
+            if (!driverIdA || !driverIdB || driverIdA === driverIdB) return;
+            let locA = null, locB = null;
+
+            state.raceGroups.forEach((grp, gIdx) => {
+                grp.slots.forEach((s, sIdx) => {
+                    if (s.driverId === driverIdA) locA = { gIdx, type: 'LANE', idx: sIdx };
+                    if (s.driverId === driverIdB) locB = { gIdx, type: 'LANE', idx: sIdx };
+                });
+                grp.restQueue.forEach((rId, rIdx) => {
+                    if (rId === driverIdA) locA = { gIdx, type: 'REST', idx: rIdx };
+                    if (rId === driverIdB) locB = { gIdx, type: 'REST', idx: rIdx };
+                });
+            });
+
+            if (!locA || !locB) return;
+
+            if (locA.type === 'LANE') state.raceGroups[locA.gIdx].slots[locA.idx].driverId = driverIdB;
+            else state.raceGroups[locA.gIdx].restQueue[locA.idx] = driverIdB;
+
+            if (locB.type === 'LANE') state.raceGroups[locB.gIdx].slots[locB.idx].driverId = driverIdA;
+            else state.raceGroups[locB.gIdx].restQueue[locB.idx] = driverIdA;
+
+            rebuildHeatsFromRaceGroups();
+            renderWizardStep3();
+            renderLiveRaceView();
+            updatePreHeatModalUI();
+            saveLocalDatabase();
+        }
+
+        function swapTwoPilotsBetweenGroups() {
+            const selA = document.getElementById('swap-pilot-a');
+            const selB = document.getElementById('swap-pilot-b');
+            if (!selA || !selB) return;
+            executeSwapBetweenTwoDrivers(selA.value, selB.value);
+        }
+
+        function swapPilotsFromModal() {
+            const selA = document.getElementById('modal-swap-a');
+            const selB = document.getElementById('modal-swap-b');
+            if (!selA || !selB) return;
+            executeSwapBetweenTwoDrivers(selA.value, selB.value);
+        }
+
+        // Añadir piloto que llega tarde (Ej: ROGER) a la manga elegida: si está llena (6 pilotos), entra en D-1 (Descans)
+        function registerLatePilotInGroup(rawName, targetGroupIdx) {
+            const cleanName = String(rawName || '').trim().toUpperCase();
+            if (!cleanName) return;
+            if (!state.raceGroups || state.raceGroups.length === 0) syncDriversToRaceGroups();
+
+            let drv = state.drivers.find(d => d.name.toUpperCase() === cleanName);
+            if (!drv) {
+                drv = {
+                    id: 'drv_late_' + Date.now(),
+                    name: cleanName,
+                    car: 'Scaleauto / Slot GT3',
+                    poleLap: 8.750
+                };
+                state.drivers.push(drv);
+            }
+
+            const grp = state.raceGroups[targetGroupIdx] || state.raceGroups[state.raceGroups.length - 1];
+            if (!grp) return;
+
+            // Evitar duplicarlo si ya estaba en algún grupo
+            state.raceGroups.forEach(g => {
+                g.slots.forEach(s => { if (s.driverId === drv.id) s.driverId = null; });
+                g.restQueue = g.restQueue.filter(id => id !== drv.id);
+            });
+
+            const freeSlot = grp.slots.find(s => !s.driverId);
+            if (freeSlot) {
+                freeSlot.driverId = drv.id;
+            } else {
+                // La manga ya está llena (ej. 6 pilotos) -> Se inscribe como D-1 (Descans) y empezará por la Pista 1
+                grp.restQueue.push(drv.id);
+            }
+
+            rebuildHeatsFromRaceGroups();
+            renderDriversList();
+            renderWizardStep3();
+            renderLiveRaceView();
+            updatePreHeatModalUI();
+            saveLocalDatabase();
+        }
+
+        function addLateArrivalPilot() {
+            const nameEl = document.getElementById('late-pilot-name');
+            const grpEl = document.getElementById('late-pilot-group');
+            const name = nameEl ? nameEl.value : 'ROGER';
+            const gIdx = grpEl ? parseInt(grpEl.value, 10) || 0 : 0;
+            registerLatePilotInGroup(name, gIdx);
+            if (nameEl) nameEl.value = '';
+        }
+
+        function addLateArrivalPilotFromModal() {
+            const nameEl = document.getElementById('modal-late-pilot-name');
+            const grpEl = document.getElementById('modal-late-pilot-group');
+            const name = nameEl ? nameEl.value : 'ROGER';
+            const gIdx = grpEl ? parseInt(grpEl.value, 10) || 0 : 0;
+            registerLatePilotInGroup(name, gIdx);
+            if (nameEl) nameEl.value = '';
+        }
+
+        // Rotar un turno exacto según la regla del documento en catalán:
+        // Rueda: 1 -> 3 -> 5 -> 6 -> 4 -> 2 (y si hay D-1: el que sale del último carril de la rueda [P-2] pasa a D-1, y D-1 entra por el primer carril de la rueda [P-1])
+        function computeGroupStateAfterRotations(group, wheel, stepsCount) {
+            const laneMap = {};
+            group.slots.forEach(s => { laneMap[s.lane] = s.driverId || null; });
+            let restList = [...(group.restQueue || [])];
+
+            for (let step = 0; step < stepsCount; step++) {
+                const prevLaneMap = { ...laneMap };
+                const prevRest = [...restList];
+
+                if (prevRest.length === 0) {
+                    // Sin descanso: rotación pura a lo largo de la rueda (1->3->5->6->4->2->1)
+                    for (let i = 0; i < wheel.length; i++) {
+                        const fromLane = wheel[i];
+                        const toLane = wheel[(i + 1) % wheel.length];
+                        laneMap[toLane] = prevLaneMap[fromLane] || null;
+                    }
+                } else {
+                    // Con descanso D-1 (ej. Roger en D-1):
+                    // - Los pilotos de wheel[0..k-2] avanzan a wheel[1..k-1] (ej. P-4 Lluis pasa a P-2)
+                    // - El piloto en el último carril de la rueda wheel[k-1] (ej. P-2 Pau) pasa a Descanso
+                    // - El piloto en D-1 (ej. Roger) entra por el primer carril de la rueda wheel[0] (P-1)
+                    for (let i = 0; i < wheel.length - 1; i++) {
+                        const fromLane = wheel[i];
+                        const toLane = wheel[i + 1];
+                        laneMap[toLane] = prevLaneMap[fromLane] || null;
+                    }
+                    const exitingDriver = prevLaneMap[wheel[wheel.length - 1]] || null;
+                    const enteringDriver = prevRest.shift();
+                    laneMap[wheel[0]] = enteringDriver || null;
+                    if (exitingDriver) prevRest.push(exitingDriver);
+                    restList = prevRest;
+                }
+            }
+
+            return { laneMap, restList };
+        }
+
+        function simulateGroupWheelStep(groupIdx) {
+            if (!state.raceGroups || !state.raceGroups[groupIdx]) return;
+            const grp = state.raceGroups[groupIdx];
+            const wheel = getClubLaneSequence(state.lanesCount, state.rotationMode);
+            const nextState = computeGroupStateAfterRotations(grp, wheel, 1);
+
+            grp.slots.forEach(s => {
+                s.driverId = nextState.laneMap[s.lane] || null;
+            });
+            grp.restQueue = nextState.restList;
+            grp.turnIndex = (grp.turnIndex || 0) + 1;
+
+            rebuildHeatsFromRaceGroups();
+            renderWizardStep3();
+            renderLiveRaceView();
+            updatePreHeatModalUI();
+            saveLocalDatabase();
+        }
+
+        // Genera todas las mangas de la carrera respetando las mangas ya terminadas y los grupos (MANGA 1, MANGA 2...)
+        function rebuildHeatsFromRaceGroups() {
+            if (!state.raceGroups || state.raceGroups.length === 0) {
+                syncDriversToRaceGroups();
+            }
+            const totalLanes = state.lanesCount;
+            const wheel = getClubLaneSequence(totalLanes, state.rotationMode);
+            const drvMap = {};
+            state.drivers.forEach(d => { drvMap[d.id] = d; });
+
+            // Conservar mangas que ya se hayan disputado (FINISHED) o estén en curso (RACING)
+            const finishedHeatsMap = {};
+            (state.heats || []).forEach(h => {
+                if (h.status === 'FINISHED' || (state.raceStatus === 'RACING' && h.heatNumber === (state.heats[state.currentHeatIndex]?.heatNumber))) {
+                    finishedHeatsMap[h.heatNumber] = h;
+                }
+            });
+
+            // Determinar cuántos turnos rota cada grupo
+            let turnsPerGroup = 1;
+            if (state.sessionType === 'PRACTICE') {
+                turnsPerGroup = 1;
+            } else if (state.raceGroups.length > 1) {
+                // Cuando hay MANGA 1 y MANGA 2 preparadas: si el usuario pide N mangas o ciclo completo
+                const maxGroupSize = Math.max(...state.raceGroups.map(g => g.slots.filter(s => s.driverId).length + g.restQueue.length));
+                if (typeof state.heatMode === 'number') {
+                    turnsPerGroup = Math.max(1, Math.ceil(state.heatMode / state.raceGroups.length));
+                } else if (state.heatMode === 'lanes') {
+                    turnsPerGroup = totalLanes;
+                } else {
+                    turnsPerGroup = Math.max(totalLanes, maxGroupSize);
+                }
+            } else {
+                const singleGrp = state.raceGroups[0];
+                const countInGrp = singleGrp ? (singleGrp.slots.filter(s => s.driverId).length + singleGrp.restQueue.length) : state.drivers.length;
+                if (typeof state.heatMode === 'number') turnsPerGroup = state.heatMode;
+                else if (state.heatMode === 'lanes') turnsPerGroup = totalLanes;
+                else turnsPerGroup = Math.max(totalLanes, countInGrp);
+            }
+
+            const rawGenerated = [];
+            let heatCounter = 1;
+
+            for (let turn = 0; turn < turnsPerGroup; turn++) {
+                for (let gIdx = 0; gIdx < state.raceGroups.length; gIdx++) {
+                    const grp = state.raceGroups[gIdx];
+                    const activeDriversCount = grp.slots.filter(s => s.driverId).length + grp.restQueue.length;
+                    if (activeDriversCount === 0) continue;
+
+                    // Si un grupo no tiene descansos y tiene exactamente 'totalLanes' pilotos, hace 'totalLanes' turnos; si tiene D-1 (7 pilotos), hace 7 turnos
+                    const groupNeededTurns = Math.max(totalLanes, activeDriversCount);
+                    if (turn >= groupNeededTurns && state.heatMode === 'auto') continue;
+
+                    const rotated = computeGroupStateAfterRotations(grp, wheel, turn);
+                    const assignments = [];
+
+                    for (let laneNum = 1; laneNum <= totalLanes; laneNum++) {
+                        const dId = rotated.laneMap[laneNum];
+                        if (dId && drvMap[dId]) {
+                            const dObj = drvMap[dId];
+                            assignments.push({
+                                lane: laneNum,
+                                laneInfo: LANE_PALETTE[laneNum],
+                                driverId: dObj.id,
+                                driverName: dObj.name,
+                                driverCar: dObj.car
+                            });
+                        }
+                    }
+
+                    const marshals = rotated.restList
+                        .map(rId => drvMap[rId] ? drvMap[rId].name : null)
+                        .filter(Boolean);
+
+                    rawGenerated.push({
+                        heatNumber: heatCounter++,
+                        groupNumber: grp.groupNumber,
+                        groupTitle: grp.title,
+                        turnNumber: turn + 1,
+                        assignments,
+                        marshals
+                    });
+                }
+            }
+
+            state.heats = rawGenerated.map((heatObj, idx) => {
+                if (finishedHeatsMap[heatObj.heatNumber]) {
+                    return finishedHeatsMap[heatObj.heatNumber];
+                }
+                const nextSameGroupHeat = rawGenerated.slice(idx + 1).find(nh => nh.groupNumber === heatObj.groupNumber) || rawGenerated[idx + 1] || null;
+
+                const fullAssignments = heatObj.assignments.map(a => {
+                    let nextAction = '🏁 Fin Carrera';
+                    if (nextSameGroupHeat) {
+                        const nextFound = nextSameGroupHeat.assignments.find(na => na.driverId === a.driverId);
+                        if (nextFound) {
+                            nextAction = `→ P-${nextFound.lane} (C${nextFound.lane})`;
+                        } else {
+                            nextAction = `→ D-1 (${t('word_marshals')})`;
+                        }
+                    }
+                    return {
+                        ...a,
+                        nextAction,
+                        laps: 0,
+                        lastLap: 0,
+                        bestLap: Infinity,
+                        history: [],
+                        currentSector: 1,
+                        sectorAccum: 0,
+                        lastCheckpointTime: 0,
+                        lastSectors: { 1: null, 2: null, 3: null },
+                        prevSectors: { 1: null, 2: null, 3: null },
+                        bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
+                        sectorColors: { 1: '', 2: '', 3: '' },
+                        lastLapPassTime: 0
+                    };
+                });
+
+                return {
+                    heatNumber: heatObj.heatNumber,
+                    groupNumber: heatObj.groupNumber,
+                    groupTitle: heatObj.groupTitle,
+                    turnNumber: heatObj.turnNumber,
+                    status: idx === state.currentHeatIndex ? 'READY' : 'PENDING',
+                    assignments: fullAssignments,
+                    marshals: heatObj.marshals
+                };
+            });
+
+            if (state.currentHeatIndex >= state.heats.length) {
+                state.currentHeatIndex = 0;
+            }
+        }
+
+        function renderCursaPreparadaBoards(targetContainerId = 'cursa-preparada-boards') {
+            const container = document.getElementById(targetContainerId);
+            if (!container) return;
+            if (!state.raceGroups || state.raceGroups.length === 0) syncDriversToRaceGroups();
+
+            const drvMap = {};
+            state.drivers.forEach(d => { drvMap[d.id] = d; });
+            const wheel = getClubLaneSequence(state.lanesCount, state.rotationMode);
+
+            const wheelBadge = document.getElementById('cursa-wheel-badge');
+            if (wheelBadge) wheelBadge.textContent = wheel.join('→');
+            const wheelInput = document.getElementById('cursa-prep-wheel-input');
+            if (wheelInput && document.activeElement !== wheelInput) wheelInput.value = wheel.join(', ');
+
+            // Rellenar selectores de intercambio y de llegada tardía
+            const allActiveDrivers = [];
+            state.raceGroups.forEach(g => {
+                g.slots.forEach(s => {
+                    if (s.driverId && drvMap[s.driverId]) {
+                        allActiveDrivers.push({ id: s.driverId, label: `${drvMap[s.driverId].name} (${g.title} · P-${s.lane})` });
+                    }
+                });
+                g.restQueue.forEach((rId, rIdx) => {
+                    if (drvMap[rId]) {
+                        allActiveDrivers.push({ id: rId, label: `${drvMap[rId].name} (${g.title} · D-${rIdx + 1})` });
+                    }
+                });
+            });
+
+            ['swap-pilot-a', 'swap-pilot-b', 'modal-swap-a', 'modal-swap-b'].forEach((selId, idx) => {
+                const sel = document.getElementById(selId);
+                if (!sel) return;
+                const prev = sel.value;
+                sel.innerHTML = allActiveDrivers.map(d => `<option value="${d.id}" class="bg-[#12151e] text-white">${d.label}</option>`).join('');
+                if (prev && allActiveDrivers.some(d => d.id === prev)) {
+                    sel.value = prev;
+                } else if (idx % 2 === 1 && allActiveDrivers.length > 1) {
+                    const pau = allActiveDrivers.find(d => d.label.startsWith('PAU'));
+                    sel.value = pau ? pau.id : allActiveDrivers[1].id;
+                } else if (idx % 2 === 0 && allActiveDrivers.length > 0) {
+                    const jp = allActiveDrivers.find(d => d.label.startsWith('JP'));
+                    sel.value = jp ? jp.id : allActiveDrivers[0].id;
+                }
+            });
+
+            ['late-pilot-group', 'modal-late-pilot-group'].forEach(selId => {
+                const sel = document.getElementById(selId);
+                if (!sel) return;
+                sel.innerHTML = state.raceGroups.map((g, i) => `<option value="${i}" class="bg-[#12151e] text-white">${g.title}</option>`).join('');
+                if (state.raceGroups.length > 1) sel.value = '1'; // Por defecto Manga 2 como en el ejemplo de Roger
+            });
+
+            // Añadir botón para crear un nuevo grupo si solo hay 1
+            container.innerHTML = state.raceGroups.map((grp, gIdx) => {
+                const otherGroupIdx = state.raceGroups.length > 1 ? (gIdx === 0 ? 1 : 0) : null;
+                const otherGroupName = otherGroupIdx !== null ? state.raceGroups[otherGroupIdx].title : '';
+
+                const laneRowsHtml = grp.slots.map((slot, sIdx) => {
+                    const drv = slot.driverId ? drvMap[slot.driverId] : null;
+                    const pal = LANE_PALETTE[slot.lane] || { hex: '#5ac8fa' };
+                    // Calcular a qué pista o descanso va en el siguiente turno según la rueda
+                    const posInWheel = wheel.indexOf(slot.lane);
+                    let nextDestLabel = '';
+                    if (posInWheel !== -1) {
+                        if (grp.restQueue.length > 0 && posInWheel === wheel.length - 1) {
+                            nextDestLabel = '→ pasa a D-1 (Descans)';
+                        } else {
+                            const nextLane = wheel[(posInWheel + 1) % wheel.length];
+                            nextDestLabel = `→ pasa a P-${nextLane}`;
+                        }
+                    }
+
+                    return `
+                    <div class="px-3.5 py-2 flex items-center justify-between gap-2 bg-black/45 rounded-xl border border-white/10 hover:border-white/25 transition">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="px-2.5 py-1 rounded-lg font-mono-num font-black text-xs shrink-0" style="background:${pal.hex}25; color:${pal.hex}; border:1px solid ${pal.hex}60;">
+                                P-${slot.lane}
+                            </span>
+                            ${drv ? `
+                                <span class="font-black text-white text-sm truncate">${drv.name}</span>
+                                <span class="text-[10px] font-mono-num text-slate-400 hidden sm:inline">${nextDestLabel}</span>
+                            ` : `
+                                <span class="text-xs italic text-slate-500">— PISTA LIBRE —</span>
+                            `}
+                        </div>
+                        ${drv ? `
+                        <div class="flex items-center gap-1 shrink-0">
+                            ${otherGroupIdx !== null ? `
+                                <button onclick="movePilotToAnotherGroup(${gIdx}, 'LANE', ${sIdx}, ${otherGroupIdx})" class="px-2 py-1 rounded-lg bg-[#0a84ff]/20 hover:bg-[#0a84ff]/40 text-[#5ac8fa] border border-[#0a84ff]/40 text-[10px] font-black cursor-pointer" title="Mover este piloto a ${otherGroupName}">
+                                    ⇄ A M${otherGroupIdx + 1}
+                                </button>
+                            ` : ''}
+                            <button onclick="removePilotFromGroupSlot(${gIdx}, 'LANE', ${sIdx})" class="px-2 py-1 rounded-lg bg-[#ff453a]/20 hover:bg-[#ff453a]/40 text-[#ff6961] border border-[#ff453a]/40 text-[10px] font-black cursor-pointer" title="El piloto se marcha: sacarlo de la manga sin alterar el resto">
+                                ✕ BAJA
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>`;
+                }).join('');
+
+                const restRowsHtml = grp.restQueue.map((rId, rIdx) => {
+                    const drv = drvMap[rId];
+                    if (!drv) return '';
+                    const firstWheelLane = wheel[0] || 1;
+                    return `
+                    <div class="px-3.5 py-2 flex items-center justify-between gap-2 bg-[#ffd60a]/15 rounded-xl border-2 border-[#ffd60a]/50">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-2.5 py-1 rounded-lg font-mono-num font-black text-xs bg-[#ffd60a] text-black">
+                                D-${rIdx + 1}
+                            </span>
+                            <div>
+                                <span class="font-black text-[#ffd60a] text-sm">${drv.name}</span>
+                                <span class="text-[10px] font-mono-num text-white ml-1.5">→ Entra por P-${firstWheelLane} (Pista ${firstWheelLane})</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            ${otherGroupIdx !== null ? `
+                                <button onclick="movePilotToAnotherGroup(${gIdx}, 'REST', ${rIdx}, ${otherGroupIdx})" class="px-2 py-1 rounded-lg bg-[#0a84ff]/25 text-[#5ac8fa] border border-[#0a84ff]/40 text-[10px] font-black cursor-pointer">
+                                    ⇄ A M${otherGroupIdx + 1}
+                                </button>
+                            ` : ''}
+                            <button onclick="removePilotFromGroupSlot(${gIdx}, 'REST', ${rIdx})" class="px-2 py-1 rounded-lg bg-[#ff453a]/25 text-[#ff6961] border border-[#ff453a]/40 text-[10px] font-black cursor-pointer">
+                                ✕ BAJA
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                const emptyRestIndicator = grp.restQueue.length === 0 ? `
+                    <div class="px-3.5 py-1.5 flex items-center justify-between rounded-xl border border-dashed border-white/15 text-xs text-slate-400">
+                        <span class="font-mono-num font-bold text-[#5ac8fa]">D-1 (Descans)</span>
+                        <span>Libre · Si llega un piloto nuevo con la manga llena, entra aquí y empieza por P-${wheel[0] || 1}</span>
+                    </div>
+                ` : '';
+
+                const totalGroupPilots = grp.slots.filter(s => s.driverId).length + grp.restQueue.length;
+
+                return `
+                <div class="mac-silver-well p-4 border-2 border-[#ff453a]/40 space-y-2.5">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base font-black text-[#5ac8fa] tracking-wide">${grp.title}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono-num font-black bg-white/10 text-white">${totalGroupPilots} Pilotos</span>
+                        </div>
+                        <button onclick="simulateGroupWheelStep(${gIdx})" class="px-2.5 py-1 rounded-lg mac-silver-btn text-[10px] font-black text-[#ffd60a] cursor-pointer">
+                            <i class="fa-solid fa-rotate mr-1"></i>ROTAR 1 TURNO (${wheel.join('→')})
+                        </button>
+                    </div>
+                    <div class="space-y-1.5">
+                        ${laneRowsHtml}
+                        ${restRowsHtml}
+                        ${emptyRestIndicator}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ==================== MODAL YES / NO ANTES DE EMPEZAR CARRERA O SEGUNDA MANGA ====================
+        function promptPreRaceCheckModal(heatNum = 1) {
+            state.pendingPreHeatNumber = heatNum;
+            const modal = document.getElementById('preHeatYesNoModal');
+            const editor = document.getElementById('yesno-editor-container');
+            const qEl = document.getElementById('yesno-modal-question');
+            const badgeEl = document.getElementById('yesno-modal-badge');
+
+            if (heatNum <= 1) {
+                if (badgeEl) badgeEl.textContent = 'CURSA PREPARADA · VERIFICACIÓN ANTES DE LA MANGA 1';
+                if (qEl) qEl.textContent = 'La carrera ya está creada/lista para empezar: ¿Desea realizar algún cambio?';
+            } else {
+                if (badgeEl) badgeEl.textContent = `CAMBIO DE MANGA · VERIFICACIÓN ANTES DE LA MANGA ${heatNum}`;
+                if (qEl) qEl.textContent = `La manga ${heatNum} está creada/lista para empezar: ¿Desea realizar algún cambio?`;
+            }
+
+            if (editor) editor.classList.add('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            updatePreHeatModalUI();
+        }
+
+        function openLivePreHeatModificationModal() {
+            const currentNum = state.heats[state.currentHeatIndex] ? state.heats[state.currentHeatIndex].heatNumber : 1;
+            promptPreRaceCheckModal(currentNum);
+            handlePreHeatDecision('YES');
+        }
+
+        function updatePreHeatModalUI() {
+            renderCursaPreparadaBoards('modal-cursa-boards');
+        }
+
+        function handlePreHeatDecision(decision) {
+            const modal = document.getElementById('preHeatYesNoModal');
+            const editor = document.getElementById('yesno-editor-container');
+            if (decision === 'YES') {
+                if (editor) editor.classList.remove('hidden');
+                updatePreHeatModalUI();
+            } else {
+                if (modal) {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }
+                switchMainTab('race');
+                renderLiveRaceView();
+                announceDrivers(state.autoAdvance);
+            }
+        }
+
+        function closePreHeatModalAndGoTrack() {
+            const modal = document.getElementById('preHeatYesNoModal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+            switchMainTab('race');
+            renderLiveRaceView();
+            announceDrivers(state.autoAdvance);
         }
 
         // ==================== CONTROLES MANUALES DE CREAR CARRERA (TIEMPO, VUELTAS, MANGAS Y ROTACIÓN) ====================
@@ -2736,7 +4172,7 @@
                 const pal = LANE_PALETTE[i];
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.onclick = () => { state.lanesCount = i; rebuildHeats(); renderWizardStep1(); updateHeaderSummary(); };
+                btn.onclick = () => { state.lanesCount = i; syncDriversToRaceGroups(); rebuildHeats(); renderWizardStep1(); updateHeaderSummary(); };
                 btn.className = active
                     ? "p-2 rounded-xl text-xs font-black border transition mac-silver-active"
                     : "p-2 rounded-xl text-xs font-bold border transition mac-silver-btn";
@@ -2837,10 +4273,13 @@
                     : "p-2.5 text-left rounded-xl text-xs font-bold border transition mac-silver-btn cursor-pointer flex items-center justify-between";
             });
 
+            renderClubCategoriesManager();
+            updateEventHeaderBadges();
+
             const liveSum = document.getElementById('mac-config-live-summary');
             if (liveSum) {
                 const modeTxt = state.targetLaps === 'infinity' ? '∞ Por Tiempo' : `Meta ${state.targetLaps} Vueltas`;
-                liveSum.textContent = `${state.lanesCount} Carriles · Cuerda ${state.trackLengthMeters || 28}m · ${totalHeatsCount} Mangas x ${state.durationLabel} · ${modeTxt} · Rueda [${activeSeq.join('→')}]`;
+                liveSum.textContent = `${state.eventName || 'EVENTO'} (${state.eventDate || ''}) · [${state.activeClubCategory || 'GT'}] · ${state.lanesCount} Carriles · ${totalHeatsCount} Mangas x ${state.durationLabel} · ${modeTxt}`;
             }
         }
 
@@ -2857,25 +4296,27 @@
 
         function updateHeaderSummary() {
             const badge = document.getElementById('badge-category');
-            if (badge) badge.textContent = `${state.sessionType} · ${state.durationLabel}`;
+            if (badge) badge.textContent = `${state.activeClubCategory || 'GT'} · ${state.durationLabel}`;
             const sum = document.getElementById('header-summary');
             const lapsTxt = state.targetLaps === 'infinity' ? '∞' : `${state.targetLaps}V`;
-            if (sum) sum.textContent = `${state.lanesCount} ${t('lane')}S · ${state.numSectors} Sect · ${lapsTxt}`;
+            if (sum) sum.textContent = `${state.eventName || 'CLUB'} (${state.eventDate || ''}) · ${state.lanesCount} ${t('lane')}S · ${lapsTxt}`;
         }
 
         // ==================== GESTIÓN DE PILOTOS Y ALGORITMO EXACTO DE ROTACIÓN DE MANGAS ====================
         function sortDriversByPole() { state.drivers.sort((a, b) => a.poleLap - b.poleLap); }
 
         function loadPdfExampleDrivers() {
+            const cat = state.activeClubCategory || 'GT';
             state.drivers = [
-                { id: 'd1', name: 'ALBERT', car: 'Scaleauto Honda NSX GT3', poleLap: 8.420 },
-                { id: 'd2', name: 'JUAN', car: 'Slot.it Porsche 911 GT3', poleLap: 8.510 },
-                { id: 'd3', name: 'MARTA', car: 'NSR Corvette C7R', poleLap: 8.575 },
-                { id: 'd4', name: 'PEDRO', car: 'Scaleauto BMW M6 GT3', poleLap: 8.610 },
-                { id: 'd5', name: 'LUIS', car: 'Slot.it Audi R8 LMS', poleLap: 8.720 },
-                { id: 'd6', name: 'CARLOS', car: 'NSR Mercedes AMG GT3', poleLap: 8.800 }
+                { id: 'd1', name: 'ALBERT', category: cat, car: `${cat} · Scaleauto Honda NSX`, poleLap: 8.420 },
+                { id: 'd2', name: 'JUAN', category: cat, car: `${cat} · Slot.it Porsche 911`, poleLap: 8.510 },
+                { id: 'd3', name: 'MARTA', category: cat, car: `${cat} · NSR Corvette C7R`, poleLap: 8.575 },
+                { id: 'd4', name: 'PEDRO', category: cat, car: `${cat} · Scaleauto BMW M6`, poleLap: 8.610 },
+                { id: 'd5', name: 'LUIS', category: cat, car: `${cat} · Slot.it Audi R8 LMS`, poleLap: 8.720 },
+                { id: 'd6', name: 'CARLOS', category: cat, car: `${cat} · NSR Mercedes AMG`, poleLap: 8.800 }
             ];
             sortDriversByPole();
+            syncDriversToRaceGroups();
             rebuildHeats();
             renderDriversList();
         }
@@ -2883,40 +4324,66 @@
         function addDriverFromInput() {
             const nameInput = document.getElementById('new-driver-name');
             const carInput = document.getElementById('new-driver-car');
+            const catSelect = document.getElementById('new-driver-category-select');
             const name = nameInput.value.trim().toUpperCase();
             if (!name) return;
-            const car = carInput.value.trim() || 'Slot GT3 Pro';
-            state.drivers.push({ id: 'drv_' + Date.now(), name, car, poleLap: +(8.35 + Math.random() * 0.65).toFixed(3) });
+            const chosenCat = (catSelect && catSelect.value) ? catSelect.value : (state.activeClubCategory || 'GT');
+            const rawCar = carInput.value.trim();
+            const car = rawCar ? `${chosenCat} · ${rawCar}` : `${chosenCat} · Oficial Club`;
+            state.drivers.push({ id: 'drv_' + Date.now(), name, category: chosenCat, car, poleLap: +(8.35 + Math.random() * 0.65).toFixed(3) });
             nameInput.value = ''; carInput.value = '';
-            sortDriversByPole(); rebuildHeats(); renderDriversList();
+            sortDriversByPole(); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase();
         }
 
-        function removeDriver(id) { state.drivers = state.drivers.filter(d => d.id !== id); rebuildHeats(); renderDriversList(); }
-        function clearAllDrivers() { state.drivers = []; state.heats = []; renderDriversList(); }
+        function removeDriver(id) { state.drivers = state.drivers.filter(d => d.id !== id); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase(); }
+        function clearAllDrivers() { state.drivers = []; state.raceGroups = []; state.heats = []; renderDriversList(); saveLocalDatabase(); }
         function simulatePoleSession() {
             if (state.drivers.length === 0) loadPdfExampleDrivers();
             state.drivers.forEach(d => { d.poleLap = +(8.20 + Math.random() * 0.70).toFixed(3); });
-            sortDriversByPole(); rebuildHeats(); renderDriversList();
+            sortDriversByPole(); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase();
         }
         function updateDriverPole(id, val) {
             const drv = state.drivers.find(d => d.id === id);
-            if (drv) { drv.poleLap = parseFloat(val) || 9.999; sortDriversByPole(); rebuildHeats(); renderDriversList(); }
+            if (drv) { drv.poleLap = parseFloat(val) || 9.999; sortDriversByPole(); syncDriversToRaceGroups(); rebuildHeats(); renderDriversList(); saveLocalDatabase(); }
+        }
+
+        function updateDriverCategory(id, newCat) {
+            const drv = state.drivers.find(d => d.id === id);
+            if (!drv) return;
+            drv.category = newCat;
+            const parts = String(drv.car || '').split('·');
+            const modelOnly = parts.length > 1 ? parts.slice(1).join('·').trim() : drv.car;
+            drv.car = `${newCat} · ${modelOnly || 'Slot Pro'}`;
+            rebuildHeatsFromRaceGroups();
+            renderDriversList();
+            saveLocalDatabase();
         }
 
         function renderDriversList() {
             const container = document.getElementById('drivers-list-container');
             if (!container) return;
+            renderClubCategoriesManager();
             document.getElementById('drivers-count-badge').textContent = `${state.drivers.length} Pilotos`;
             if (state.drivers.length === 0) {
                 container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Sin pilotos inscritos. Pulsa "Cargar 6 Pilotos Oficiales de Ejemplo" o añade uno arriba.</div>`;
                 return;
             }
-            container.innerHTML = state.drivers.map((d, idx) => `
+            container.innerHTML = state.drivers.map((d, idx) => {
+                const drvCat = d.category || state.activeClubCategory || 'GT';
+                const catOptions = (state.clubCategories || DEFAULT_CLUB_CATEGORIES).map(c =>
+                    `<option value="${c}" class="bg-[#12151e] text-white" ${c === drvCat ? 'selected' : ''}>${c}</option>`
+                ).join('');
+                return `
                 <div class="px-5 py-2.5 flex items-center justify-between gap-3 hover:bg-white/5 transition">
                     <div class="flex items-center space-x-3">
                         <span class="w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs ${idx === 0 ? 'mac-silver-active' : 'bg-white/10 text-white'}">P${idx + 1}</span>
                         <div>
-                            <div class="font-bold text-white text-sm">${d.name}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-white text-sm">${d.name}</span>
+                                <select onchange="updateDriverCategory('${d.id}', this.value)" class="bg-[#0a84ff]/20 border border-[#5ac8fa]/40 text-[#5ac8fa] rounded-lg px-2 py-0.5 text-[10px] font-black cursor-pointer focus:outline-none">
+                                    ${catOptions}
+                                </select>
+                            </div>
                             <div class="text-xs text-slate-400">${d.car}</div>
                         </div>
                     </div>
@@ -2925,128 +4392,21 @@
                         <button onclick="removeDriver('${d.id}')" class="text-slate-400 hover:text-[#ff453a] p-1.5 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function rebuildHeats() {
             sortDriversByPole();
             const d = state.drivers;
-            state.heats = [];
-            if (d.length === 0) return;
-
-            const n = d.length;
-            const totalLanes = state.lanesCount;
-            const activeLanesCount = Math.min(totalLanes, n);
-
-            let totalHeats = 1;
-            if (state.sessionType === 'PRACTICE') {
-                totalHeats = 1;
-            } else {
-                if (state.heatMode === 'auto') {
-                    totalHeats = Math.max(n, totalLanes);
-                } else if (state.heatMode === 'lanes') {
-                    totalHeats = totalLanes;
-                } else if (typeof state.heatMode === 'number') {
-                    totalHeats = state.heatMode;
-                } else {
-                    totalHeats = Math.max(n, totalLanes);
-                }
+            if (d.length === 0) {
+                state.heats = [];
+                state.raceGroups = [];
+                return;
             }
-
-            const wheelSize = (n < totalLanes && totalHeats >= totalLanes) ? totalLanes : activeLanesCount;
-            const laneWheel = getClubLaneSequence(wheelSize, state.rotationMode);
-
-            const rawHeats = [];
-            for (let h = 0; h < totalHeats; h++) {
-                let assignments = [];
-                let activeDriverIds = new Set();
-
-                if (n >= activeLanesCount) {
-                    for (let pos = 0; pos < activeLanesCount; pos++) {
-                        const laneNumber = laneWheel[pos];
-                        const driverIdx = ((pos - h) % n + n) % n;
-                        const driver = d[driverIdx];
-                        activeDriverIds.add(driver.id);
-
-                        assignments.push({
-                            lane: laneNumber,
-                            laneInfo: LANE_PALETTE[laneNumber],
-                            driverId: driver.id,
-                            driverName: driver.name,
-                            driverCar: driver.car
-                        });
-                    }
-                } else {
-                    for (let drvIdx = 0; drvIdx < n; drvIdx++) {
-                        const wheelPos = (drvIdx + h) % wheelSize;
-                        const laneNumber = laneWheel[wheelPos];
-                        const driver = d[drvIdx];
-                        activeDriverIds.add(driver.id);
-
-                        assignments.push({
-                            lane: laneNumber,
-                            laneInfo: LANE_PALETTE[laneNumber],
-                            driverId: driver.id,
-                            driverName: driver.name,
-                            driverCar: driver.car
-                        });
-                    }
-                }
-
-                assignments.sort((a, b) => a.lane - b.lane);
-                const marshals = d.filter(drv => !activeDriverIds.has(drv.id)).map(drv => drv.name);
-
-                rawHeats.push({
-                    heatNumber: h + 1,
-                    assignments,
-                    marshals
-                });
+            if (!state.raceGroups || state.raceGroups.length === 0) {
+                syncDriversToRaceGroups();
             }
-
-            state.heats = rawHeats.map((heatObj, hIdx) => {
-                const nextHeat = rawHeats[hIdx + 1] || null;
-
-                const fullAssignments = heatObj.assignments.map(a => {
-                    let nextAction = '🏁 Fin Carrera';
-                    if (nextHeat) {
-                        const nextFound = nextHeat.assignments.find(na => na.driverId === a.driverId);
-                        if (nextFound) {
-                            nextAction = `→ C${nextFound.lane}`;
-                        } else {
-                            nextAction = `→ ${t('word_marshals')}`;
-                        }
-                    }
-
-                    return {
-                        ...a,
-                        nextAction,
-                        laps: 0,
-                        lastLap: 0,
-                        bestLap: Infinity,
-                        history: [],
-                        currentSector: 1,
-                        sectorAccum: 0,
-                        lastCheckpointTime: 0,
-                        lastSectors: { 1: null, 2: null, 3: null },
-                        prevSectors: { 1: null, 2: null, 3: null },
-                        bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
-                        sectorColors: { 1: '', 2: '', 3: '' },
-                        lastLapPassTime: 0
-                    };
-                });
-
-                return {
-                    heatNumber: heatObj.heatNumber,
-                    status: hIdx === 0 ? 'READY' : 'PENDING',
-                    assignments: fullAssignments,
-                    marshals: heatObj.marshals
-                };
-            });
-
-            state.currentHeatIndex = 0;
-            state.timeRemaining = state.durationSeconds;
-            state.overallBestLap = Infinity;
-            state.overallBestSectors = { 1: Infinity, 2: Infinity, 3: Infinity };
+            rebuildHeatsFromRaceGroups();
             saveLocalDatabase();
         }
 
@@ -3055,10 +4415,11 @@
             const matrixEl = document.getElementById('heats-equity-matrix');
             if (!container) return;
 
+            renderCursaPreparadaBoards('cursa-preparada-boards');
+
             const n = state.drivers.length;
             const totalLanes = state.lanesCount;
-            const wheelSize = (n < totalLanes && state.heats.length >= totalLanes) ? totalLanes : Math.min(totalLanes, n || totalLanes);
-            const seq = getClubLaneSequence(wheelSize, state.rotationMode);
+            const seq = getClubLaneSequence(totalLanes, state.rotationMode);
 
             document.getElementById('step3-subtitle').textContent = `Rueda Oficial [${seq.join(' → ')}] · ${state.heats.length} ${t('word_heat')}s x ${state.durationLabel}`;
 
@@ -3121,16 +4482,19 @@
             container.innerHTML = state.heats.map(h => `
                 <div class="mac-studio-silver overflow-hidden">
                     <div class="px-4 py-2.5 bg-black/50 border-b border-white/10 flex items-center justify-between">
-                        <span class="font-black text-xs text-white">${t('word_heat').toUpperCase()} ${h.heatNumber}</span>
-                        <span class="text-[11px] font-bold text-[#ff9f0a]">
-                            ${h.marshals.length > 0 ? `<i class="fa-solid fa-vest-patches mr-1"></i>${t('word_marshals')}: ${h.marshals.join(', ')}` : ''}
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-xs text-white">${t('word_heat').toUpperCase()} ${h.heatNumber}</span>
+                            ${h.groupTitle ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-[#0a84ff]/25 text-[#5ac8fa] border border-[#5ac8fa]/40">${h.groupTitle} · T${h.turnNumber || 1}</span>` : ''}
+                        </div>
+                        <span class="text-[11px] font-bold text-[#ffd60a]">
+                            ${h.marshals.length > 0 ? `<i class="fa-solid fa-mug-hot mr-1"></i>D-1 Descans: ${h.marshals.join(', ')}` : ''}
                         </span>
                     </div>
                     <div class="divide-y divide-white/10">
                         ${h.assignments.map(a => `
                             <div class="px-4 py-2 flex items-center justify-between text-xs">
                                 <div class="flex items-center space-x-2">
-                                    <span class="px-2 py-0.5 rounded font-black text-[10px]" style="background:${a.laneInfo.hex}25; color:${a.laneInfo.hex}; border:1px solid ${a.laneInfo.hex}55">C${a.lane}</span>
+                                    <span class="px-2 py-0.5 rounded font-black text-[10px]" style="background:${a.laneInfo.hex}25; color:${a.laneInfo.hex}; border:1px solid ${a.laneInfo.hex}55">P-${a.lane}</span>
                                     <span class="font-bold text-white">${a.driverName}</span>
                                 </div>
                                 <span class="text-[10px] font-mono-num text-slate-300">${a.nextAction}</span>
@@ -3148,7 +4512,12 @@
             state.raceStatus = 'STANDBY';
             updateRaceFullscreenLayout();
             renderLiveRaceView();
-            announceDrivers(false);
+            const targetHeat = state.heats[idx];
+            if (targetHeat && targetHeat.status !== 'FINISHED') {
+                promptPreRaceCheckModal(targetHeat.heatNumber);
+            } else {
+                announceDrivers(false);
+            }
         }
 
         function getDriverMeanLap(a) {
@@ -3328,6 +4697,9 @@
             renderMasterClock();
             saveLocalDatabase();
 
+            // Enviar instantáneamente por WebRTC P2P y BroadcastChannel a todos los teléfonos móviles conectados
+            forceBroadcastLiveStateToMobiles(a.driverId, lapSec);
+
             // Actualizar en vivo el Spotter Móvil y la vista QR si están abiertos
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) {
@@ -3335,9 +4707,6 @@
                 if (a.driverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
                     speakMobileDriverStatusNow();
                 }
-            }
-            if (raceBroadcastChannel) {
-                raceBroadcastChannel.postMessage({ type: 'LAP_UPDATE', driverId: a.driverId, lane: a.lane, lapSec });
             }
 
             if (state.targetLaps !== 'infinity' && a.laps >= state.targetLaps) {
@@ -3607,7 +4976,6 @@
 
             const barsSvg = recent.map((val, idx) => {
                 const xCenter = padX + (idx + 0.5) * barSlotW;
-                // Invertido para que vueltas más rápidas (menor tiempo) tengan barra alta de rendimiento o línea clara
                 const norm = (val - minV) / span;
                 const y = padY + norm * plotH;
                 const barH = Math.max(6, h - padY - y);
@@ -4224,7 +5592,6 @@
             }
         }
 
-        // CORRECCIÓN 3: Ocultar siempre el overlay gigante del semáforo F1 al detener temporizadores
         function stopAllTimers() {
             if (clockInterval) clearInterval(clockInterval);
             if (autoSimInterval) clearInterval(autoSimInterval);
@@ -4272,6 +5639,14 @@
                             switchMainTab('standings');
                         }
                     }, 2200);
+                } else if (state.currentHeatIndex + 1 < state.heats.length) {
+                    state.currentHeatIndex += 1;
+                    state.timeRemaining = state.durationSeconds;
+                    state.raceStatus = 'STANDBY';
+                    updateRaceFullscreenLayout();
+                    renderLiveRaceView();
+                    saveLocalDatabase();
+                    promptPreRaceCheckModal(state.heats[state.currentHeatIndex].heatNumber);
                 }
             }, 'HIGH');
         }
@@ -4293,7 +5668,11 @@
                     updateRaceFullscreenLayout();
                     renderLiveRaceView();
                     saveLocalDatabase();
-                    announceDrivers(state.autoAdvance);
+                    if (state.autoAdvance) {
+                        announceDrivers(true);
+                    } else {
+                        promptPreRaceCheckModal(state.heats[state.currentHeatIndex].heatNumber);
+                    }
                 } else {
                     speakText(dict.tts_race_finished, null, 'HIGH');
                     switchMainTab('standings');
@@ -4308,7 +5687,6 @@
             saveLocalDatabase();
         }
 
-        // CORRECCIÓN 1: Récord de carrera independiente del tiempo de Pole Position
         function renderStandingsView() {
             ['laps', 'time', 'points'].forEach(m => {
                 const btn = document.getElementById(`standings-btn-${m}`);
@@ -4329,7 +5707,7 @@
 
             let summary = state.drivers.map(d => {
                 let totalLaps = 0;
-                let bestLap = Infinity; // Solo cuenta vueltas reales en mangas de carrera
+                let bestLap = Infinity;
                 let totalPoints = 0;
                 let heatBreakdown = [];
 
@@ -4399,13 +5777,23 @@
             }
             changeLanguage(state.lang || 'es');
 
-            // Si un piloto abre el enlace escaneado desde su código QR en el móvil, abrir directamente su Ingeniero de Pista Móvil
+            // Si un piloto abre el enlace escaneado desde su código QR en el móvil, hidratar sus datos instantáneos del QR, conectar a la sala WebRTC y abrir su Spotter Móvil
             const params = new URLSearchParams(window.location.search);
             const scannedPilotId = params.get('pilot');
+            const snapParam = params.get('snap');
+            const roomParam = params.get('room');
+
+            if (snapParam) {
+                hydrateStateFromUrlSnapshot(snapParam);
+            }
             if (scannedPilotId) {
+                if (roomParam) {
+                    connectMobileClientToHostRoom(roomParam);
+                }
                 switchMainTab('qr');
-                setTimeout(() => openMobileCompanion(scannedPilotId), 350);
+                setTimeout(() => openMobileCompanion(scannedPilotId), 250);
             } else {
+                initHostRealtimeServer();
                 switchMainTab(state.mainTab || 'race');
             }
         };
