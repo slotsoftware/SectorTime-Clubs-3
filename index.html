@@ -10,12 +10,12 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg-canvas: #090b10;
-            --bg-silver-card: linear-gradient(145deg, rgba(38, 42, 54, 0.78) 0%, rgba(18, 21, 28, 0.92) 100%);
-            --border-silver: rgba(226, 232, 240, 0.14);
+            --bg-canvas: #0b0d12;
+            --bg-silver-card: linear-gradient(155deg, rgba(48, 54, 66, 0.72) 0%, rgba(20, 23, 30, 0.88) 100%);
+            --border-silver: rgba(226, 232, 240, 0.18);
             --text-silver: #f8fafc;
             --text-titanium: #94a3b8;
             --neon-blue: #0a84ff;
@@ -29,14 +29,14 @@
         body {
             background-color: var(--bg-canvas);
             background-image: 
-                radial-gradient(circle at 12% 15%, rgba(10, 132, 255, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 88% 12%, rgba(48, 209, 88, 0.08) 0%, transparent 35%),
-                radial-gradient(circle at 50% 90%, rgba(239, 68, 68, 0.06) 0%, transparent 50%);
+                radial-gradient(circle at 15% 10%, rgba(203, 213, 225, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 15%, rgba(148, 163, 184, 0.10) 0%, transparent 40%),
+                radial-gradient(circle at 50% 95%, rgba(10, 132, 255, 0.08) 0%, transparent 55%);
             color: var(--text-silver);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             overflow-x: hidden;
             user-select: none;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.018em;
         }
 
         .font-mono-num {
@@ -44,18 +44,74 @@
             font-variant-numeric: tabular-nums;
         }
 
+        /* Estilo Apple Mac Studio Silver / Anodized Aluminum */
         .mac-window {
             background: var(--bg-silver-card);
-            backdrop-filter: saturate(190%) blur(28px);
-            -webkit-backdrop-filter: saturate(190%) blur(28px);
+            backdrop-filter: saturate(200%) blur(32px);
+            -webkit-backdrop-filter: saturate(200%) blur(32px);
             border: 1px solid var(--border-silver);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-            border-radius: 20px;
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            border-radius: 22px;
+        }
+
+        .mac-studio-silver {
+            background: linear-gradient(165deg, rgba(71, 85, 105, 0.42) 0%, rgba(30, 35, 45, 0.78) 55%, rgba(17, 20, 27, 0.92) 100%);
+            backdrop-filter: saturate(210%) blur(35px);
+            -webkit-backdrop-filter: saturate(210%) blur(35px);
+            border: 1px solid rgba(226, 232, 240, 0.24);
+            box-shadow: 
+                0 20px 45px -15px rgba(0, 0, 0, 0.65),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
+                inset 0 -1px 0 0 rgba(255, 255, 255, 0.06);
+            border-radius: 22px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mac-studio-silver:hover {
+            border-color: rgba(248, 250, 252, 0.38);
+            box-shadow: 
+                0 24px 50px -12px rgba(0, 0, 0, 0.75),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.48);
+        }
+
+        .mac-silver-well {
+            background: linear-gradient(180deg, rgba(9, 11, 16, 0.75) 0%, rgba(18, 22, 30, 0.62) 100%);
+            border: 1px solid rgba(226, 232, 240, 0.14);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.65), 0 1px 0 rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+        }
+
+        .mac-silver-btn {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(226, 232, 240, 0.18);
+            color: #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.18s ease;
+        }
+        .mac-silver-btn:hover {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.09) 100%);
+            border-color: rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+        }
+
+        .mac-silver-active {
+            background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%) !important;
+            color: #090b10 !important;
+            border: 1px solid #ffffff !important;
+            box-shadow: 0 0 22px rgba(226, 232, 240, 0.45), inset 0 1px 0 #ffffff !important;
+            font-weight: 900 !important;
+        }
+
+        .mac-traffic-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            display: inline-block;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.45);
         }
 
         .mac-group-box {
             background: rgba(12, 14, 20, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.10);
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
             border-radius: 14px;
         }
@@ -154,74 +210,6 @@
 
         .arrow-up { color: var(--neon-red); }
         .arrow-down { color: var(--neon-green); }
-
-        /* ==================== ESTÉTICA APPLE macOS SEQUOIA & visionOS FUTURISTA ==================== */
-        .mac-window {
-            background: linear-gradient(145deg, rgba(32, 36, 48, 0.72) 0%, rgba(14, 16, 22, 0.88) 100%);
-            backdrop-filter: saturate(210%) blur(36px);
-            -webkit-backdrop-filter: saturate(210%) blur(36px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), inset 0 1px 0.5px rgba(255, 255, 255, 0.25);
-            border-radius: 22px;
-        }
-
-        .mac-group-box {
-            background: linear-gradient(180deg, rgba(16, 19, 27, 0.75) 0%, rgba(9, 11, 16, 0.85) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-        }
-
-        .mac-traffic-dots {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .mac-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 999px;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4);
-        }
-
-        .pilot-card-futuristic {
-            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
-        }
-        .pilot-card-futuristic:hover {
-            box-shadow: 0 26px 55px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.32);
-        }
-
-        .mini-apple-pill {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 8px;
-            padding: 2px 6px;
-            font-size: 9px;
-            font-weight: 800;
-            color: #cbd5e1;
-            transition: all 0.15s ease;
-        }
-        .mini-apple-pill:hover {
-            background: rgba(255, 255, 255, 0.16);
-            color: #ffffff;
-        }
-        .mini-apple-pill.active-pill {
-            background: linear-gradient(180deg, #2294ff 0%, #0070e0 100%);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 10px rgba(10, 132, 255, 0.5);
-        }
-
-        .color-swatch-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 999px;
-            border: 1.5px solid rgba(255, 255, 255, 0.35);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .color-swatch-dot:hover {
-            transform: scale(1.25);
-        }
 
         button, nav a, select, .apple-segmented button, .mac-control-pill {
             text-transform: uppercase !important;
@@ -344,246 +332,331 @@
     </header>
 
     <!-- ======================================================================================== -->
-    <!-- MÓDULO 1: CONFIGURADOR DE CARRERA Y CAMPEONATO (EL ASISTENTE COMPLETO DE TICTAC PRO)     -->
+    <!-- MÓDULO 1: CONFIGURADOR DE CARRERA ESTILO APPLE MAC STUDIO SILVER (CON CONTROLES MANUALES)-->
     <!-- ======================================================================================== -->
-    <section id="view-config" class="hidden flex-1 flex flex-col gap-3 min-h-0 overflow-hidden">
+    <section id="view-config" class="hidden flex-1 flex flex-col gap-2.5 min-h-0 overflow-hidden">
 
-        <!-- Barra de Pasos del Asistente Fija Arriba -->
-        <div class="max-w-4xl w-full mx-auto mac-window p-2 flex items-center justify-between shrink-0">
-            <button onclick="goToWizardStep(1)" id="step-pill-1" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition cursor-pointer">
-                <span class="w-5 h-5 rounded-full flex items-center justify-center bg-[#0a84ff] text-white font-black">1</span>
-                <span data-i18n="step1_pill">Opciones de Carrera</span>
-            </button>
-            <i class="fa-solid fa-chevron-right text-slate-600 text-xs mx-2"></i>
-            <button onclick="goToWizardStep(2)" id="step-pill-2" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition cursor-pointer">
-                <span class="w-5 h-5 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 font-black">2</span>
-                <span data-i18n="step2_pill">Pilotos y Pole</span>
-            </button>
-            <i class="fa-solid fa-chevron-right text-slate-600 text-xs mx-2"></i>
-            <button onclick="goToWizardStep(3)" id="step-pill-3" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition cursor-pointer">
-                <span class="w-5 h-5 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 font-black">3</span>
-                <span data-i18n="step3_pill">Cuadro de Mangas</span>
-            </button>
-        </div>
-
-        <!-- Contenedor con Scroll Interno Limpio para los Pasos -->
-        <div class="flex-1 overflow-y-auto min-h-0 pr-1">
-            
-            <!-- PASO 1: 6 BLOQUES DE CONFIGURACIÓN SIMÉTRICOS EN GRID 3x2 PARA PANTALLA HORIZONTAL -->
-            <div id="wizard-step-1" class="max-w-7xl mx-auto space-y-3 pb-2">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-
-                    <!-- BLOQUE 1: CARRILES (1 a 10) Y SECTORES (1 a 3) -->
-                    <div class="mac-window p-4 flex flex-col justify-between gap-3">
-                        <div class="space-y-2.5">
-                            <div class="flex items-center justify-between">
-                                <label class="flex items-center text-xs font-extrabold text-white">
-                                    <span class="bg-[#ff453a]/20 text-[#ff453a] w-6 h-6 rounded-lg flex items-center justify-center mr-2"><i class="fa-solid fa-road"></i></span>
-                                    <span data-i18n="b1_title">1. Carriles (1-10) y Sectores</span>
-                                </label>
-                                <span id="lanes-selected-badge" class="text-[11px] font-bold text-[#ff453a] bg-[#ff453a]/15 px-2 py-0.5 rounded-full border border-[#ff453a]/30">4 Carriles</span>
-                            </div>
-                            <div id="lane-selector-buttons" class="grid grid-cols-5 gap-1.5"></div>
-                        </div>
-                        <div class="flex items-center justify-between pt-2 border-t border-white/10">
-                            <span class="text-[11px] font-bold text-[#94a3b8]" data-i18n="sectors_label">Sectores:</span>
-                            <div class="apple-segmented">
-                                <button type="button" onclick="setSectorsCount(1)" id="sec-btn-1" class="px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer">1 (Meta)</button>
-                                <button type="button" onclick="setSectorsCount(2)" id="sec-btn-2" class="px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer">2 Sect</button>
-                                <button type="button" onclick="setSectorsCount(3)" id="sec-btn-3" class="px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer">3 (S1·S2·S3)</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE 2: TIEMPO POR MANGA (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN) -->
-                    <div class="mac-window p-4 flex flex-col justify-between gap-3">
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center text-xs font-extrabold text-white">
-                                <span class="bg-[#0a84ff]/20 text-[#5ac8fa] w-6 h-6 rounded-lg flex items-center justify-center mr-2"><i class="fa-solid fa-stopwatch"></i></span>
-                                <span data-i18n="b2_title">2. Tiempo por Manga (2 a 120m)</span>
-                            </label>
-                            <span id="duration-selected-badge" class="text-[11px] font-bold text-[#5ac8fa] bg-[#0a84ff]/15 px-2 py-0.5 rounded-full border border-[#0a84ff]/30">3 Min ★</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-1.5 my-auto">
-                            <button type="button" onclick="selectDurationPreset(120, '2 Min', 'SPRINT')" id="dur-btn-120" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(180, '3 Min ★', 'CLUB')" id="dur-btn-180" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(300, '5 Min ★', 'CLUB')" id="dur-btn-300" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(600, '10 Min', 'RESIS')" id="dur-btn-600" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(900, '15 Min', 'RESIS')" id="dur-btn-900" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(1800, '30 Min', 'RESIS')" id="dur-btn-1800" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(3600, '60 Min', 'ENDURANCE')" id="dur-btn-3600" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(5400, '90 Min', 'ENDURANCE')" id="dur-btn-5400" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                            <button type="button" onclick="selectDurationPreset(7200, '120 Min', 'ENDURANCE')" id="dur-btn-7200" class="p-2 rounded-xl text-xs font-bold border transition cursor-pointer"></button>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE 3: META DE VUELTAS (INFINITAS POR TIEMPO O LÍMITE DE VUELTAS) -->
-                    <div class="mac-window p-4 flex flex-col justify-between gap-3">
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center text-xs font-extrabold text-white">
-                                <span class="bg-[#30d158]/20 text-[#30d158] w-6 h-6 rounded-lg flex items-center justify-center mr-2"><i class="fa-solid fa-rotate"></i></span>
-                                <span data-i18n="b3_title">3. Modalidad: Tiempo o Vueltas</span>
-                            </label>
-                            <span id="laps-selected-badge" class="text-[11px] font-bold text-[#30d158] bg-[#30d158]/15 px-2 py-0.5 rounded-full border border-[#30d158]/30">∞ Tiempo</span>
-                        </div>
-                        <div class="grid grid-cols-4 gap-1.5 my-auto">
-                            <button type="button" onclick="setTargetLaps('infinity')" id="lap-btn-infinity" class="col-span-2 p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">⏱️ Tiempo (∞)</button>
-                            <button type="button" onclick="setTargetLaps(10)" id="lap-btn-10" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">10 V</button>
-                            <button type="button" onclick="setTargetLaps(20)" id="lap-btn-20" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">20 V</button>
-                            <button type="button" onclick="setTargetLaps(25)" id="lap-btn-25" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">25 V</button>
-                            <button type="button" onclick="setTargetLaps(30)" id="lap-btn-30" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">30 V</button>
-                            <button type="button" onclick="setTargetLaps(50)" id="lap-btn-50" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">50 V</button>
-                            <button type="button" onclick="setTargetLaps(100)" id="lap-btn-100" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">100 V</button>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE 4: TIPO DE SESIÓN Y CANTIDAD DE MANGAS -->
-                    <div class="mac-window p-4 flex flex-col justify-between gap-3">
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center text-xs font-extrabold text-white">
-                                <span class="bg-[#bf5af2]/20 text-[#d982ff] w-6 h-6 rounded-lg flex items-center justify-center mr-2"><i class="fa-solid fa-layer-group"></i></span>
-                                <span data-i18n="b4_title">4. Tipo de Sesión y Mangas</span>
-                            </label>
-                            <span id="heats-selected-badge" class="text-[11px] font-bold text-[#d982ff] bg-[#bf5af2]/15 px-2 py-0.5 rounded-full border border-[#bf5af2]/30">Carrera Club</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-1.5">
-                            <button type="button" onclick="setSessionType('PRACTICE')" id="sess-btn-PRACTICE" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">🟢 Entrenos (1M)</button>
-                            <button type="button" onclick="setSessionType('CLUB')" id="sess-btn-CLUB" class="p-2.5 rounded-xl text-xs font-bold border transition cursor-pointer">🏆 Carrera Club</button>
-                        </div>
-                        <div class="grid grid-cols-4 gap-1.5">
-                            <button type="button" onclick="setHeatMode('auto')" id="heat-btn-auto" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer" title="Mínimo max(Pilotos, Carriles) para que todos pasen por todos los carriles">Auto (Ciclo)</button>
-                            <button type="button" onclick="setHeatMode('lanes')" id="heat-btn-lanes" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">= Carriles</button>
-                            <button type="button" onclick="setHeatMode(6)" id="heat-btn-6" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">6 Mangas</button>
-                            <button type="button" onclick="setHeatMode(10)" id="heat-btn-10" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">10 Mangas</button>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE 5: ROTACIÓN DE CARRILES -->
-                    <div class="mac-window p-4 flex flex-col justify-between gap-2.5">
-                        <label class="flex items-center text-xs font-extrabold text-white">
-                            <span class="bg-[#ff9f0a]/20 text-[#ff9f0a] w-6 h-6 rounded-lg flex items-center justify-center mr-2"><i class="fa-solid fa-arrows-spin"></i></span>
-                            <span data-i18n="b5_title">5. Orden de Rotación de Carriles</span>
-                        </label>
-                        <div class="grid grid-cols-1 gap-1.5 my-auto">
-                            <button type="button" onclick="setRotationModeWizard('club_odd_even')" id="rot-wiz-club_odd_even" class="p-2 text-left rounded-xl text-xs font-bold border transition flex justify-between items-center cursor-pointer">
-                                <span data-i18n="rot_club">Oficial Club: Impares → Pares</span>
-                                <span id="wheel-preview-badge" class="font-mono-num text-[10px] bg-black/60 px-2 py-0.5 rounded text-[#ff9f0a]">1→3→4→2</span>
-                            </button>
-                            <button type="button" onclick="setRotationModeWizard('random')" id="rot-wiz-random" class="p-2 text-left rounded-xl text-xs font-bold border transition flex justify-between items-center cursor-pointer">
-                                <span data-i18n="rot_random">Sorteo Aleatorio de Carriles</span>
-                                <span>🎲</span>
-                            </button>
-                            <button type="button" onclick="setRotationModeWizard('sequential')" id="rot-wiz-sequential" class="p-2 text-left rounded-xl text-xs font-bold border transition flex justify-between items-center cursor-pointer">
-                                <span data-i18n="rot_seq">Lineal Consecutivo (1 → 2 → 3...)</span>
-                                <span>1,2,3...</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE 6: CRITERIO DE CLASIFICACIÓN -->
-                    <div class="mac-window p-4 flex flex-col justify-between gap-2.5">
-                        <label class="flex items-center text-xs font-extrabold text-white">
-                            <span class="bg-yellow-500/20 text-yellow-400 w-6 h-6 rounded-lg flex items-center justify-center mr-2"><i class="fa-solid fa-trophy"></i></span>
-                            <span data-i18n="b6_title">6. ¿Cómo se Calcula el Ganador?</span>
-                        </label>
-                        <div class="grid grid-cols-1 gap-1.5 my-auto">
-                            <button type="button" onclick="setScoringMethodWizard('laps')" id="score-wiz-laps" class="p-2 text-left rounded-xl text-xs font-bold border transition cursor-pointer">
-                                <span data-i18n="score_laps">A. Por Vueltas Acumuladas (+ mejor tiempo)</span>
-                            </button>
-                            <button type="button" onclick="setScoringMethodWizard('time')" id="score-wiz-time" class="p-2 text-left rounded-xl text-xs font-bold border transition cursor-pointer">
-                                <span data-i18n="score_time">B. Por Mejor Crono / Récord Individual</span>
-                            </button>
-                            <button type="button" onclick="setScoringMethodWizard('points')" id="score-wiz-points" class="p-2 text-left rounded-xl text-xs font-bold border transition cursor-pointer">
-                                <span data-i18n="score_points">C. Por Tabla de Puntos (10, 8, 6...)</span>
-                            </button>
-                        </div>
-                    </div>
-
+        <!-- Barra Superior macOS Sequoia con Semáforo Mac + Selector de Pasos + Resumen en Tiempo Real -->
+        <div class="max-w-7xl w-full mx-auto mac-studio-silver px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <!-- Semáforo icónico macOS + Título de Ventana -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5">
+                    <span class="mac-traffic-dot bg-[#ff5f56]"></span>
+                    <span class="mac-traffic-dot bg-[#ffbd2e]"></span>
+                    <span class="mac-traffic-dot bg-[#27c93f]"></span>
                 </div>
-
-                <!-- Botonera Inferior del Paso 1 -->
-                <div class="flex justify-between items-center pt-1">
-                    <button onclick="switchMainTab('race')" class="btn-silver px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 cursor-pointer">
-                        <i class="fa-solid fa-gauge-high text-[#5ac8fa]"></i>
-                        <span>Ir directo a Pista en Vivo</span>
-                    </button>
-                    <button onclick="goToWizardStep(2)" class="btn-neon-blue px-7 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2.5 cursor-pointer">
-                        <span data-i18n="btn_next_drivers">Siguiente: Inscribir Pilotos</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+                <div class="h-4 w-[1px] bg-white/15"></div>
+                <div>
+                    <div class="text-[10px] font-black tracking-widest uppercase text-slate-300">APPLE MAC STUDIO · RACE ARCHITECT</div>
+                    <div id="mac-config-live-summary" class="text-xs font-extrabold text-white tracking-tight">4 Carriles · 3 Min · ∞ Tiempo · Rueda 1→3→4→2</div>
                 </div>
             </div>
 
-            <!-- PASO 2: INSCRIPCIÓN DE PILOTOS Y POLE -->
+            <!-- Segmented Control estilo macOS para los 3 Pasos -->
+            <div class="apple-segmented p-1 bg-black/60 border border-white/15 rounded-2xl">
+                <button onclick="goToWizardStep(1)" id="step-pill-1" class="py-1.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer">
+                    <span class="w-4 h-4 rounded-full flex items-center justify-center bg-white/20 text-[10px] font-black">1</span>
+                    <span data-i18n="step1_pill">Parámetros y Manual</span>
+                </button>
+                <button onclick="goToWizardStep(2)" id="step-pill-2" class="py-1.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer">
+                    <span class="w-4 h-4 rounded-full flex items-center justify-center bg-white/10 text-[10px] font-black">2</span>
+                    <span data-i18n="step2_pill">Pilotos y Pole</span>
+                </button>
+                <button onclick="goToWizardStep(3)" id="step-pill-3" class="py-1.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer">
+                    <span class="w-4 h-4 rounded-full flex items-center justify-center bg-white/10 text-[10px] font-black">3</span>
+                    <span data-i18n="step3_pill">Cuadro de Mangas</span>
+                </button>
+            </div>
+
+            <!-- Acción Rápida a Pista -->
+            <button onclick="switchMainTab('race')" class="mac-silver-active px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-flag-checkered"></i>
+                <span>IR A PISTA EN VIVO</span>
+            </button>
+                    <!-- BLOQUE 1: CARRILES (1 a 10), SECTORES Y CUERDA DE PISTA (METROS) -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                    <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-road text-[11px]"></i></span>
+                                    <span data-i18n="b1_title">1. CARRILES, SECTORES Y CUERDA</span>
+                                </label>
+                                <span id="lanes-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">4 Carriles</span>
+                            </div>
+                            <div id="lane-selector-buttons" class="grid grid-cols-5 gap-1.5"></div>
+                        </div>
+
+                        <!-- Control Manual de Sectores + Longitud de Pista para Velocidad -->
+                        <div class="mac-silver-well p-2.5 flex flex-col gap-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] font-bold text-slate-300 uppercase" data-i18n="sectors_label">SECTORES:</span>
+                                <div class="apple-segmented bg-black/50">
+                                    <button type="button" onclick="setSectorsCount(1)" id="sec-btn-1" class="px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer">1 (META)</button>
+                                    <button type="button" onclick="setSectorsCount(2)" id="sec-btn-2" class="px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer">2 SECT</button>
+                                    <button type="button" onclick="setSectorsCount(3)" id="sec-btn-3" class="px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer">3 (S1·S2·S3)</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-white/10">
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i>CUERDA PISTA (M):</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" onclick="stepTrackLength(-2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
+                                    <input type="number" id="manual-track-length" min="5" max="250" step="0.5" value="28" onchange="applyManualTrackLength(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-0.5 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
+                                    <button type="button" onclick="stepTrackLength(2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
+                                    <span class="text-[10px] font-bold text-slate-400">METROS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 2: TIEMPO POR MANGA (PRESETS + ENTRADA MANUAL MINUTOS Y SEGUNDOS) -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-stopwatch text-[11px]"></i></span>
+                                <span data-i18n="b2_title">2. TIEMPO POR MANGA</span>
+                            </label>
+                            <span id="duration-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">03:00</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button type="button" onclick="selectDurationPreset(120, '2 Min', 'SPRINT')" id="dur-btn-120" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
+                            <button type="button" onclick="selectDurationPreset(180, '3 Min ★', 'CLUB')" id="dur-btn-180" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
+                            <button type="button" onclick="selectDurationPreset(300, '5 Min ★', 'CLUB')" id="dur-btn-300" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
+                            <button type="button" onclick="selectDurationPreset(600, '10 Min', 'RESIS')" id="dur-btn-600" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
+                            <button type="button" onclick="selectDurationPreset(900, '15 Min', 'RESIS')" id="dur-btn-900" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
+                            <button type="button" onclick="selectDurationPreset(1800, '30 Min', 'RESIS')" id="dur-btn-1800" class="p-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer"></button>
+                        </div>
+
+                        <!-- Ajuste Manual de Tiempo (Minutos y Segundos exactos) -->
+                        <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-sliders mr-1 text-slate-400"></i>MANUAL:</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="number" id="manual-dur-min" min="0" max="999" value="3" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white" title="Minutos">
+                                <span class="text-[10px] font-bold text-slate-400">MIN</span>
+                                <input type="number" id="manual-dur-sec" min="0" max="59" value="0" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white" title="Segundos">
+                                <span class="text-[10px] font-bold text-slate-400">SEG</span>
+                                <button type="button" onclick="applyManualDuration()" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">OK</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 3: MODALIDAD POR TIEMPO O META DE VUELTAS MANUAL -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-rotate text-[11px]"></i></span>
+                                <span data-i18n="b3_title">3. MODALIDAD: TIEMPO O VUELTAS</span>
+                            </label>
+                            <span id="laps-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">∞ Tiempo</span>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button type="button" onclick="setTargetLaps('infinity')" id="lap-btn-infinity" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">⏱️ POR TIEMPO (∞)</button>
+                            <button type="button" onclick="setTargetLaps(15)" id="lap-btn-15" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">15 V</button>
+                            <button type="button" onclick="setTargetLaps(25)" id="lap-btn-25" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">25 V</button>
+                            <button type="button" onclick="setTargetLaps(40)" id="lap-btn-40" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">40 V</button>
+                            <button type="button" onclick="setTargetLaps(50)" id="lap-btn-50" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">50 V</button>
+                            <button type="button" onclick="setTargetLaps(100)" id="lap-btn-100" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">100 VUELTAS</button>
+                        </div>
+
+                        <!-- Meta de Vueltas Manual o Cuenta Atrás / Adelante -->
+                        <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i>VUELTAS MANUAL:</span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="stepManualTargetLaps(-5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
+                                <input type="number" id="manual-target-laps-input" min="1" max="9999" placeholder="∞" onchange="applyManualTargetLaps(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
+                                <button type="button" onclick="stepManualTargetLaps(5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
+                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 4: TIPO DE SESIÓN Y NÚMERO DE MANGAS MANUAL -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-layer-group text-[11px]"></i></span>
+                                <span data-i18n="b4_title">4. SESIÓN Y Nº DE MANGAS</span>
+                            </label>
+                            <span id="heats-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">Auto</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" onclick="setSessionType('PRACTICE')" id="sess-btn-PRACTICE" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">ENTRENOS (1M)</button>
+                            <button type="button" onclick="setSessionType('CLUB')" id="sess-btn-CLUB" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">CARRERA OFICIAL</button>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button type="button" onclick="setHeatMode('auto')" id="heat-btn-auto" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">AUTO CICLO</button>
+                            <button type="button" onclick="setHeatMode('lanes')" id="heat-btn-lanes" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">= CARRILES</button>
+                            <button type="button" onclick="setHeatMode(6)" id="heat-btn-6" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">6 MANGAS</button>
+                            <button type="button" onclick="setHeatMode(10)" id="heat-btn-10" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">10 MANGAS</button>
+                        </div>
+
+                        <!-- Selector Manual del Número de Mangas -->
+                        <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-hashtag mr-1 text-slate-400"></i>Nº MANGAS MANUAL:</span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="stepManualHeats(-1)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
+                                <input type="number" id="manual-heats-input" min="1" max="99" value="6" onchange="applyManualHeatsCount(this.value)" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
+                                <button type="button" onclick="stepManualHeats(1)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
+                                <button type="button" onclick="applyManualHeatsCount(document.getElementById('manual-heats-input').value)" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">OK</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 5: ORDEN DE ROTACIÓN DE CARRILES (AUTOMÁTICO + MANUAL PERSONALIZADO) -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-arrows-spin text-[11px]"></i></span>
+                                <span data-i18n="b5_title">5. ROTACIÓN DE CARRILES</span>
+                            </label>
+                            <span id="wheel-preview-badge" class="font-mono-num text-[10px] font-black bg-white/15 px-2.5 py-0.5 rounded-full text-white border border-white/20">1→3→4→2</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button type="button" onclick="setRotationModeWizard('club_odd_even')" id="rot-wiz-club_odd_even" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
+                                IMPAR→PAR
+                            </button>
+                            <button type="button" onclick="setRotationModeWizard('sequential')" id="rot-wiz-sequential" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
+                                1 → 2 → 3 → 4
+                            </button>
+                            <button type="button" onclick="setRotationModeWizard('random')" id="rot-wiz-random" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
+                                SORTEO 🎲
+                            </button>
+                        </div>
+
+                        <!-- Entrada Manual del Orden de Rotación de Carriles -->
+                        <div class="mac-silver-well p-2.5 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-keyboard mr-1 text-slate-400"></i>ORDEN MANUAL (EJ: 1,3,4,2):</span>
+                                <button type="button" onclick="invertCurrentRotationOrder()" class="text-[9px] font-black text-slate-300 hover:text-white underline cursor-pointer">INVERTIR RUEDA</button>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <input type="text" id="manual-rotation-input" placeholder="1, 3, 4, 2" onkeydown="if(event.key==='Enter') applyManualRotationOrder()" class="flex-1 bg-black/70 border border-white/20 rounded-lg px-2.5 py-1 font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
+                                <button type="button" onclick="applyManualRotationOrder()" id="rot-wiz-custom" class="px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">APLICAR</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 6: CRITERIO DE CLASIFICACIÓN Y PUNTUACIÓN -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-trophy text-[11px]"></i></span>
+                                <span data-i18n="b6_title">6. CÁLCULO DEL GANADOR</span>
+                            </label>
+                            <span class="text-[10px] font-mono-num font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded-full">FIA / CLUB</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-1.5 my-auto">
+                            <button type="button" onclick="setScoringMethodWizard('laps')" id="score-wiz-laps" class="p-2.5 text-left rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-between">
+                                <span data-i18n="score_laps">A. Por Vueltas Acumuladas (+ mejor tiempo)</span>
+                                <i class="fa-solid fa-check text-[10px] opacity-60"></i>
+                            </button>
+                            <button type="button" onclick="setScoringMethodWizard('time')" id="score-wiz-time" class="p-2.5 text-left rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-between">
+                                <span data-i18n="score_time">B. Por Mejor Crono / Récord Individual</span>
+                                <i class="fa-solid fa-stopwatch text-[10px] opacity-60"></i>
+                            </button>
+                            <button type="button" onclick="setScoringMethodWizard('points')" id="score-wiz-points" class="p-2.5 text-left rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-between">
+                                <span data-i18n="score_points">C. Por Tabla de Puntos (10, 8, 6...)</span>
+                                <i class="fa-solid fa-medal text-[10px] opacity-60"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Dock Inferior Mac Studio del Paso 1 -->
+                <div class="mac-studio-silver px-5 py-3 flex flex-wrap justify-between items-center gap-3">
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <i class="fa-brands fa-apple text-base text-white"></i>
+                        <span>Todos los parámetros manuales se guardan automáticamente en la base de datos local de tu dispositivo.</span>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <button onclick="switchMainTab('race')" class="mac-silver-btn px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 cursor-pointer">
+                            <i class="fa-solid fa-gauge-high text-slate-200"></i>
+                            <span>Ir directo a Pista en Vivo</span>
+                        </button>
+                        <button onclick="goToWizardStep(2)" class="mac-silver-active px-7 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2.5 cursor-pointer">
+                            <span data-i18n="btn_next_drivers">Siguiente: Inscribir Pilotos</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 2: INSCRIPCIÓN DE PILOTOS Y POLE EN ESTILO MAC STUDIO SILVER -->
             <div id="wizard-step-2" class="hidden max-w-5xl mx-auto space-y-4 pb-2">
-                <div class="mac-window p-4 space-y-3">
+                <div class="mac-studio-silver p-5 space-y-3.5">
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
                         <div class="sm:col-span-5">
-                            <label data-i18n="lbl_driver_name" class="block text-xs font-bold text-[#94a3b8] mb-1">Nombre del Piloto / Equipo</label>
-                            <input type="text" id="new-driver-name" placeholder="Albert, Juan, Marta..." onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/15 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#0a84ff]">
+                            <label data-i18n="lbl_driver_name" class="block text-[11px] font-extrabold text-slate-300 mb-1 uppercase tracking-wider">Nombre del Piloto / Equipo</label>
+                            <input type="text" id="new-driver-name" placeholder="ALBERT, JUAN, MARTA..." onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-white">
                         </div>
                         <div class="sm:col-span-4">
-                            <label data-i18n="lbl_driver_car" class="block text-xs font-bold text-[#94a3b8] mb-1">Coche / Categoría</label>
-                            <input type="text" id="new-driver-car" placeholder="Scaleauto GT3" onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/15 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#0a84ff]">
+                            <label data-i18n="lbl_driver_car" class="block text-[11px] font-extrabold text-slate-300 mb-1 uppercase tracking-wider">Coche / Categoría</label>
+                            <input type="text" id="new-driver-car" placeholder="Scaleauto GT3" onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-white">
                         </div>
                         <div class="sm:col-span-3 flex items-end">
-                            <button onclick="addDriverFromInput()" class="w-full btn-neon-green py-2 px-4 rounded-xl font-black text-xs sm:text-sm transition flex items-center justify-center space-x-2 cursor-pointer">
+                            <button onclick="addDriverFromInput()" class="w-full mac-silver-active py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm transition flex items-center justify-center space-x-2 cursor-pointer">
                                 <i class="fa-solid fa-user-plus"></i>
                                 <span data-i18n="btn_add_driver">Añadir Piloto</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-white/10">
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/15">
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="loadPdfExampleDrivers()" class="text-xs font-bold bg-[#0a84ff]/20 hover:bg-[#0a84ff]/35 text-[#5ac8fa] border border-[#0a84ff]/40 px-3 py-1.5 rounded-lg transition cursor-pointer">
-                                <i class="fa-solid fa-users mr-1.5"></i><span data-i18n="btn_load_pdf">Cargar 6 Pilotos Oficiales de Ejemplo</span>
+                            <button onclick="loadPdfExampleDrivers()" class="text-xs font-bold mac-silver-btn px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                                <i class="fa-solid fa-users mr-1.5 text-slate-300"></i><span data-i18n="btn_load_pdf">Cargar 6 Pilotos Oficiales de Ejemplo</span>
                             </button>
-                            <button onclick="simulatePoleSession()" class="text-xs font-bold bg-[#ff9f0a]/20 hover:bg-[#ff9f0a]/35 text-[#ff9f0a] border border-[#ff9f0a]/40 px-3 py-1.5 rounded-lg transition cursor-pointer">
-                                <i class="fa-solid fa-bolt mr-1.5"></i><span data-i18n="btn_sim_pole">Simular Pole</span>
+                            <button onclick="simulatePoleSession()" class="text-xs font-bold mac-silver-btn px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                                <i class="fa-solid fa-bolt mr-1.5 text-amber-300"></i><span data-i18n="btn_sim_pole">Simular Pole</span>
                             </button>
                         </div>
-                        <button onclick="clearAllDrivers()" class="text-xs font-bold bg-[#ff453a]/20 hover:bg-[#ff453a]/35 text-[#ff453a] border border-[#ff453a]/40 px-3 py-1.5 rounded-lg transition cursor-pointer">
+                        <button onclick="clearAllDrivers()" class="text-xs font-bold bg-[#ff453a]/15 hover:bg-[#ff453a]/30 text-[#ff6961] border border-[#ff453a]/35 px-3.5 py-1.5 rounded-xl transition cursor-pointer">
                             <i class="fa-solid fa-trash-can mr-1.5"></i><span data-i18n="btn_clear_list">Vaciar Lista</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="mac-window overflow-hidden">
-                    <div class="px-5 py-2.5 bg-black/40 border-b border-white/10 flex justify-between items-center">
-                        <span data-i18n="grid_pole_title" class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Parrilla Ordenada por Pole Position</span>
-                        <span id="drivers-count-badge" class="text-xs font-bold text-[#30d158]">0</span>
+                <div class="mac-studio-silver overflow-hidden">
+                    <div class="px-5 py-3 bg-black/45 border-b border-white/15 flex justify-between items-center">
+                        <span data-i18n="grid_pole_title" class="text-xs font-extrabold uppercase tracking-wider text-slate-200">Parrilla Ordenada por Pole Position</span>
+                        <span id="drivers-count-badge" class="text-xs font-mono-num font-black text-slate-900 bg-slate-200 px-2.5 py-0.5 rounded-full">0</span>
                     </div>
                     <div id="drivers-list-container" class="divide-y divide-white/10 max-h-60 overflow-y-auto"></div>
                 </div>
 
                 <div class="flex justify-between items-center">
-                    <button onclick="goToWizardStep(1)" class="px-5 py-2.5 rounded-xl text-xs font-bold btn-silver cursor-pointer">
+                    <button onclick="goToWizardStep(1)" class="px-5 py-2.5 rounded-xl text-xs font-bold mac-silver-btn cursor-pointer">
                         <i class="fa-solid fa-arrow-left mr-2"></i><span data-i18n="btn_back">Volver</span>
                     </button>
-                    <button onclick="goToWizardStep(3)" class="btn-neon-blue px-7 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2.5 cursor-pointer">
+                    <button onclick="goToWizardStep(3)" class="mac-silver-active px-7 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2.5 cursor-pointer">
                         <span data-i18n="btn_gen_heats">Generar Cuadro de Mangas</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- PASO 3: CUADRO DE MANGAS, VERIFICACIÓN PILOTO-CARRIL Y COMISARIOS -->
+            <!-- PASO 3: CUADRO DE MANGAS, EDICIÓN MANUAL Y MATRIZ PILOTO-CARRIL -->
             <div id="wizard-step-3" class="hidden max-w-7xl mx-auto space-y-4 pb-4">
-                <div class="mac-window p-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="mac-studio-silver p-4 flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <span data-i18n="step3_badge" class="text-[11px] font-extrabold uppercase tracking-widest text-[#30d158]">Paso 3 de 3 · Calendario Oficial</span>
-                        <h2 data-i18n="step3_title" class="text-xl font-black text-white">Distribución de Mangas y Carriles</h2>
-                        <p id="step3-subtitle" class="text-[#94a3b8] text-xs"></p>
+                        <span data-i18n="step3_badge" class="text-[10px] font-extrabold uppercase tracking-widest text-slate-300">PASO 3 DE 3 · ARQUITECTURA DE MANGAS MAC STUDIO</span>
+                        <h2 data-i18n="step3_title" class="text-xl font-black text-white">Distribución de Mangas y Rotación de Carriles</h2>
+                        <p id="step3-subtitle" class="text-slate-300 text-xs font-mono-num mt-0.5"></p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button onclick="goToWizardStep(2)" class="btn-silver px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
+                        <button onclick="goToWizardStep(2)" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-arrow-left mr-1.5"></i><span data-i18n="btn_back">Volver</span>
                         </button>
-                        <button onclick="rebuildHeats(); renderWizardStep3();" class="btn-silver px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
+                        <button onclick="rebuildHeats(); renderWizardStep3();" class="mac-silver-btn px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer">
                             <i class="fa-solid fa-rotate mr-1.5"></i><span data-i18n="btn_recalc">Recalcular / Sortear</span>
                         </button>
-                        <button onclick="switchMainTab('race')" class="btn-neon-green px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
+                        <button onclick="switchMainTab('race')" class="mac-silver-active px-6 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-flag-checkered"></i>
                             <span data-i18n="btn_go_track">IR A PARRILLA Y PISTA EN VIVO</span>
                         </button>
@@ -591,7 +664,7 @@
                 </div>
 
                 <!-- AVISO / MATRIZ DE EQUIDAD PILOTO vs CARRIL -->
-                <div id="heats-equity-matrix" class="mac-window p-4 overflow-x-auto"></div>
+                <div id="heats-equity-matrix" class="mac-studio-silver p-4 overflow-x-auto"></div>
 
                 <!-- TARJETAS DE CADA MANGA -->
                 <div id="heats-schedule-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
@@ -601,20 +674,33 @@
     </section>
 
     <!-- ======================================================================================== -->
-    <!-- MÓDULO 2: PARRILLA EN VIVO FUSIONADA (TARJETAS KRONOS + DIRECCIÓN DE MANGAS TICTAC PRO)   -->
+    <!-- MÓDULO 2: PARRILLA EN VIVO FUSIONADA (5 VISTAS BENTO + COLORES PERSONALIZABLES)          -->
     <!-- ======================================================================================== -->
     <section id="view-race" class="flex-1 flex flex-col gap-2 min-h-0 overflow-hidden">
 
         <!-- DOCK DE MANDO DE DIRECCIÓN DE CARRERA (SE OCULTA AUTOMÁTICAMENTE DURANTE LA CARRERA) -->
-        <div id="race-top-dock" class="mac-window px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div id="race-top-dock" class="mac-studio-silver px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
             
             <!-- Selector de Mangas con indicador "(ACABADA) ✓" -->
             <div class="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5 uppercase" id="live-heat-tabs"></div>
 
+            <!-- Selector Global de los 3 Tipos de Cuadro (BÁSICO, MEDIO, EXPERTO) + Paleta de Colores -->
+            <div class="flex items-center gap-1.5">
+                <div class="apple-segmented bg-black/60 p-1" title="3 niveles de cuadro con letra gigante para lectura fácil y telemetría de tiempo/velocidad">
+                    <button onclick="setGlobalCardLayout(1)" id="global-layout-1" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
+                    <button onclick="setGlobalCardLayout(2)" id="global-layout-2" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
+                    <button onclick="setGlobalCardLayout(3)" id="global-layout-3" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
+                </div>
+                <button onclick="cycleGlobalCardTheme()" class="mac-silver-btn px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer" title="Cambiar Acabado Gris Plata / Color de los Cuadros">
+                    <i class="fa-solid fa-palette text-slate-200"></i>
+                    <span id="global-theme-label" class="hidden xl:inline">PLATA MAC</span>
+                </button>
+            </div>
+
             <!-- Semáforo FIA Compacto + Crono Maestro -->
-            <div class="mac-group-box px-3.5 py-1 flex items-center gap-3.5 border border-white/10">
+            <div class="mac-silver-well px-3.5 py-1 flex items-center gap-3.5">
                 <div class="flex flex-col items-center gap-0.5">
-                    <span id="live-heat-title" class="group-label text-[#ff453a]">MANGA 1</span>
+                    <span id="live-heat-title" class="group-label text-slate-300">MANGA 1</span>
                     <div class="flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
                         <div class="f1-light" id="f1L1"></div>
                         <div class="f1-light" id="f1L2"></div>
@@ -625,38 +711,14 @@
                 </div>
                 <div class="h-7 w-[1px] bg-white/10"></div>
                 <div class="text-right">
-                    <div id="live-target-badge" class="group-label text-[#5ac8fa]">CRONO MANGA</div>
+                    <div id="live-target-badge" class="group-label text-slate-300">CRONO MANGA</div>
                     <div id="masterClock" class="text-2xl md:text-3xl font-mono-num font-black text-white tracking-tight leading-none">03:00.0</div>
-                </div>
-            </div>
-
-            <!-- Selector Global Apple de 5 Diseños de Cuadro + Temas de Color -->
-            <div class="mac-group-box px-2.5 py-1 flex items-center gap-2 border border-white/10">
-                <div class="flex items-center gap-1">
-                    <span class="text-[9px] font-black text-[#94a3b8] hidden xl:inline"><i class="fa-brands fa-apple mr-1 text-white"></i>VISTA:</span>
-                    <div class="apple-segmented">
-                        <button onclick="setGlobalCardLayout(1)" id="glayout-btn-1" title="1. Vista Pro Equilibrada" class="px-2 py-0.5 rounded-[7px] text-[10px] font-black cursor-pointer">L1</button>
-                        <button onclick="setGlobalCardLayout(2)" id="glayout-btn-2" title="2. Telemetría Gigante" class="px-2 py-0.5 rounded-[7px] text-[10px] font-black cursor-pointer">L2</button>
-                        <button onclick="setGlobalCardLayout(3)" id="glayout-btn-3" title="3. Radar de Sectores S1·S2·S3" class="px-2 py-0.5 rounded-[7px] text-[10px] font-black cursor-pointer">L3</button>
-                        <button onclick="setGlobalCardLayout(4)" id="glayout-btn-4" title="4. Monitor de Ritmo e Historial" class="px-2 py-0.5 rounded-[7px] text-[10px] font-black cursor-pointer">L4</button>
-                        <button onclick="setGlobalCardLayout(5)" id="glayout-btn-5" title="5. Cabina F1 HUD Futurista" class="px-2 py-0.5 rounded-[7px] text-[10px] font-black cursor-pointer">L5</button>
-                    </div>
-                </div>
-                <div class="h-5 w-[1px] bg-white/10"></div>
-                <div class="flex items-center gap-1" title="Aplicar tema de color Mac a todos los cuadros">
-                    <button onclick="setAllCardsColorTheme('lane')" class="px-1.5 py-0.5 rounded text-[9px] font-black bg-white/10 hover:bg-white/20 text-white cursor-pointer" title="Color Oficial del Carril">AUTO</button>
-                    <button onclick="setAllCardsColorTheme('#0a84ff')" class="color-swatch-dot cursor-pointer" style="background:#0a84ff" title="Azul Mac Pro"></button>
-                    <button onclick="setAllCardsColorTheme('#30d158')" class="color-swatch-dot cursor-pointer" style="background:#30d158" title="Verde Esmeralda"></button>
-                    <button onclick="setAllCardsColorTheme('#bf5af2')" class="color-swatch-dot cursor-pointer" style="background:#bf5af2" title="Violeta Cyber"></button>
-                    <button onclick="setAllCardsColorTheme('#ff9f0a')" class="color-swatch-dot cursor-pointer" style="background:#ff9f0a" title="Ámbar Titanio"></button>
-                    <button onclick="setAllCardsColorTheme('#ff453a')" class="color-swatch-dot cursor-pointer" style="background:#ff453a" title="Rojo Competición"></button>
-                    <button onclick="setAllCardsColorTheme('#5ac8fa')" class="color-swatch-dot cursor-pointer" style="background:#5ac8fa" title="Cian Espacial"></button>
                 </div>
             </div>
 
             <!-- Botonera Unificada: Llamar Pilotos, Salida F1, Modo Auto-Mangas, Auto-Sim, Track Call, Sig Manga -->
             <div class="flex flex-wrap items-center gap-1.5 uppercase">
-                <button onclick="announceDrivers(false)" class="px-3 py-2 btn-neon-blue font-extrabold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
+                <button onclick="announceDrivers(false)" class="px-3 py-2 mac-silver-btn font-extrabold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-bullhorn"></i>
                     <span data-i18n="btn_call_drivers">LLAMAR PILOTOS</span>
                 </button>
@@ -664,11 +726,11 @@
                     <i class="fa-solid fa-traffic-light"></i>
                     <span data-i18n="f1_start">SALIDA F1</span>
                 </button>
-                <button onclick="toggleAutoMode()" id="btn-auto-mode" class="px-3 py-2 btn-silver font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
+                <button onclick="toggleAutoMode()" id="btn-auto-mode" class="px-3 py-2 mac-silver-btn font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-robot text-[#d982ff]"></i>
                     <span id="btn-auto-text" data-i18n="btn_auto_off">AUTO-MANGAS: OFF</span>
                 </button>
-                <button onclick="toggleAutoSim()" id="btnAutoDemo" class="px-3 py-2 btn-silver font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
+                <button onclick="toggleAutoSim()" id="btnAutoDemo" class="px-3 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-car-burst text-[#5ac8fa]"></i>
                     <span id="btnAutoSimText">SIMULADOR: OFF</span>
                 </button>
@@ -676,7 +738,7 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span id="btn-track-call-text">TRACK CALL</span>
                 </button>
-                <button onclick="finishCurrentHeat()" class="px-2.5 py-2 btn-silver font-bold text-xs rounded-xl transition cursor-pointer uppercase" title="SIGUIENTE MANGA">
+                <button onclick="finishCurrentHeat()" class="px-2.5 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer uppercase" title="SIGUIENTE MANGA">
                     <i class="fa-solid fa-forward-step mr-1"></i><span data-i18n="btn_next_heat">SIG. MANGA</span>
                 </button>
             </div>
@@ -696,14 +758,6 @@
                 <span id="active-race-heat-label" class="text-xs md:text-sm font-black text-[#5ac8fa] uppercase tracking-wider">MANGA 1</span>
                 <span class="text-white/20">|</span>
                 <span id="active-race-clock" class="text-xl md:text-2xl font-mono-num font-black text-white leading-none">03:00.0</span>
-                <span class="text-white/20 hidden md:inline">|</span>
-                <div class="hidden md:flex items-center gap-1 apple-segmented">
-                    <button onclick="setGlobalCardLayout(1)" class="px-2 py-0.5 rounded text-[10px] font-black text-white/80 hover:text-white cursor-pointer">L1</button>
-                    <button onclick="setGlobalCardLayout(2)" class="px-2 py-0.5 rounded text-[10px] font-black text-white/80 hover:text-white cursor-pointer">L2</button>
-                    <button onclick="setGlobalCardLayout(3)" class="px-2 py-0.5 rounded text-[10px] font-black text-white/80 hover:text-white cursor-pointer">L3</button>
-                    <button onclick="setGlobalCardLayout(4)" class="px-2 py-0.5 rounded text-[10px] font-black text-white/80 hover:text-white cursor-pointer">L4</button>
-                    <button onclick="setGlobalCardLayout(5)" class="px-2 py-0.5 rounded text-[10px] font-black text-white/80 hover:text-white cursor-pointer">L5</button>
-                </div>
             </div>
 
             <button onclick="toggleTrackCall()" id="btn-track-call-bottom" class="px-8 py-2.5 bg-[#ff9f0a] hover:bg-[#ffb340] text-black font-black text-xs md:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-[0_0_20px_rgba(255,159,10,0.45)] uppercase">
@@ -1295,10 +1349,10 @@
             }
         };
 
-        // Colores Oficiales de Carril
+        // Colores Oficiales de Carril y Temas Apple Mac Studio para las Tarjetas de Piloto
         const LANE_PALETTE = {
             1: { num: 1, hex: '#ff453a', colorName: 'Rojo' },
-            2: { num: 2, hex: '#e2e8f0', colorName: 'Blanco' },
+            2: { num: 2, hex: '#e2e8f0', colorName: 'Plata' },
             3: { num: 3, hex: '#30d158', colorName: 'Verde' },
             4: { num: 4, hex: '#ffd60a', colorName: 'Amarillo' },
             5: { num: 5, hex: '#0a84ff', colorName: 'Azul' },
@@ -1306,23 +1360,19 @@
             7: { num: 7, hex: '#bf5af2', colorName: 'Morado' },
             8: { num: 8, hex: '#5ac8fa', colorName: 'Cian' },
             9: { num: 9, hex: '#ff375f', colorName: 'Rosa' },
-            10: { num: 10, hex: '#94a3b8', colorName: 'Gris' }
+            10: { num: 10, hex: '#94a3b8', colorName: 'Titanio' }
         };
 
-        const POINTS_TABLE = [10, 8, 6, 5, 4, 3, 2, 1, 0, 0];
-
-        // Paleta de temas Apple macOS Futurista para los cuadros de pilotos
-        const CARD_COLOR_THEMES = [
-            { id: 'lane', hex: null, label: 'CARRIL' },
-            { id: 'blue', hex: '#0a84ff', label: 'AZUL PRO' },
-            { id: 'cyan', hex: '#5ac8fa', label: 'CIAN VISION' },
-            { id: 'green', hex: '#30d158', label: 'ESMERALDA' },
-            { id: 'purple', hex: '#bf5af2', label: 'NEÓN VIOLETA' },
-            { id: 'amber', hex: '#ff9f0a', label: 'ÁMBAR TITANIO' },
-            { id: 'red', hex: '#ff453a', label: 'ROJO F1' },
-            { id: 'pink', hex: '#ff375f', label: 'MAGENTA PRO' },
-            { id: 'silver', hex: '#e2e8f0', label: 'PLATA MAC' }
+        const PILOT_CARD_THEMES = [
+            { id: 'silver', name: 'Plata Mac Studio', hex: null, bg: 'linear-gradient(165deg, rgba(82, 96, 117, 0.52) 0%, rgba(32, 38, 49, 0.86) 55%, rgba(16, 19, 26, 0.96) 100%)' },
+            { id: 'platinum', name: 'Aluminio Claro', hex: '#f8fafc', bg: 'linear-gradient(165deg, rgba(148, 163, 184, 0.42) 0%, rgba(45, 53, 66, 0.88) 55%, rgba(20, 24, 33, 0.96) 100%)' },
+            { id: 'titanium', name: 'Titanio Espacial', hex: '#94a3b8', bg: 'linear-gradient(165deg, rgba(100, 116, 139, 0.40) 0%, rgba(28, 33, 43, 0.92) 100%)' },
+            { id: 'blue', name: 'Acero Azul Mac', hex: '#38bdf8', bg: 'linear-gradient(165deg, rgba(14, 116, 144, 0.42) 0%, rgba(22, 30, 46, 0.94) 100%)' },
+            { id: 'emerald', name: 'Plata Esmeralda', hex: '#30d158', bg: 'linear-gradient(165deg, rgba(22, 101, 52, 0.40) 0%, rgba(20, 31, 28, 0.94) 100%)' },
+            { id: 'amber', name: 'Plata Champán', hex: '#fbbf24', bg: 'linear-gradient(165deg, rgba(146, 64, 14, 0.38) 0%, rgba(31, 26, 22, 0.94) 100%)' }
         ];
+
+        const POINTS_TABLE = [10, 8, 6, 5, 4, 3, 2, 1, 0, 0];
 
         // Estado Global Unificado
         let state = {
@@ -1332,16 +1382,20 @@
             sessionType: 'CLUB',
             lanesCount: 4,
             numSectors: 3,
+            trackLengthMeters: 28,
+            scaleFactor: 32,
             durationSeconds: 180,
             durationLabel: '3 Min ★',
             durationCategory: 'CLUB',
             targetLaps: 'infinity',
             heatMode: 'auto',
             rotationMode: 'club_odd_even',
+            customLaneSequence: [1, 3, 4, 2],
             scoringMethod: 'laps',
             globalCardLayout: 1,
-            laneCardLayouts: {},
-            laneCustomColors: {},
+            globalThemeIndex: 0,
+            laneLayoutModes: {},
+            laneThemeIndices: {},
             drivers: [],
             heats: [],
             currentHeatIndex: 0,
@@ -1437,16 +1491,20 @@
                     sessionType: state.sessionType,
                     lanesCount: state.lanesCount,
                     numSectors: state.numSectors,
+                    trackLengthMeters: state.trackLengthMeters || 28,
+                    scaleFactor: state.scaleFactor || 32,
                     durationSeconds: state.durationSeconds,
                     durationLabel: state.durationLabel,
                     durationCategory: state.durationCategory,
                     targetLaps: state.targetLaps,
                     heatMode: state.heatMode,
                     rotationMode: state.rotationMode,
+                    customLaneSequence: state.customLaneSequence,
                     scoringMethod: state.scoringMethod,
-                    globalCardLayout: state.globalCardLayout || 1,
-                    laneCardLayouts: state.laneCardLayouts || {},
-                    laneCustomColors: state.laneCustomColors || {},
+                    globalCardLayout: state.globalCardLayout,
+                    globalThemeIndex: state.globalThemeIndex,
+                    laneLayoutModes: state.laneLayoutModes,
+                    laneThemeIndices: state.laneThemeIndices,
                     drivers: state.drivers,
                     currentHeatIndex: state.currentHeatIndex,
                     timeRemaining: state.timeRemaining,
@@ -1501,16 +1559,20 @@
                         state.sessionType = data.sessionType || 'CLUB';
                         state.lanesCount = data.lanesCount || 4;
                         state.numSectors = data.numSectors || 3;
+                        state.trackLengthMeters = data.trackLengthMeters || 28;
+                        state.scaleFactor = data.scaleFactor || 32;
                         state.durationSeconds = data.durationSeconds || 180;
                         state.durationLabel = data.durationLabel || '3 Min ★';
                         state.durationCategory = data.durationCategory || 'CLUB';
                         state.targetLaps = data.targetLaps || 'infinity';
                         state.heatMode = data.heatMode || 'auto';
                         state.rotationMode = data.rotationMode || 'club_odd_even';
+                        state.customLaneSequence = Array.isArray(data.customLaneSequence) ? data.customLaneSequence : [1, 3, 4, 2];
                         state.scoringMethod = data.scoringMethod || 'laps';
-                        state.globalCardLayout = data.globalCardLayout || 1;
-                        state.laneCardLayouts = data.laneCardLayouts || {};
-                        state.laneCustomColors = data.laneCustomColors || {};
+                        state.globalCardLayout = [1, 2, 3].includes(data.globalCardLayout) ? data.globalCardLayout : 1;
+                        state.globalThemeIndex = data.globalThemeIndex || 0;
+                        state.laneLayoutModes = data.laneLayoutModes || {};
+                        state.laneThemeIndices = data.laneThemeIndices || {};
                         state.drivers = data.drivers;
                         state.currentHeatIndex = data.currentHeatIndex || 0;
                         state.timeRemaining = typeof data.timeRemaining === 'number' ? data.timeRemaining : state.durationSeconds;
@@ -2417,8 +2479,8 @@
                 const pill = document.getElementById(`step-pill-${s}`);
                 if (pill) {
                     pill.className = (s === step)
-                        ? "flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 bg-[#0a84ff]/25 text-white border border-[#0a84ff]/50 transition"
-                        : "flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 text-[#94a3b8] hover:text-white transition";
+                        ? "py-1.5 px-4 rounded-xl text-xs font-black flex items-center gap-2 mac-silver-active transition cursor-pointer"
+                        : "py-1.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 text-slate-300 hover:text-white transition cursor-pointer";
                 }
             }
             if (step === 1) renderWizardStep1();
@@ -2432,6 +2494,16 @@
         }
 
         function getClubLaneSequence(count, mode) {
+            if (mode === 'custom' && Array.isArray(state.customLaneSequence) && state.customLaneSequence.length > 0) {
+                const valid = state.customLaneSequence
+                    .map(n => parseInt(n, 10))
+                    .filter(n => !isNaN(n) && n >= 1 && n <= count);
+                const unique = [...new Set(valid)];
+                for (let i = 1; i <= count; i++) {
+                    if (!unique.includes(i)) unique.push(i);
+                }
+                return unique;
+            }
             if (mode === 'sequential') return Array.from({ length: count }, (_, i) => i + 1);
             if (mode === 'random') {
                 let arr = Array.from({ length: count }, (_, i) => i + 1);
@@ -2449,6 +2521,119 @@
             return [...odds, ...evens];
         }
 
+        // ==================== CONTROLES MANUALES DE CREAR CARRERA (TIEMPO, VUELTAS, MANGAS Y ROTACIÓN) ====================
+        function applyManualTrackLength(val) {
+            const parsed = Math.max(5, Math.min(500, parseFloat(val) || 28));
+            state.trackLengthMeters = +parsed.toFixed(1);
+            const inp = document.getElementById('manual-track-length');
+            if (inp) inp.value = state.trackLengthMeters;
+            renderWizardStep1();
+            renderLiveRaceView();
+            saveLocalDatabase();
+        }
+
+        function stepTrackLength(delta) {
+            const next = Math.max(5, Math.min(500, (state.trackLengthMeters || 28) + delta));
+            applyManualTrackLength(next);
+        }
+
+        function applyManualDuration() {
+            const minEl = document.getElementById('manual-dur-min');
+            const secEl = document.getElementById('manual-dur-sec');
+            let mins = Math.max(0, parseInt(minEl ? minEl.value : 3, 10) || 0);
+            let secs = Math.max(0, Math.min(59, parseInt(secEl ? secEl.value : 0, 10) || 0));
+            let totalSec = mins * 60 + secs;
+            if (totalSec < 10) {
+                totalSec = 10;
+                mins = 0;
+                secs = 10;
+                if (secEl) secEl.value = 10;
+            }
+            const label = secs > 0 ? `${mins}m ${secs}s` : `${mins} Min`;
+            state.durationSeconds = totalSec;
+            state.durationLabel = label;
+            state.durationCategory = mins >= 15 ? 'ENDURANCE' : 'CLUB';
+            state.timeRemaining = totalSec;
+            renderWizardStep1();
+            updateHeaderSummary();
+            renderMasterClock();
+            saveLocalDatabase();
+        }
+
+        function applyManualTargetLaps(val) {
+            const clean = String(val || '').trim();
+            if (!clean || clean === '0' || clean === '∞') {
+                state.targetLaps = 'infinity';
+            } else {
+                const parsed = Math.max(1, parseInt(clean, 10) || 10);
+                state.targetLaps = parsed;
+            }
+            renderWizardStep1();
+            updateHeaderSummary();
+            renderMasterClock();
+            saveLocalDatabase();
+        }
+
+        function stepManualTargetLaps(delta) {
+            const current = state.targetLaps === 'infinity' ? 20 : state.targetLaps;
+            const next = Math.max(1, current + delta);
+            const inp = document.getElementById('manual-target-laps-input');
+            if (inp) inp.value = next;
+            applyManualTargetLaps(next);
+        }
+
+        function applyManualHeatsCount(val) {
+            const num = Math.max(1, Math.min(99, parseInt(val, 10) || 1));
+            state.sessionType = 'CLUB';
+            state.heatMode = num;
+            rebuildHeats();
+            renderWizardStep1();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function stepManualHeats(delta) {
+            const current = typeof state.heatMode === 'number' ? state.heatMode : (state.heats.length || state.lanesCount);
+            const next = Math.max(1, Math.min(99, current + delta));
+            const inp = document.getElementById('manual-heats-input');
+            if (inp) inp.value = next;
+            applyManualHeatsCount(next);
+        }
+
+        function applyManualRotationOrder() {
+            const inp = document.getElementById('manual-rotation-input');
+            if (!inp) return;
+            const parts = inp.value
+                .split(/[\s,.\-;>→]+/)
+                .map(x => parseInt(x.trim(), 10))
+                .filter(n => !isNaN(n) && n >= 1 && n <= state.lanesCount);
+
+            if (parts.length === 0) return;
+            const unique = [...new Set(parts)];
+            for (let i = 1; i <= state.lanesCount; i++) {
+                if (!unique.includes(i)) unique.push(i);
+            }
+            state.customLaneSequence = unique;
+            state.rotationMode = 'custom';
+            inp.value = unique.join(', ');
+            rebuildHeats();
+            renderWizardStep1();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
+        function invertCurrentRotationOrder() {
+            const currentSeq = getClubLaneSequence(state.lanesCount, state.rotationMode);
+            state.customLaneSequence = [...currentSeq].reverse();
+            state.rotationMode = 'custom';
+            const inp = document.getElementById('manual-rotation-input');
+            if (inp) inp.value = state.customLaneSequence.join(', ');
+            rebuildHeats();
+            renderWizardStep1();
+            updateHeaderSummary();
+            saveLocalDatabase();
+        }
+
         function renderWizardStep1() {
             const laneContainer = document.getElementById('lane-selector-buttons');
             if (!laneContainer) return;
@@ -2460,20 +2645,31 @@
                 btn.type = 'button';
                 btn.onclick = () => { state.lanesCount = i; rebuildHeats(); renderWizardStep1(); updateHeaderSummary(); };
                 btn.className = active
-                    ? "p-2 rounded-xl text-xs font-black border transition btn-neon-blue"
-                    : "p-2 rounded-xl text-xs font-bold border transition bg-black/40 text-slate-300 border-white/10 hover:border-white/30";
-                btn.innerHTML = `<span style="color:${pal.hex}">●</span> C${i}`;
+                    ? "p-2 rounded-xl text-xs font-black border transition mac-silver-active"
+                    : "p-2 rounded-xl text-xs font-bold border transition mac-silver-btn";
+                btn.innerHTML = `<span style="color:${active ? '#090b10' : pal.hex}">●</span> C${i}`;
                 laneContainer.appendChild(btn);
             }
             document.getElementById('lanes-selected-badge').textContent = `${state.lanesCount} ${t('lane')}S`;
 
             [1, 2, 3].forEach(sec => {
                 const b = document.getElementById(`sec-btn-${sec}`);
-                if (b) b.className = (state.numSectors === sec) ? "px-3 py-1 rounded-lg text-xs font-black btn-neon-blue" : "px-3 py-1 rounded-lg text-xs font-semibold text-[#94a3b8] hover:text-white";
+                if (b) b.className = (state.numSectors === sec)
+                    ? "px-2.5 py-1 rounded-lg text-[10px] font-black mac-silver-active cursor-pointer"
+                    : "px-2.5 py-1 rounded-lg text-[10px] font-semibold text-slate-300 hover:text-white cursor-pointer";
             });
 
-            const seq = getClubLaneSequence(state.lanesCount, 'club_odd_even');
-            document.getElementById('wheel-preview-badge').textContent = seq.join('→');
+            const trackLenInp = document.getElementById('manual-track-length');
+            if (trackLenInp && document.activeElement !== trackLenInp) {
+                trackLenInp.value = state.trackLengthMeters || 28;
+            }
+
+            const activeSeq = getClubLaneSequence(state.lanesCount, state.rotationMode);
+            document.getElementById('wheel-preview-badge').textContent = activeSeq.join('→');
+            const rotInput = document.getElementById('manual-rotation-input');
+            if (rotInput && document.activeElement !== rotInput) {
+                rotInput.value = activeSeq.join(', ');
+            }
 
             const durations = [
                 { s: 120, label: '2 Min' },
@@ -2481,59 +2677,78 @@
                 { s: 300, label: '5 Min ★' },
                 { s: 600, label: '10 Min' },
                 { s: 900, label: '15 Min' },
-                { s: 1800, label: '30 Min' },
-                { s: 3600, label: '60 Min' },
-                { s: 5400, label: '90 Min' },
-                { s: 7200, label: '120 Min' }
+                { s: 1800, label: '30 Min' }
             ];
             durations.forEach(d => {
                 const btn = document.getElementById(`dur-btn-${d.s}`);
                 if (!btn) return;
                 btn.textContent = d.label;
                 btn.className = (state.durationSeconds === d.s)
-                    ? "p-2.5 rounded-xl text-xs font-black border transition btn-neon-blue"
-                    : "p-2.5 rounded-xl text-xs font-bold border transition bg-black/40 text-slate-300 border-white/10 hover:border-white/30";
+                    ? "p-1.5 rounded-xl text-[11px] font-black border transition mac-silver-active cursor-pointer"
+                    : "p-1.5 rounded-xl text-[11px] font-bold border transition mac-silver-btn cursor-pointer";
             });
             document.getElementById('duration-selected-badge').textContent = state.durationLabel;
 
-            const lapOptions = ['infinity', 10, 20, 25, 30, 50, 100];
+            const minEl = document.getElementById('manual-dur-min');
+            const secEl = document.getElementById('manual-dur-sec');
+            if (minEl && document.activeElement !== minEl) minEl.value = Math.floor(state.durationSeconds / 60);
+            if (secEl && document.activeElement !== secEl) secEl.value = state.durationSeconds % 60;
+
+            const lapOptions = ['infinity', 15, 25, 40, 50, 100];
             lapOptions.forEach(lap => {
                 const btn = document.getElementById(`lap-btn-${lap}`);
                 if (!btn) return;
-                const spanClass = lap === 'infinity' ? 'col-span-2' : '';
+                const spanClass = (lap === 'infinity' || lap === 100) ? 'col-span-2' : '';
                 btn.className = (state.targetLaps === lap)
-                    ? `${spanClass} p-2.5 rounded-xl text-xs font-black border transition btn-neon-green`
-                    : `${spanClass} p-2.5 rounded-xl text-xs font-bold border transition bg-black/40 text-slate-300 border-white/10 hover:border-white/30`;
+                    ? `${spanClass} p-2 rounded-xl text-[11px] font-black border transition mac-silver-active cursor-pointer`
+                    : `${spanClass} p-2 rounded-xl text-[11px] font-bold border transition mac-silver-btn cursor-pointer`;
             });
             document.getElementById('laps-selected-badge').textContent = state.targetLaps === 'infinity' ? '∞ Tiempo' : `${state.targetLaps} ${t('laps')}`;
+            const manualLapsInp = document.getElementById('manual-target-laps-input');
+            if (manualLapsInp && document.activeElement !== manualLapsInp) {
+                manualLapsInp.value = state.targetLaps === 'infinity' ? '' : state.targetLaps;
+            }
 
             ['PRACTICE', 'CLUB'].forEach(st => {
                 const b = document.getElementById(`sess-btn-${st}`);
                 if (b) b.className = (state.sessionType === st)
-                    ? "p-2.5 rounded-xl text-xs font-black border transition btn-neon-purple"
-                    : "p-2.5 rounded-xl text-xs font-bold border transition bg-black/40 text-slate-300 border-white/10";
+                    ? "p-2 rounded-xl text-[11px] font-black border transition mac-silver-active cursor-pointer"
+                    : "p-2 rounded-xl text-[11px] font-bold border transition mac-silver-btn cursor-pointer";
             });
 
             ['auto', 'lanes', 6, 10].forEach(hm => {
                 const b = document.getElementById(`heat-btn-${hm}`);
                 if (b) b.className = (state.heatMode === hm)
-                    ? "p-2 rounded-xl text-xs font-black border transition btn-neon-blue"
-                    : "p-2 rounded-xl text-xs font-bold border transition bg-black/40 text-slate-300 border-white/10";
+                    ? "p-1.5 rounded-xl text-[10px] font-black border transition mac-silver-active cursor-pointer"
+                    : "p-1.5 rounded-xl text-[10px] font-bold border transition mac-silver-btn cursor-pointer";
             });
+
+            const totalHeatsCount = state.heats.length || (typeof state.heatMode === 'number' ? state.heatMode : state.lanesCount);
+            document.getElementById('heats-selected-badge').textContent = `${totalHeatsCount} Mangas`;
+            const manualHeatsInp = document.getElementById('manual-heats-input');
+            if (manualHeatsInp && document.activeElement !== manualHeatsInp) {
+                manualHeatsInp.value = totalHeatsCount;
+            }
 
             ['club_odd_even', 'random', 'sequential'].forEach(rm => {
                 const b = document.getElementById(`rot-wiz-${rm}`);
                 if (b) b.className = (state.rotationMode === rm)
-                    ? "p-2.5 text-left rounded-xl text-xs font-black border transition flex justify-between items-center bg-[#ff9f0a]/20 text-white border-[#ff9f0a]"
-                    : "p-2.5 text-left rounded-xl text-xs font-bold border transition flex justify-between items-center bg-black/40 text-slate-300 border-white/10";
+                    ? "p-2 rounded-xl text-[10px] font-black border transition text-center mac-silver-active cursor-pointer"
+                    : "p-2 rounded-xl text-[10px] font-bold border transition text-center mac-silver-btn cursor-pointer";
             });
 
             ['laps', 'time', 'points'].forEach(sm => {
                 const b = document.getElementById(`score-wiz-${sm}`);
                 if (b) b.className = (state.scoringMethod === sm)
-                    ? "p-2.5 text-left rounded-xl text-xs font-black border transition bg-yellow-500/20 text-white border-yellow-400"
-                    : "p-2.5 text-left rounded-xl text-xs font-bold border transition bg-black/40 text-slate-300 border-white/10";
+                    ? "p-2.5 text-left rounded-xl text-xs font-black border transition mac-silver-active cursor-pointer flex items-center justify-between"
+                    : "p-2.5 text-left rounded-xl text-xs font-bold border transition mac-silver-btn cursor-pointer flex items-center justify-between";
             });
+
+            const liveSum = document.getElementById('mac-config-live-summary');
+            if (liveSum) {
+                const modeTxt = state.targetLaps === 'infinity' ? '∞ Por Tiempo' : `Meta ${state.targetLaps} Vueltas`;
+                liveSum.textContent = `${state.lanesCount} Carriles · Cuerda ${state.trackLengthMeters || 28}m · ${totalHeatsCount} Mangas x ${state.durationLabel} · ${modeTxt} · Rueda [${activeSeq.join('→')}]`;
+            }
         }
 
         function setSectorsCount(n) { state.numSectors = n; renderWizardStep1(); renderLiveRaceView(); saveLocalDatabase(); }
@@ -2600,21 +2815,21 @@
             if (!container) return;
             document.getElementById('drivers-count-badge').textContent = `${state.drivers.length} Pilotos`;
             if (state.drivers.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-xs text-[#94a3b8]">Sin pilotos inscritos. Pulsa "Cargar 6 Pilotos Oficiales de Ejemplo" o añade uno arriba.</div>`;
+                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Sin pilotos inscritos. Pulsa "Cargar 6 Pilotos Oficiales de Ejemplo" o añade uno arriba.</div>`;
                 return;
             }
             container.innerHTML = state.drivers.map((d, idx) => `
                 <div class="px-5 py-2.5 flex items-center justify-between gap-3 hover:bg-white/5 transition">
                     <div class="flex items-center space-x-3">
-                        <span class="w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs ${idx === 0 ? 'bg-[#ffd60a] text-black' : 'bg-white/10 text-white'}">P${idx + 1}</span>
+                        <span class="w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs ${idx === 0 ? 'mac-silver-active' : 'bg-white/10 text-white'}">P${idx + 1}</span>
                         <div>
                             <div class="font-bold text-white text-sm">${d.name}</div>
-                            <div class="text-xs text-[#94a3b8]">${d.car}</div>
+                            <div class="text-xs text-slate-400">${d.car}</div>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
                         <input type="number" step="0.001" value="${d.poleLap.toFixed(3)}" onchange="updateDriverPole('${d.id}', this.value)" class="w-20 bg-black/50 border border-white/15 rounded-lg px-2 py-1 text-right font-mono-num font-bold text-[#30d158] text-xs">
-                        <button onclick="removeDriver('${d.id}')" class="text-[#94a3b8] hover:text-[#ff453a] p-1.5 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="removeDriver('${d.id}')" class="text-slate-400 hover:text-[#ff453a] p-1.5 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -2786,11 +3001,11 @@
 
                 const warningHtml = (state.sessionType === 'CLUB' && state.heats.length < state.drivers.length)
                     ? `<div class="mb-3 px-3.5 py-2 rounded-xl bg-[#ff9f0a]/15 border border-[#ff9f0a]/40 flex items-center justify-between gap-2 text-xs text-[#ff9f0a]">
-                        <div><i class="fa-solid fa-triangle-exclamation mr-1.5"></i><b>Aviso de Equidad:</b> Tienes <b>${state.drivers.length} pilotos</b> pero solo <b>${state.heats.length} mangas</b> seleccionadas. Para que todos corran exactamente las mismas mangas y pasen por los ${totalLanes} carriles, necesitas <b>${Math.max(state.drivers.length, totalLanes)} mangas</b>.</div>
+                        <div><i class="fa-solid fa-triangle-exclamation mr-1.5"></i><b>Aviso de Equidad:</b> Tienes <b>${state.drivers.length} pilotos</b> pero solo <b>${state.heats.length} mangas</b> seleccionadas.</div>
                         <button onclick="setHeatMode('auto'); renderWizardStep3();" class="px-3 py-1 rounded-lg bg-[#ff9f0a] text-black font-black shrink-0 cursor-pointer">Ajustar a ${Math.max(state.drivers.length, totalLanes)} Mangas</button>
                        </div>`
                     : `<div class="mb-2 flex items-center justify-between text-xs">
-                        <span class="font-extrabold uppercase tracking-wider text-[#5ac8fa]"><i class="fa-solid fa-table-cells mr-1.5"></i>Matriz de Verificación: Rotación de Pilotos por Carril</span>
+                        <span class="font-extrabold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-table-cells mr-1.5"></i>Matriz de Verificación: Rotación de Pilotos por Carril</span>
                         <span class="text-[11px] font-bold text-[#30d158]">✓ Ciclo de rotación verificado</span>
                        </div>`;
 
@@ -2798,7 +3013,7 @@
                     ${warningHtml}
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="text-[10px] uppercase text-[#94a3b8] bg-black/40">
+                            <tr class="text-[10px] uppercase text-slate-300 bg-black/40">
                                 <th class="px-3 py-1.5">Piloto</th>
                                 ${lanesList.map(l => `<th class="px-2.5 py-1.5 text-center border-l border-white/5" style="color:${LANE_PALETTE[l].hex}">Carril ${l}</th>`).join('')}
                                 <th class="px-3 py-1.5 text-center border-l border-white/10 text-[#30d158]">Total</th>
@@ -2811,7 +3026,7 @@
             }
 
             container.innerHTML = state.heats.map(h => `
-                <div class="mac-window overflow-hidden">
+                <div class="mac-studio-silver overflow-hidden">
                     <div class="px-4 py-2.5 bg-black/50 border-b border-white/10 flex items-center justify-between">
                         <span class="font-black text-xs text-white">${t('word_heat').toUpperCase()} ${h.heatNumber}</span>
                         <span class="text-[11px] font-bold text-[#ff9f0a]">
@@ -2825,7 +3040,7 @@
                                     <span class="px-2 py-0.5 rounded font-black text-[10px]" style="background:${a.laneInfo.hex}25; color:${a.laneInfo.hex}; border:1px solid ${a.laneInfo.hex}55">C${a.lane}</span>
                                     <span class="font-bold text-white">${a.driverName}</span>
                                 </div>
-                                <span class="text-[10px] font-mono-num text-[#94a3b8]">${a.nextAction}</span>
+                                <span class="text-[10px] font-mono-num text-slate-300">${a.nextAction}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -2833,7 +3048,6 @@
             `).join('');
         }
 
-        // ==================== PARRILLA EN VIVO: TARJETAS KRONOS + MANGAS TICTAC ====================
         function selectLiveHeat(idx) {
             stopAllTimers();
             state.currentHeatIndex = idx;
@@ -2845,7 +3059,7 @@
         }
 
         function getDriverMeanLap(a) {
-            if (!a.history || !a.history.length) return 0;
+            if (!a || !a.history || !a.history.length) return 0;
             return a.history.reduce((x, y) => x + y, 0) / a.history.length;
         }
 
@@ -2860,446 +3074,14 @@
             return map;
         }
 
-        function renderLiveRaceView() {
-            if (state.heats.length === 0) return;
-            const heat = state.heats[state.currentHeatIndex];
-            if (!heat) return;
-
-            const doneSuffix = heat.status === 'FINISHED' ? ` · ${t('word_finished')} ✓` : '';
-            document.getElementById('live-heat-title').textContent = `${t('word_heat').toUpperCase()} ${heat.heatNumber}/${state.heats.length}${doneSuffix}`;
-            document.getElementById('live-target-badge').textContent = state.targetLaps === 'infinity' ? state.durationLabel : `META ${state.targetLaps}V`;
-            renderMasterClock();
-
-            const tabsEl = document.getElementById('live-heat-tabs');
-            tabsEl.innerHTML = state.heats.map((h, i) => {
-                const isCur = i === state.currentHeatIndex;
-                const isDone = h.status === 'FINISHED';
-                const cls = isCur
-                    ? 'btn-neon-blue text-white'
-                    : (isDone ? 'bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40' : 'bg-white/5 text-[#94a3b8] border border-white/10 hover:text-white');
-                return `<button onclick="selectLiveHeat(${i})" class="px-3 py-1.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer ${cls}">
-                    ${t('word_heat')} ${h.heatNumber}${isDone ? ` (${t('word_finished')}) ✓` : ''}
-                </button>`;
-            }).join('');
-
-            renderLanesGrid();
-        }
-
-        // ==================== FUNCIONES DE PERSONALIZACIÓN DE LOS 5 LAYOUTS Y COLORES DE CUADRO ====================
-        function setGlobalCardLayout(layoutNum) {
-            state.globalCardLayout = layoutNum;
-            state.laneCardLayouts = {};
-            renderLanesGrid();
-            saveLocalDatabase();
-        }
-
-        function setLaneCardLayout(laneNum, layoutNum) {
-            if (!state.laneCardLayouts) state.laneCardLayouts = {};
-            state.laneCardLayouts[laneNum] = layoutNum;
-            renderLanesGrid();
-            saveLocalDatabase();
-        }
-
-        function cycleLaneColorTheme(laneNum) {
-            if (!state.laneCustomColors) state.laneCustomColors = {};
-            const current = state.laneCustomColors[laneNum] || null;
-            const idx = CARD_COLOR_THEMES.findIndex(t => t.hex === current);
-            const nextTheme = CARD_COLOR_THEMES[(idx + 1) % CARD_COLOR_THEMES.length];
-            if (nextTheme.hex === null) {
-                delete state.laneCustomColors[laneNum];
-            } else {
-                state.laneCustomColors[laneNum] = nextTheme.hex;
-            }
-            renderLanesGrid();
-            saveLocalDatabase();
-        }
-
-        function setLaneColorDirect(laneNum, hexValue) {
-            if (!state.laneCustomColors) state.laneCustomColors = {};
-            if (!hexValue || hexValue === 'lane') {
-                delete state.laneCustomColors[laneNum];
-            } else {
-                state.laneCustomColors[laneNum] = hexValue;
-            }
-            renderLanesGrid();
-            saveLocalDatabase();
-        }
-
-        function setAllCardsColorTheme(hexOrLane) {
-            if (!state.laneCustomColors) state.laneCustomColors = {};
-            if (hexOrLane === 'lane') {
-                state.laneCustomColors = {};
-            } else {
-                for (let i = 1; i <= 10; i++) {
-                    state.laneCustomColors[i] = hexOrLane;
-                }
-            }
-            renderLanesGrid();
-            saveLocalDatabase();
-        }
-
-        function renderLanesGrid() {
-            const container = document.getElementById('lanesGridContainer');
-            if (!container || state.heats.length === 0) return;
-            const heat = state.heats[state.currentHeatIndex];
-            if (!heat) return;
-
-            // Actualizar estado activo de botones globales L1..L5
-            for (let l = 1; l <= 5; l++) {
-                const gBtn = document.getElementById(`glayout-btn-${l}`);
-                if (gBtn) {
-                    const isAct = (state.globalCardLayout || 1) === l && Object.keys(state.laneCardLayouts || {}).length === 0;
-                    gBtn.className = isAct
-                        ? "px-2 py-0.5 rounded-[7px] text-[10px] font-black btn-neon-blue cursor-pointer"
-                        : "px-2 py-0.5 rounded-[7px] text-[10px] font-black text-[#94a3b8] hover:text-white cursor-pointer";
-                }
-            }
-
-            const assignments = heat.assignments;
-            const n = assignments.length;
-            const sCount = state.numSectors;
-            const standings = getHeatStandingsMap(heat);
-
-            let cols = 1, rows = 1;
-            if (n === 1) { cols = 1; rows = 1; }
-            else if (n === 2) { cols = 2; rows = 1; }
-            else if (n === 3) { cols = 3; rows = 1; }
-            else if (n === 4) { cols = 2; rows = 2; }
-            else if (n <= 6) { cols = 3; rows = 2; }
-            else if (n <= 8) { cols = 4; rows = 2; }
-            else { cols = 5; rows = 2; }
-
-            container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-            container.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
-
-            // Encontrar líder para cálculo de gap en vivo
-            const sortedByPos = [...assignments].sort((x, y) => (y.laps - x.laps) || (x.bestLap - y.bestLap));
-            const leaderAss = sortedByPos[0];
-
-            container.innerHTML = assignments.map(a => {
-                const pal = a.laneInfo;
-                const activeHex = (state.laneCustomColors && state.laneCustomColors[a.lane]) ? state.laneCustomColors[a.lane] : pal.hex;
-                const cardLayout = (state.laneCardLayouts && state.laneCardLayouts[a.lane]) ? state.laneCardLayouts[a.lane] : (state.globalCardLayout || 1);
-
-                const pos = standings[a.lane];
-                const isLeader = pos === 1 && a.laps > 0;
-                const meanVal = getDriverMeanLap(a);
-                const lastValStr = a.lastLap > 0 ? a.lastLap.toFixed(3) : '--.---';
-                const bestValStr = a.bestLap < Infinity ? a.bestLap.toFixed(3) : '--.---';
-                const meanValStr = meanVal > 0 ? meanVal.toFixed(3) : '0.000';
-                const gapLaps = leaderAss ? (leaderAss.laps - a.laps) : 0;
-                const gapText = isLeader ? 'LÍDER P1' : (gapLaps > 0 ? `-${gapLaps} V` : (a.bestLap < Infinity && leaderAss.bestLap < Infinity ? `+${Math.abs(a.bestLap - leaderAss.bestLap).toFixed(2)}s` : 'EN PARALELO'));
-
-                const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'text-white';
-                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(3) : '--.---';
-                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(3) : '--.---';
-                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(3) : '--.---';
-                const curSec = a.currentSector || 1;
-                const activeBox = (idx) => curSec === idx ? `border border-[${activeHex}] bg-white/10 shadow-[0_0_12px_${activeHex}40]` : '';
-
-                // Barra de Sectores Compacta para modos L1, L2, L4 y L5
-                let compactSectorsHtml = '';
-                if (sCount >= 2) {
-                    compactSectorsHtml = `
-                        <div class="grid grid-cols-${sCount} gap-1.5 pt-1.5 border-t border-white/10 shrink-0">
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-group-box px-2 py-1 flex items-center justify-between transition ${activeBox(1)}">
-                                <span class="text-[9px] font-black ${curSec === 1 ? 'text-[#5ac8fa]' : 'text-[#94a3b8]'}">S1 ${curSec === 1 ? '●' : ''}</span>
-                                <span class="text-xs font-mono-num font-black ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
-                            </div>
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-group-box px-2 py-1 flex items-center justify-between transition ${activeBox(2)}">
-                                <span class="text-[9px] font-black ${curSec === 2 ? 'text-[#5ac8fa]' : 'text-[#94a3b8]'}">${sCount === 2 ? t('finish_line') : 'S2'} ${curSec === 2 ? '●' : ''}</span>
-                                <span class="text-xs font-mono-num font-black ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
-                            </div>
-                            ${sCount === 3 ? `
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-group-box px-2 py-1 flex items-center justify-between transition ${activeBox(3)}">
-                                <span class="text-[9px] font-black ${curSec === 3 ? 'text-[#5ac8fa]' : 'text-[#94a3b8]'}">${t('finish_line')} ${curSec === 3 ? '●' : ''}</span>
-                                <span class="text-xs font-mono-num font-black ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
-                            </div>` : ''}
-                        </div>`;
-                }
-
-                // Historial de vueltas relleno sin huecos vacíos
-                let historyRows = '';
-                for (let j = a.history.length - 1; j >= 0; j--) {
-                    const tm = a.history[j];
-                    const isBest = tm === a.bestLap;
-                    const prev = j > 0 ? a.history[j - 1] : null;
-                    let trend = prev ? (tm < prev ? '<span class="arrow-down text-[10px] ml-1">▼</span>' : '<span class="arrow-up text-[10px] ml-1">▲</span>') : '';
-                    historyRows += `
-                        <div class="flex justify-between items-center text-xs font-mono-num border-b border-white/5 py-1 px-2 rounded hover:bg-white/5">
-                            <span class="text-[#94a3b8] font-bold">V${j + 1}</span>
-                            <div class="flex items-center">
-                                <span class="${isBest ? 'text-[#30d158] font-black' : 'text-white font-semibold'}">${tm.toFixed(3)}s</span>
-                                ${trend}
-                            </div>
-                        </div>`;
-                }
-                if (!historyRows) {
-                    historyRows = `
-                        <div class="flex-1 grid grid-cols-3 gap-1.5 h-full items-stretch">
-                            <div class="mac-group-box p-2 flex flex-col justify-center items-center text-center">
-                                <span class="text-[9px] font-black text-[#94a3b8]">ESTADO</span>
-                                <span class="text-xs font-black text-[#30d158] mt-0.5">LISTO EN PISTA</span>
-                            </div>
-                            <div class="mac-group-box p-2 flex flex-col justify-center items-center text-center">
-                                <span class="text-[9px] font-black text-[#94a3b8]">SIG. CAMBIO</span>
-                                <span class="text-xs font-mono-num font-black text-[#ffd60a] mt-0.5">${a.nextAction}</span>
-                            </div>
-                            <div class="mac-group-box p-2 flex flex-col justify-center items-center text-center">
-                                <span class="text-[9px] font-black text-[#94a3b8]">SENSOR</span>
-                                <span class="text-xs font-mono-num font-black text-[#5ac8fa] mt-0.5">TECLA [${a.lane === 10 ? 0 : a.lane}]</span>
-                            </div>
-                        </div>`;
-                }
-
-                // Cabecera estilo Apple macOS con selector de los 5 Layouts y Selector de Color por Piloto
-                const headerBarHtml = `
-                    <div class="flex items-center justify-between gap-1.5 pb-1.5 mb-1.5 border-b border-white/10 shrink-0 z-10">
-                        <div class="flex items-center gap-1.5 min-w-0">
-                            <div class="mac-traffic-dots mr-0.5 hidden sm:inline-flex">
-                                <span class="mac-dot" style="background:${activeHex}"></span>
-                                <span class="mac-dot bg-white/20"></span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider shrink-0" style="background:${activeHex}28; color:${activeHex}; border:1px solid ${activeHex}66;">
-                                C${a.lane}
-                            </span>
-                            <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black shrink-0 ${isLeader ? 'bg-[#ffd60a] text-black shadow-[0_0_12px_rgba(255,214,10,0.5)]' : 'bg-white/10 text-white'}">
-                                P${pos}
-                            </span>
-                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-sm lg:text-base tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-[#0a84ff]"/>
-                        </div>
-
-                        <!-- Botones Apple de 5 Vistas (1-5) + Color + Auditoría (+1V/-1V) -->
-                        <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
-                            <div class="flex items-center gap-0.5 bg-black/50 p-0.5 rounded-lg border border-white/10" title="5 Opciones de Organización de Datos del Cuadro">
-                                ${[1, 2, 3, 4, 5].map(num => `
-                                    <button type="button" onclick="setLaneCardLayout(${a.lane}, ${num})" class="mini-apple-pill ${cardLayout === num ? 'active-pill' : ''} cursor-pointer">${num}</button>
-                                `).join('')}
-                            </div>
-
-                            <!-- Botón Selector de Color del Cuadro -->
-                            <button type="button" onclick="cycleLaneColorTheme(${a.lane})" title="Cambiar color de este cuadro de piloto" class="px-1.5 py-1 rounded-lg bg-black/50 hover:bg-white/15 border border-white/15 flex items-center gap-1 cursor-pointer">
-                                <span class="w-2.5 h-2.5 rounded-full" style="background:${activeHex}; box-shadow: 0 0 8px ${activeHex};"></span>
-                                <i class="fa-solid fa-palette text-[9px] text-white/80"></i>
-                            </button>
-
-                            <button type="button" onclick="auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded-md bg-[#30d158]/20 hover:bg-[#30d158]/40 text-[#30d158] text-[9px] font-black cursor-pointer">+1</button>
-                            <button type="button" onclick="auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded-md bg-[#ff453a]/20 hover:bg-[#ff453a]/40 text-[#ff453a] text-[9px] font-black cursor-pointer">-1</button>
-                        </div>
-                    </div>
-                `;
-
-                // Construcción de las 5 Opciones de Organización de Datos ajustadas al 100% del cuadro sin espacios vacíos
-                let bodyLayoutHtml = '';
-
-                if (cardLayout === 1) {
-                    // OPCIÓN 1: VISTA PRO EQUILIBRADA (Bento Grid 4 KPIs + Historial/Estado expandido + Sectores)
-                    bodyLayoutHtml = `
-                        <div class="flex-1 flex flex-col gap-1.5 min-h-0 z-10">
-                            <div class="grid grid-cols-4 gap-1.5 shrink-0">
-                                <div class="mac-group-box p-2 flex flex-col justify-between border-l-2" style="border-left-color:${activeHex}">
-                                    <span class="group-label text-[#94a3b8]">${t('laps')}</span>
-                                    <span class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none mt-0.5">${a.laps}</span>
-                                </div>
-                                <div class="mac-group-box p-2 flex flex-col justify-between">
-                                    <span class="group-label text-[#5ac8fa]">ÚLTIMA</span>
-                                    <span class="text-base lg:text-xl font-mono-num font-black text-white leading-none mt-0.5">${lastValStr}<small class="text-[10px] text-[#94a3b8]">s</small></span>
-                                </div>
-                                <div class="mac-group-box p-2 flex flex-col justify-between border border-[#30d158]/30 bg-[#30d158]/5">
-                                    <span class="group-label text-[#30d158]">${t('record')}</span>
-                                    <span class="text-base lg:text-xl font-mono-num font-black text-[#30d158] leading-none mt-0.5">${bestValStr}<small class="text-[10px]">s</small></span>
-                                </div>
-                                <div class="mac-group-box p-2 flex flex-col justify-between">
-                                    <span class="group-label text-[#ffd60a]">${t('mean_lap')}</span>
-                                    <span class="text-base lg:text-xl font-mono-num font-black text-[#e2e8f0] leading-none mt-0.5">${meanValStr}<small class="text-[10px] text-[#94a3b8]">s</small></span>
-                                </div>
-                            </div>
-                            <div class="mac-group-box p-1.5 flex-1 min-h-0 overflow-y-auto flex flex-col justify-between">
-                                ${historyRows}
-                            </div>
-                            ${compactSectorsHtml}
-                        </div>`;
-                } else if (cardLayout === 2) {
-                    // OPCIÓN 2: TELEMETRÍA GIGANTE (Números ultra grandes ocupando el 100% del alto y ancho para lectura lejana)
-                    bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-12 gap-2 min-h-0 z-10 items-stretch">
-                            <div class="col-span-5 mac-group-box p-3 flex flex-col justify-between items-center text-center relative overflow-hidden" style="border: 1px solid ${activeHex}55; background: radial-gradient(circle at 50% 0%, ${activeHex}28, rgba(10,12,18,0.9));">
-                                <span class="group-label tracking-widest" style="color:${activeHex}">${t('laps')} EN MANGA</span>
-                                <div class="text-5xl lg:text-7xl font-mono-num font-black text-white leading-none my-auto">${a.laps}</div>
-                                <span class="text-[10px] font-mono-num font-bold text-[#ffd60a] bg-black/50 px-2.5 py-0.5 rounded-full border border-white/10">${gapText}</span>
-                            </div>
-                            <div class="col-span-7 flex flex-col justify-between gap-2 min-h-0">
-                                <div class="mac-group-box p-2.5 flex-1 flex flex-col justify-center items-center text-center border border-white/10">
-                                    <span class="group-label text-[#5ac8fa]">CRONO ÚLTIMA VUELTA</span>
-                                    <div class="text-3xl lg:text-5xl font-mono-num font-black text-white leading-none mt-1">${lastValStr}<span class="text-base text-[#5ac8fa] ml-0.5">s</span></div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2 shrink-0">
-                                    <div class="mac-group-box p-2 text-center border border-[#30d158]/30 bg-[#30d158]/10">
-                                        <div class="group-label text-[#30d158]">${t('record')}</div>
-                                        <div class="text-sm lg:text-lg font-mono-num font-black text-[#30d158]">${bestValStr}s</div>
-                                    </div>
-                                    <div class="mac-group-box p-2 text-center">
-                                        <div class="group-label text-[#94a3b8]">${t('mean_lap')}</div>
-                                        <div class="text-sm lg:text-lg font-mono-num font-black text-white">${meanValStr}s</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        ${compactSectorsHtml}`;
-                } else if (cardLayout === 3) {
-                    // OPCIÓN 3: RADAR DE SECTORES S1·S2·S3 Y PARCIALES OCUPANDO TODO EL CUADRO
-                    const secCols = Math.max(2, sCount);
-                    bodyLayoutHtml = `
-                        <div class="flex-1 flex flex-col justify-between gap-2 min-h-0 z-10">
-                            <div class="grid grid-cols-3 gap-2 shrink-0">
-                                <div class="mac-group-box px-3 py-2 flex items-center justify-between">
-                                    <span class="group-label text-[#30d158]">${t('laps')}</span>
-                                    <span class="text-2xl font-mono-num font-black text-white">${a.laps}</span>
-                                </div>
-                                <div class="mac-group-box px-3 py-2 flex items-center justify-between">
-                                    <span class="group-label text-[#5ac8fa]">ÚLTIMA</span>
-                                    <span class="text-lg font-mono-num font-black text-white">${lastValStr}s</span>
-                                </div>
-                                <div class="mac-group-box px-3 py-2 flex items-center justify-between border border-[#d982ff]/30">
-                                    <span class="group-label text-[#d982ff]">${t('record')}</span>
-                                    <span class="text-lg font-mono-num font-black text-[#d982ff]">${bestValStr}s</span>
-                                </div>
-                            </div>
-
-                            <div class="flex-1 grid grid-cols-${secCols} gap-2 min-h-0 items-stretch">
-                                <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-group-box p-3 flex flex-col justify-between text-center transition ${activeBox(1)}">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-black text-[#5ac8fa]">SECTOR 1</span>
-                                        <span class="text-[9px] font-mono-num text-[#94a3b8]">RÉC: ${a.bestSectors[1] < Infinity ? a.bestSectors[1].toFixed(3) : '--'}</span>
-                                    </div>
-                                    <div class="text-2xl lg:text-4xl font-mono-num font-black my-auto ${getSecColor(a.sectorColors[1])}">${s1Val}</div>
-                                    <div class="text-[9px] font-bold text-[#94a3b8] uppercase">${curSec === 1 ? '▶ EN TRAMO S1' : 'COMPLETADO'}</div>
-                                </div>
-
-                                <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-group-box p-3 flex flex-col justify-between text-center transition ${activeBox(2)}">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-black text-[#ffd60a]">${sCount === 2 ? t('finish_line') : 'SECTOR 2'}</span>
-                                        <span class="text-[9px] font-mono-num text-[#94a3b8]">RÉC: ${a.bestSectors[2] < Infinity ? a.bestSectors[2].toFixed(3) : '--'}</span>
-                                    </div>
-                                    <div class="text-2xl lg:text-4xl font-mono-num font-black my-auto ${getSecColor(a.sectorColors[2])}">${s2Val}</div>
-                                    <div class="text-[9px] font-bold text-[#94a3b8] uppercase">${curSec === 2 ? '▶ EN TRAMO S2' : 'ESPERANDO'}</div>
-                                </div>
-
-                                ${sCount === 3 ? `
-                                <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-group-box p-3 flex flex-col justify-between text-center transition ${activeBox(3)}">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-black text-[#30d158]">SECTOR 3 · ${t('finish_line')}</span>
-                                        <span class="text-[9px] font-mono-num text-[#94a3b8]">RÉC: ${a.bestSectors[3] < Infinity ? a.bestSectors[3].toFixed(3) : '--'}</span>
-                                    </div>
-                                    <div class="text-2xl lg:text-4xl font-mono-num font-black my-auto ${getSecColor(a.sectorColors[3])}">${s3Val}</div>
-                                    <div class="text-[9px] font-bold text-[#94a3b8] uppercase">${curSec === 3 ? '▶ TRAMO META' : 'ESPERANDO'}</div>
-                                </div>` : ''}
-                            </div>
-                        </div>`;
-                } else if (cardLayout === 4) {
-                    // OPCIÓN 4: MONITOR DE RITMO Y TABLA DE VUELTAS EN 2 COLUMNAS SIN ESPACIOS VACÍOS
-                    const recentLaps = a.history.slice(-6).reverse();
-                    const gridCells = Array.from({ length: 6 }, (_, idx) => {
-                        const lapTime = recentLaps[idx];
-                        const lapNumber = a.history.length - idx;
-                        if (lapTime !== undefined) {
-                            const isBest = lapTime === a.bestLap;
-                            return `
-                                <div class="mac-group-box px-2.5 py-1.5 flex items-center justify-between ${isBest ? 'border border-[#30d158]/50 bg-[#30d158]/10' : ''}">
-                                    <span class="text-[10px] font-black text-[#94a3b8]">V${lapNumber}</span>
-                                    <span class="text-xs lg:text-sm font-mono-num font-black ${isBest ? 'text-[#30d158]' : 'text-white'}">${lapTime.toFixed(3)}s</span>
-                                </div>`;
-                        } else {
-                            return `
-                                <div class="mac-group-box px-2.5 py-1.5 flex items-center justify-between opacity-50">
-                                    <span class="text-[10px] font-bold text-[#64748b]">VUELTA</span>
-                                    <span class="text-xs font-mono-num text-[#64748b]">--.---s</span>
-                                </div>`;
-                        }
-                    }).join('');
-
-                    bodyLayoutHtml = `
-                        <div class="flex-1 flex flex-col justify-between gap-2 min-h-0 z-10">
-                            <div class="grid grid-cols-4 gap-1.5 shrink-0">
-                                <div class="mac-group-box px-2.5 py-1.5 flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-[#30d158]">VUELTAS</span>
-                                    <span class="text-lg font-mono-num font-black text-white">${a.laps}</span>
-                                </div>
-                                <div class="mac-group-box px-2.5 py-1.5 flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-[#5ac8fa]">ÚLT</span>
-                                    <span class="text-sm font-mono-num font-black text-white">${lastValStr}</span>
-                                </div>
-                                <div class="mac-group-box px-2.5 py-1.5 flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-[#d982ff]">RÉC</span>
-                                    <span class="text-sm font-mono-num font-black text-[#d982ff]">${bestValStr}</span>
-                                </div>
-                                <div class="mac-group-box px-2.5 py-1.5 flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-[#ffd60a]">MED</span>
-                                    <span class="text-sm font-mono-num font-black text-white">${meanValStr}</span>
-                                </div>
-                            </div>
-                            <div class="flex-1 grid grid-cols-2 grid-rows-3 gap-1.5 min-h-0 items-stretch">
-                                ${gridCells}
-                            </div>
-                            ${compactSectorsHtml}
-                        </div>`;
-                } else {
-                    // OPCIÓN 5: CABINA F1 HUD FUTURISTA (6 Tarjetas Simétricas 3x2 ocupando todo el cuadro)
-                    const consistency = (a.bestLap < Infinity && meanVal > 0) ? Math.min(100, Math.round((a.bestLap / meanVal) * 100)) : 100;
-                    bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-3 grid-rows-2 gap-2 min-h-0 z-10 items-stretch">
-                            <div class="mac-group-box p-2.5 flex flex-col justify-between" style="border-left: 3px solid ${activeHex}">
-                                <span class="group-label text-[#94a3b8]">POSICIÓN / GAP</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none">P${pos}</div>
-                                <span class="text-[10px] font-mono-num font-bold text-[#ffd60a]">${gapText}</span>
-                            </div>
-                            <div class="mac-group-box p-2.5 flex flex-col justify-between">
-                                <span class="group-label text-[#30d158]">TOTAL VUELTAS</span>
-                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#30d158] leading-none">${a.laps}</div>
-                                <span class="text-[10px] font-mono-num text-[#94a3b8]">${a.nextAction}</span>
-                            </div>
-                            <div class="mac-group-box p-2.5 flex flex-col justify-between">
-                                <span class="group-label text-[#5ac8fa]">ÚLTIMA VUELTA</span>
-                                <div class="text-xl lg:text-2xl font-mono-num font-black text-white leading-none">${lastValStr}s</div>
-                                <span class="text-[10px] font-mono-num text-[#5ac8fa]">S${curSec} ACTIVO</span>
-                            </div>
-                            <div class="mac-group-box p-2.5 flex flex-col justify-between border border-[#d982ff]/30 bg-[#bf5af2]/10">
-                                <span class="group-label text-[#d982ff]">MEJOR CRONO</span>
-                                <div class="text-xl lg:text-2xl font-mono-num font-black text-[#d982ff] leading-none">${bestValStr}s</div>
-                                <span class="text-[10px] font-mono-num text-white/70">RÉCORD MANGA</span>
-                            </div>
-                            <div class="mac-group-box p-2.5 flex flex-col justify-between">
-                                <span class="group-label text-[#ffd60a]">VUELTA MEDIA</span>
-                                <div class="text-xl lg:text-2xl font-mono-num font-black text-white leading-none">${meanValStr}s</div>
-                                <span class="text-[10px] font-mono-num text-[#94a3b8]">RITMO MEDIO</span>
-                            </div>
-                            <div class="mac-group-box p-2.5 flex flex-col justify-between">
-                                <span class="group-label text-[#30d158]">REGULARIDAD IA</span>
-                                <div class="text-xl lg:text-2xl font-mono-num font-black text-white leading-none">${consistency}%</div>
-                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                                    <div class="h-full rounded-full" style="width:${consistency}%; background:${activeHex}"></div>
-                                </div>
-                            </div>
-                        </div>`;
-                }
-
-                return `
-                <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-window pilot-card-futuristic p-2.5 lg:p-3 flex flex-col h-full min-h-0 relative overflow-hidden cursor-pointer" style="border-top: 4px solid ${activeHex}; background: radial-gradient(circle at 92% 8%, ${activeHex}18 0%, rgba(28, 32, 44, 0.82) 55%, rgba(12, 14, 20, 0.95) 100%);">
-                    ${headerBarHtml}
-                    ${bodyLayoutHtml}
-                </div>`;
-            }).join('');
-        }
-
-        // CORRECCIÓN 4: Sincronizar el cambio de nombre del piloto en state.drivers y en todas las mangas
         function updateHeatDriverName(laneNum, newName) {
             const heat = state.heats[state.currentHeatIndex];
             if (!heat || !newName.trim()) return;
             const cleanName = newName.trim().toUpperCase();
             const a = heat.assignments.find(x => x.lane === laneNum);
             if (a) {
+                const oldName = a.driverName;
                 const drv = state.drivers.find(d => d.id === a.driverId);
-                const oldName = drv ? drv.name : a.driverName;
                 if (drv) drv.name = cleanName;
                 state.heats.forEach(h => {
                     h.assignments.forEach(ass => {
@@ -3309,7 +3091,8 @@
                         h.marshals = h.marshals.map(m => m === oldName ? cleanName : m);
                     }
                 });
-                renderLanesGrid();
+                renderDriversList();
+                renderLiveRaceView();
                 saveLocalDatabase();
             }
         }
@@ -3643,6 +3426,386 @@
                     completeCurrentHeat();
                 }
             }, 100);
+        }
+
+        function renderLiveRaceView() {
+            if (state.heats.length === 0) return;
+            const heat = state.heats[state.currentHeatIndex];
+            if (!heat) return;
+
+            const doneSuffix = heat.status === 'FINISHED' ? ` · ${t('word_finished')} ✓` : '';
+            document.getElementById('live-heat-title').textContent = `${t('word_heat').toUpperCase()} ${heat.heatNumber}/${state.heats.length}${doneSuffix}`;
+            document.getElementById('live-target-badge').textContent = state.targetLaps === 'infinity' ? state.durationLabel : `META ${state.targetLaps}V`;
+            renderMasterClock();
+
+            const tabsEl = document.getElementById('live-heat-tabs');
+            tabsEl.innerHTML = state.heats.map((h, i) => {
+                const isCur = i === state.currentHeatIndex;
+                const isDone = h.status === 'FINISHED';
+                const cls = isCur
+                    ? 'mac-silver-active'
+                    : (isDone ? 'bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40' : 'mac-silver-btn');
+                return `<button onclick="selectLiveHeat(${i})" class="px-3 py-1.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer ${cls}">
+                    ${t('word_heat')} ${h.heatNumber}${isDone ? ` (${t('word_finished')}) ✓` : ''}
+                </button>`;
+            }).join('');
+
+            for (let l = 1; l <= 3; l++) {
+                const lb = document.getElementById(`global-layout-${l}`);
+                if (lb) {
+                    lb.className = (state.globalCardLayout === l)
+                        ? "px-3 py-1.5 rounded-lg text-xs font-black mac-silver-active cursor-pointer"
+                        : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white cursor-pointer";
+                }
+            }
+
+            renderLanesGrid();
+        }
+
+        // ==================== 3 TIPOS DE CUADROS DE PILOTO (BÁSICO, MEDIO, EXPERTO) CON DATOS DE TIEMPO Y VELOCIDAD EN TAMAÑO GIGANTE ====================
+        function setGlobalCardLayout(layoutNum) {
+            state.globalCardLayout = layoutNum;
+            state.laneLayoutModes = {};
+            renderLiveRaceView();
+            saveLocalDatabase();
+        }
+
+        function setLaneCardLayout(laneNum, layoutNum) {
+            state.laneLayoutModes[laneNum] = layoutNum;
+            renderLanesGrid();
+            saveLocalDatabase();
+        }
+
+        function cycleGlobalCardTheme() {
+            state.globalThemeIndex = ((state.globalThemeIndex || 0) + 1) % PILOT_CARD_THEMES.length;
+            state.laneThemeIndices = {};
+            const themeObj = PILOT_CARD_THEMES[state.globalThemeIndex];
+            const lbl = document.getElementById('global-theme-label');
+            if (lbl) lbl.textContent = themeObj.name.toUpperCase();
+            renderLanesGrid();
+            saveLocalDatabase();
+        }
+
+        function cycleLaneCardTheme(laneNum) {
+            const cur = state.laneThemeIndices[laneNum] !== undefined ? state.laneThemeIndices[laneNum] : (state.globalThemeIndex || 0);
+            state.laneThemeIndices[laneNum] = (cur + 1) % PILOT_CARD_THEMES.length;
+            renderLanesGrid();
+            saveLocalDatabase();
+        }
+
+        function renderLanesGrid() {
+            const container = document.getElementById('lanesGridContainer');
+            if (!container || state.heats.length === 0) return;
+            const heat = state.heats[state.currentHeatIndex];
+            if (!heat) return;
+
+            const assignments = heat.assignments;
+            const n = assignments.length;
+            const sCount = state.numSectors;
+            const standings = getHeatStandingsMap(heat);
+            const trackLen = state.trackLengthMeters || 28;
+            const scaleFactor = state.scaleFactor || 32;
+
+            // Buscar al líder actual de la manga para calcular diferencias de tiempo/ritmo
+            const sortedHeat = [...assignments].sort((x, y) => (y.laps - x.laps) || (x.bestLap - y.bestLap));
+            const leaderAss = sortedHeat[0] || null;
+
+            let cols = 1, rows = 1;
+            if (n === 1) { cols = 1; rows = 1; }
+            else if (n === 2) { cols = 2; rows = 1; }
+            else if (n === 3) { cols = 3; rows = 1; }
+            else if (n === 4) { cols = 2; rows = 2; }
+            else if (n <= 6) { cols = 3; rows = 2; }
+            else if (n <= 8) { cols = 4; rows = 2; }
+            else { cols = 5; rows = 2; }
+
+            container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+            container.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
+
+            container.innerHTML = assignments.map(a => {
+                const pal = a.laneInfo;
+                const pos = standings[a.lane];
+                const isLeader = pos === 1 && a.laps > 0;
+                const rawMode = state.laneLayoutModes[a.lane] || state.globalCardLayout || 1;
+                const layoutMode = [1, 2, 3].includes(rawMode) ? rawMode : 1;
+                const themeIdx = state.laneThemeIndices[a.lane] !== undefined ? state.laneThemeIndices[a.lane] : (state.globalThemeIndex || 0);
+                const themeObj = PILOT_CARD_THEMES[themeIdx] || PILOT_CARD_THEMES[0];
+                const accentHex = themeObj.hex || pal.hex;
+
+                // Cálculos matemáticos derivados exclusivamente del Tiempo y la Velocidad (V = d / t)
+                const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
+                const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
+                const meanLapVal = getDriverMeanLap(a);
+
+                const lastLapStr = lastLapVal > 0 ? lastLapVal.toFixed(2) + 's' : '--.--s';
+                const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(2) + 's' : '--.--s';
+                const meanLapStr = meanLapVal > 0 ? meanLapVal.toFixed(2) + 's' : '--.--s';
+
+                // Velocidades en km/h: v = (metros / segundos) * 3.6
+                const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
+                const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
+                const avgSpeedKmh = meanLapVal > 0 ? (trackLen / meanLapVal) * 3.6 : 0;
+                const scaleSpeedKmh = curSpeedKmh * scaleFactor;
+                const speedMetersPerSec = lastLapVal > 0 ? (trackLen / lastLapVal) : 0;
+
+                const curSpeedStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(1) : '0.0';
+                const maxSpeedStr = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
+                const avgSpeedStr = avgSpeedKmh > 0 ? avgSpeedKmh.toFixed(1) : '0.0';
+                const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
+                const mpsStr = speedMetersPerSec > 0 ? speedMetersPerSec.toFixed(2) : '0.00';
+
+                // Distancia recorrida (km), Tiempo rodando acumulado y Proyección de vueltas al final de la manga
+                const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
+                const totalTimeRunSec = a.history.reduce((acc, v) => acc + v, 0);
+                const projectedLaps = meanLapVal > 0
+                    ? Math.round(a.laps + (state.timeRemaining / meanLapVal))
+                    : a.laps;
+
+                // Delta de ritmo respecto a su propia vuelta media (negativo = viene mejorando ritmo)
+                const paceDelta = (lastLapVal > 0 && meanLapVal > 0) ? (lastLapVal - meanLapVal) : 0;
+                const paceDeltaStr = (lastLapVal > 0 && meanLapVal > 0)
+                    ? `${paceDelta <= 0 ? '' : '+'}${paceDelta.toFixed(2)}s`
+                    : '0.00s';
+
+                // Índice de Regularidad en % basado en tiempos (Mejor Vuelta / Vuelta Media)
+                const consistencyPct = (bestLapVal > 0 && meanLapVal > 0)
+                    ? Math.min(100, Math.max(50, Math.round((bestLapVal / meanLapVal) * 100)))
+                    : 100;
+
+                // Sectores de alta visibilidad (si están activos 2 o 3 sectores)
+                const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'text-white';
+                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(2) + 's' : '--.--';
+                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(2) + 's' : '--.--';
+                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(2) + 's' : '--.--';
+                const curSec = a.currentSector || 1;
+
+                let compactSectorsHtml = '';
+                if (sCount >= 2) {
+                    const activeBox = (idx) => curSec === idx ? 'border-2 border-white bg-white/15' : '';
+                    compactSectorsHtml = `
+                        <div class="grid grid-cols-${sCount} gap-2 pt-1.5 shrink-0">
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well px-3 py-1.5 flex items-center justify-between ${activeBox(1)}">
+                                <span class="text-xs font-black text-slate-200">SECTOR 1</span>
+                                <span class="text-base lg:text-xl font-mono-num font-black ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                            </div>
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well px-3 py-1.5 flex items-center justify-between ${activeBox(2)}">
+                                <span class="text-xs font-black text-slate-200">${sCount === 2 ? t('finish_line') : 'SECTOR 2'}</span>
+                                <span class="text-base lg:text-xl font-mono-num font-black ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                            </div>
+                            ${sCount === 3 ? `
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well px-3 py-1.5 flex items-center justify-between ${activeBox(3)}">
+                                <span class="text-xs font-black text-slate-200">${t('finish_line')}</span>
+                                <span class="text-base lg:text-xl font-mono-num font-black ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                            </div>` : ''}
+                        </div>`;
+                }
+
+                // Construcción de los 3 niveles de cuadro estilo Crear Carrera (Mac Studio Silver) con números extra grandes
+                let bodyLayoutHtml = '';
+
+                if (layoutMode === 1) {
+                    // ==================== 1. CUADRO BÁSICO (NÚMEROS GIGANTES PARA LECTURA INMEDIATA) ====================
+                    // Solo 3 bloques enormes ocupando el 100% del cuadro: Vueltas, Tiempo Última Vuelta (+ Récord) y Velocidad Actual
+                    bodyLayoutHtml = `
+                        <div class="flex-1 grid grid-cols-12 gap-2.5 min-h-0">
+                            <!-- Bloque Izquierdo: VUELTAS GIGANTES -->
+                            <div class="col-span-4 mac-silver-well p-3 flex flex-col justify-between items-center text-center h-full border border-white/20">
+                                <span class="text-xs lg:text-sm font-black tracking-wider text-slate-200 uppercase">VUELTAS</span>
+                                <span class="text-5xl md:text-6xl lg:text-7xl font-mono-num font-black text-white leading-none my-auto">${a.laps}</span>
+                                <span class="text-xs font-mono-num font-extrabold text-slate-300 bg-white/10 px-2.5 py-0.5 rounded-full">${a.nextAction}</span>
+                            </div>
+
+                            <!-- Bloque Central: TIEMPO ÚLTIMA VUELTA + MEJOR TIEMPO -->
+                            <div class="col-span-4 mac-silver-well p-3 flex flex-col justify-between items-center text-center h-full border border-white/20">
+                                <span class="text-xs lg:text-sm font-black tracking-wider text-slate-200 uppercase">ÚLTIMO TIEMPO</span>
+                                <span class="text-3xl md:text-4xl lg:text-5xl font-mono-num font-black text-white leading-none my-auto">${lastLapStr}</span>
+                                <div class="w-full pt-1.5 border-t border-white/15 flex items-center justify-between px-1">
+                                    <span class="text-xs font-black text-[#30d158]">RÉCORD:</span>
+                                    <span class="text-sm lg:text-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
+                                </div>
+                            </div>
+
+                            <!-- Bloque Derecho: VELOCIDAD REAL Y ESCALA 1:32 -->
+                            <div class="col-span-4 mac-silver-well p-3 flex flex-col justify-between items-center text-center h-full border border-white/20">
+                                <span class="text-xs lg:text-sm font-black tracking-wider text-[#5ac8fa] uppercase">VELOCIDAD</span>
+                                <div class="my-auto flex flex-col items-center">
+                                    <span class="text-3xl md:text-4xl lg:text-5xl font-mono-num font-black text-[#5ac8fa] leading-none">${curSpeedStr}</span>
+                                    <span class="text-xs font-black text-slate-300 mt-1">KM/H REAL</span>
+                                </div>
+                                <div class="w-full pt-1.5 border-t border-white/15 flex items-center justify-between px-1">
+                                    <span class="text-xs font-bold text-slate-300">ESCALA:</span>
+                                    <span class="text-sm lg:text-base font-mono-num font-black text-[#ffd60a]">${scaleSpeedStr} km/h</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${compactSectorsHtml}
+                    `;
+                } else if (layoutMode === 2) {
+                    // ==================== 2. CUADRO MEDIO (TIEMPOS Y VELOCIDADES MEDIAS / PUNTA + PROYECCIÓN) ====================
+                    // 6 Cajas grandes de alto contraste en cuadrícula 3x2 ocupando el 100% del espacio
+                    bodyLayoutHtml = `
+                        <div class="flex-1 grid grid-cols-3 grid-rows-2 gap-2 min-h-0">
+                            <!-- Fila 1: Datos de Tiempo y Vueltas -->
+                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-slate-200 uppercase">VUELTAS</span>
+                                    <span class="text-xs font-mono-num font-black text-[#ffd60a]" title="Proyección de vueltas al acabar el tiempo">EST: ${projectedLaps}V</span>
+                                </div>
+                                <div class="text-4xl lg:text-5xl font-mono-num font-black text-white leading-none my-auto">${a.laps}</div>
+                            </div>
+
+                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-slate-200 uppercase">ÚLTIMA VUELTA</span>
+                                    <span class="text-xs font-mono-num font-black ${paceDelta <= 0 ? 'text-[#30d158]' : 'text-[#ff9f0a]'}">${paceDeltaStr}</span>
+                                </div>
+                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-white leading-none my-auto">${lastLapStr}</div>
+                            </div>
+
+                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-[#30d158]/40">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-[#30d158] uppercase">MEJOR CRONO</span>
+                                    <span class="text-xs font-mono-num font-bold text-slate-300">MEDIA: ${meanLapStr}</span>
+                                </div>
+                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-[#30d158] leading-none my-auto">${bestLapStr}</div>
+                            </div>
+
+                            <!-- Fila 2: Datos derivados de Velocidad y Distancia -->
+                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-[#5ac8fa] uppercase">VEL. ACTUAL</span>
+                                    <span class="text-xs font-mono-num font-bold text-slate-300">KM/H</span>
+                                </div>
+                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-[#5ac8fa] leading-none my-auto">${curSpeedStr} <span class="text-sm text-slate-300">km/h</span></div>
+                            </div>
+
+                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-slate-200 uppercase">VEL. MEDIA / MÁX</span>
+                                    <span class="text-xs font-mono-num font-black text-[#30d158]">MÁX ${maxSpeedStr}</span>
+                                </div>
+                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-white leading-none my-auto">${avgSpeedStr} <span class="text-sm text-slate-300">km/h</span></div>
+                            </div>
+
+                            <div class="mac-silver-well p-2.5 lg:p-3 flex flex-col justify-between h-full border border-white/15">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-[#ffd60a] uppercase">VEL. ESCALA 1:32</span>
+                                    <span class="text-xs font-mono-num font-bold text-slate-300">DIST: ${totalDistKm} km</span>
+                                </div>
+                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-[#ffd60a] leading-none my-auto">${scaleSpeedStr} <span class="text-sm text-slate-300">km/h</span></div>
+                            </div>
+                        </div>
+                        ${compactSectorsHtml}
+                    `;
+                } else {
+                    // ==================== 3. CUADRO EXPERTO (INGENIERÍA COMPLETA DE TIEMPO Y VELOCIDAD) ====================
+                    // 8 Módulos grandes en cuadrícula 4x2 con todas las métricas cinemáticas de tiempo y velocidad
+                    bodyLayoutHtml = `
+                        <div class="flex-1 grid grid-cols-4 grid-rows-2 gap-2 min-h-0">
+                            <!-- 1. Vueltas y Meta Estimada por Ritmo -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-slate-200 uppercase">1. VUELTAS / PROYECCIÓN</span>
+                                <div class="text-3xl lg:text-4xl font-mono-num font-black text-white leading-none my-auto">${a.laps} <span class="text-base text-[#ffd60a]">→ ${projectedLaps}V</span></div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-300">Rodado: ${totalTimeRunSec.toFixed(1)}s</span>
+                            </div>
+
+                            <!-- 2. Último Tiempo y Diferencia vs Media -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-slate-200 uppercase">2. ÚLTIMA VUELTA</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none my-auto">${lastLapStr}</div>
+                                <span class="text-[11px] font-mono-num font-black ${paceDelta <= 0 ? 'text-[#30d158]' : 'text-[#ff9f0a]'}">Delta Media: ${paceDeltaStr}</span>
+                            </div>
+
+                            <!-- 3. Récord Personal y Tiempo Medio por Vuelta -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-[#30d158]/40">
+                                <span class="text-[11px] font-black text-[#30d158] uppercase">3. RÉCORD / MEDIA</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#30d158] leading-none my-auto">${bestLapStr}</div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-200">Media: ${meanLapStr}</span>
+                            </div>
+
+                            <!-- 4. Velocidad Instantánea (km/h y m/s) -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-[#5ac8fa] uppercase">4. VEL. ACTUAL</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#5ac8fa] leading-none my-auto">${curSpeedStr} <span class="text-xs">km/h</span></div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-200">Paso: ${mpsStr} m/s</span>
+                            </div>
+
+                            <!-- 5. Velocidad Punta y Velocidad Media -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-slate-200 uppercase">5. VEL. MÁX / MEDIA</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none my-auto">${maxSpeedStr} <span class="text-xs text-[#30d158]">máx</span></div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-300">Vel. Media: ${avgSpeedStr} km/h</span>
+                            </div>
+
+                            <!-- 6. Velocidad a Escala 1:32 -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-[#ffd60a] uppercase">6. VEL. ESCALA 1:${scaleFactor}</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#ffd60a] leading-none my-auto">${scaleSpeedStr} <span class="text-xs">km/h</span></div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-300">Cuerda: ${trackLen}m</span>
+                            </div>
+
+                            <!-- 7. Distancia Total Recorrida -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-slate-200 uppercase">7. DISTANCIA TOTAL</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-white leading-none my-auto">${totalDistKm} <span class="text-xs">km</span></div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-300">${Math.round(a.laps * trackLen)} metros</span>
+                            </div>
+
+                            <!-- 8. Consistencia de Ritmo y Velocidad -->
+                            <div class="mac-silver-well p-2.5 flex flex-col justify-between h-full border border-white/15">
+                                <span class="text-[11px] font-black text-[#d982ff] uppercase">8. REGULARIDAD RITMO</span>
+                                <div class="text-2xl lg:text-3xl font-mono-num font-black text-[#d982ff] leading-none my-auto">${consistencyPct}%</div>
+                                <span class="text-[11px] font-mono-num font-bold text-slate-300">${a.nextAction}</span>
+                            </div>
+                        </div>
+                        ${compactSectorsHtml}
+                    `;
+                }
+
+                const levelLabels = [
+                    { num: 1, label: 'BÁSICO' },
+                    { num: 2, label: 'MEDIO' },
+                    { num: 3, label: 'EXPERTO' }
+                ];
+                const layoutBtnsHtml = levelLabels.map(item => `
+                    <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="px-2.5 py-1 rounded-lg text-[11px] font-black transition cursor-pointer ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/10 text-slate-200 hover:text-white'}" title="Vista ${item.label}">
+                        ${item.label}
+                    </button>
+                `).join('');
+
+                return `
+                <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver p-3 lg:p-3.5 flex flex-col justify-between h-full min-h-0 relative overflow-hidden cursor-pointer" style="background: ${themeObj.bg}; border-top: 5px solid ${pal.hex};">
+                    <!-- Cabecera estilo Crear Carrera (Mac Studio Silver) con Letras Grandes para Usuarios Mayores -->
+                    <div class="flex justify-between items-center gap-2 pb-2 shrink-0 z-10 border-b border-white/15">
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <span class="px-2.5 py-1 rounded-xl text-xs lg:text-sm font-black uppercase shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">
+                                C${a.lane}
+                            </span>
+                            <span class="px-2.5 py-1 rounded-xl text-xs lg:text-sm font-black shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white border border-white/20'}">
+                                P${pos}
+                            </span>
+                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-lg md:text-xl lg:text-2xl tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white"/>
+                        </div>
+
+                        <!-- Selector de los 3 Niveles (BÁSICO / MEDIO / EXPERTO) + Color + Auditoría -->
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <div class="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-white/15">
+                                ${layoutBtnsHtml}
+                            </div>
+                            <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-8 h-8 rounded-xl mac-silver-btn flex items-center justify-center text-xs cursor-pointer" title="Cambiar Acabado Metálico (${themeObj.name})">
+                                <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-1 rounded-xl bg-[#30d158]/25 hover:bg-[#30d158]/45 border border-[#30d158]/50 text-[#30d158] text-xs font-black cursor-pointer">+1</button>
+                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-1 rounded-xl bg-[#ff453a]/25 hover:bg-[#ff453a]/45 border border-[#ff453a]/50 text-[#ff453a] text-xs font-black cursor-pointer">-1</button>
+                        </div>
+                    </div>
+
+                    <!-- Cuerpo Principal Ocupando el 100% del Cuadro sin Espacios Vacíos -->
+                    <div class="flex-1 flex flex-col justify-between min-h-0 pt-2 z-10">
+                        ${bodyLayoutHtml}
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function renderMasterClock() {
