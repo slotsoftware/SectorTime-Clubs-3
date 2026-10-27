@@ -290,7 +290,7 @@
             <div class="f1-light-giant" id="giantL4"></div>
             <div class="f1-light-giant" id="giantL5"></div>
         </div>
-        <button onclick="startF1Sequence()" class="mt-6 px-5 py-2 rounded-xl btn-silver text-xs font-bold text-[#94a3b8] hover:text-white cursor-pointer">
+        <button onclick="startF1Sequence()" data-i18n="btn_cancel_start" class="mt-6 px-5 py-2 rounded-xl btn-silver text-xs font-bold text-[#94a3b8] hover:text-white cursor-pointer">
             ✕ CANCELAR SALIDA
         </button>
     </div>
@@ -428,7 +428,7 @@
             <!-- Acción Rápida a Pista -->
             <button onclick="switchMainTab('race')" class="mac-silver-active px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-flag-checkered"></i>
-                <span>IR A PISTA EN VIVO</span>
+                <span data-i18n="btn_go_track">IR A PISTA EN VIVO</span>
             </button>
         </div>
 
@@ -446,8 +446,8 @@
                                 <i class="fa-solid fa-calendar-check text-xs"></i>
                             </span>
                             <div>
-                                <div class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
-                                <div class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
+                                <div data-i18n="b0_title" class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
+                                <div data-i18n="b0_sub" class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -461,15 +461,15 @@
                         <!-- Nombre del Evento -->
                         <div class="lg:col-span-4 mac-silver-well p-3 space-y-1.5">
                             <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i>NOMBRE DEL EVENTO / CAMPEONATO:
+                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i><span data-i18n="lbl_event_name">NOMBRE DEL EVENTO / CAMPEONATO:</span>
                             </label>
-                            <input type="text" id="event-name-input" placeholder="Ej: CAMPEONATO SOCIAL SLOT CLUB" oninput="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#5ac8fa]"/>
+                            <input type="text" id="event-name-input" placeholder="CAMPEONATO SOCIAL SLOT CLUB" oninput="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#5ac8fa]"/>
                         </div>
 
                         <!-- Fecha del Evento -->
                         <div class="lg:col-span-3 mac-silver-well p-3 space-y-1.5">
                             <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i>FECHA DE LA CARRERA:
+                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i><span data-i18n="lbl_event_date">FECHA DE LA CARRERA:</span>
                             </label>
                             <input type="date" id="event-date-input" onchange="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-mono-num font-black text-white focus:outline-none focus:border-[#5ac8fa]"/>
                         </div>
@@ -478,9 +478,9 @@
                         <div class="lg:col-span-5 mac-silver-well p-3 space-y-2">
                             <div class="flex items-center justify-between gap-2">
                                 <label class="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i>CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):
+                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i><span data-i18n="lbl_club_cats">CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):</span>
                                 </label>
-                                <button type="button" onclick="restoreDefaultClubCategories()" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer" title="Restaurar GT, DTM, CLÁSICOS, F1, CAMIONES">
+                                <button type="button" onclick="restoreDefaultClubCategories()" data-i18n="btn_restore_cats" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer">
                                     RESTAURAR BASE
                                 </button>
                             </div>
@@ -490,10 +490,10 @@
 
                             <!-- Input para Añadir Nueva Categoría -->
                             <div class="flex items-center gap-1.5 pt-1">
-                                <input type="text" id="new-club-category-input" placeholder="Nueva categoría (ej: RALLY, LMP, GRUPO C, NINCO...)" onkeydown="if(event.key==='Enter') addClubCategoryFromInput()" class="flex-1 bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
+                                <input type="text" id="new-club-category-input" placeholder="RALLY, LMP, GRUPO C..." onkeydown="if(event.key==='Enter') addClubCategoryFromInput()" class="flex-1 bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
                                 <button type="button" onclick="addClubCategoryFromInput()" class="px-3 py-1.5 rounded-lg btn-neon-green text-[10px] font-black cursor-pointer shrink-0 flex items-center gap-1">
                                     <i class="fa-solid fa-plus"></i>
-                                    <span>AÑADIR CATEGORÍA</span>
+                                    <span data-i18n="btn_add_cat">AÑADIR CATEGORÍA</span>
                                 </button>
                             </div>
                         </div>
@@ -526,12 +526,12 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-white/10">
-                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i>CUERDA PISTA (M):</span>
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i><span data-i18n="lbl_track_len">CUERDA PISTA (M):</span></span>
                                 <div class="flex items-center gap-1.5">
                                     <button type="button" onclick="stepTrackLength(-2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                     <input type="number" id="manual-track-length" min="5" max="250" step="0.5" value="28" onchange="applyManualTrackLength(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-0.5 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                     <button type="button" onclick="stepTrackLength(2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
-                                    <span class="text-[10px] font-bold text-slate-400">METROS</span>
+                                    <span data-i18n="unit_meters" class="text-[10px] font-bold text-slate-400">METROS</span>
                                 </div>
                             </div>
                         </div>
@@ -580,22 +580,91 @@
                         </div>
 
                         <div class="grid grid-cols-4 gap-1.5">
-                            <button type="button" onclick="setTargetLaps('infinity')" id="lap-btn-infinity" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">⏱️ POR TIEMPO (∞)</button>
+                            <button type="button" onclick="setTargetLaps('infinity')" id="lap-btn-infinity" data-i18n="btn_by_time_inf" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">⏱️ POR TIEMPO (∞)</button>
                             <button type="button" onclick="setTargetLaps(15)" id="lap-btn-15" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">15 V</button>
                             <button type="button" onclick="setTargetLaps(25)" id="lap-btn-25" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">25 V</button>
                             <button type="button" onclick="setTargetLaps(40)" id="lap-btn-40" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">40 V</button>
                             <button type="button" onclick="setTargetLaps(50)" id="lap-btn-50" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">50 V</button>
-                            <button type="button" onclick="setTargetLaps(100)" id="lap-btn-100" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">100 VUELTAS</button>
+                            <button type="button" onclick="setTargetLaps(100)" id="lap-btn-100" class="col-span-2 p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">100 V</button>
                         </div>
 
                         <!-- Meta de Vueltas Manual o Cuenta Atrás / Adelante -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i>VUELTAS MANUAL:</span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i><span data-i18n="lbl_manual_laps">VUELTAS MANUAL:</span></span>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="stepManualTargetLaps(-5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                 <input type="number" id="manual-target-laps-input" min="1" max="9999" placeholder="∞" onchange="applyManualTargetLaps(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                 <button type="button" onclick="stepManualTargetLaps(5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
-                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
+                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" data-i18n="btn_set" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 4: TIPO DE SESIÓN Y NÚMERO DE MANGAS MANUAL -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-layer-group text-[11px]"></i></span>
+                                <span data-i18n="b4_title">4. SESIÓN Y Nº DE MANGAS</span>
+                            </label>
+                            <span id="heats-selected-badge" class="text-[11px] font-mono-num font-black text-slate-900 bg-gradient-to-r from-slate-100 to-slate-300 px-2.5 py-0.5 rounded-full">Auto</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" onclick="setSessionType('PRACTICE')" id="sess-btn-PRACTICE" data-i18n="btn_practice" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">ENTRENOS (1M)</button>
+                            <button type="button" onclick="setSessionType('CLUB')" id="sess-btn-CLUB" data-i18n="btn_official_race" class="p-2 rounded-xl text-[11px] font-bold border transition cursor-pointer">CARRERA OFICIAL</button>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button type="button" onclick="setHeatMode('auto')" id="heat-btn-auto" data-i18n="btn_auto_cycle" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">AUTO CICLO</button>
+                            <button type="button" onclick="setHeatMode('lanes')" id="heat-btn-lanes" data-i18n="btn_eq_lanes" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">= CARRILES</button>
+                            <button type="button" onclick="setHeatMode(6)" id="heat-btn-6" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">6 M</button>
+                            <button type="button" onclick="setHeatMode(10)" id="heat-btn-10" class="p-1.5 rounded-xl text-[10px] font-bold border transition cursor-pointer">10 M</button>
+                        </div>
+
+                        <!-- Selector Manual del Número de Mangas -->
+                        <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-hashtag mr-1 text-slate-400"></i><span data-i18n="lbl_manual_heats">Nº MANGAS MANUAL:</span></span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="stepManualHeats(-1)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
+                                <input type="number" id="manual-heats-input" min="1" max="99" value="6" onchange="applyManualHeatsCount(this.value)" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
+                                <button type="button" onclick="stepManualHeats(1)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
+                                <button type="button" onclick="applyManualHeatsCount(document.getElementById('manual-heats-input').value)" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">OK</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 5: ORDEN DE ROTACIÓN DE CARRILES (AUTOMÁTICO + MANUAL PERSONALIZADO) -->
+                    <div class="mac-studio-silver p-4 flex flex-col justify-between gap-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-xs font-extrabold text-slate-100 tracking-tight">
+                                <span class="bg-gradient-to-b from-slate-200 to-slate-400 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center mr-2 shadow"><i class="fa-solid fa-arrows-spin text-[11px]"></i></span>
+                                <span data-i18n="b5_title">5. ROTACIÓN DE CARRILES</span>
+                            </label>
+                            <span id="wheel-preview-badge" class="font-mono-num text-[10px] font-black bg-white/15 px-2.5 py-0.5 rounded-full text-white border border-white/20">1→3→4→2</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button type="button" onclick="setRotationModeWizard('club_odd_even')" id="rot-wiz-club_odd_even" data-i18n="btn_odd_even" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
+                                IMPAR→PAR
+                            </button>
+                            <button type="button" onclick="setRotationModeWizard('sequential')" id="rot-wiz-sequential" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
+                                1 → 2 → 3 → 4
+                            </button>
+                            <button type="button" onclick="setRotationModeWizard('random')" id="rot-wiz-random" data-i18n="btn_random_draw" class="p-2 rounded-xl text-[10px] font-bold border transition text-center cursor-pointer">
+                                SORTEO 🎲
+                            </button>
+                        </div>
+
+                        <!-- Entrada Manual del Orden de Rotación de Carriles -->
+                        <div class="mac-silver-well p-2.5 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-keyboard mr-1 text-slate-400"></i><span data-i18n="lbl_manual_order">ORDEN MANUAL (EJ: 1,3,4,2):</span></span>
+                                <button type="button" onclick="invertCurrentRotationOrder()" data-i18n="btn_invert_wheel" class="text-[9px] font-black text-slate-300 hover:text-white underline cursor-pointer">INVERTIR RUEDA</button>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <input type="text" id="manual-rotation-input" placeholder="1, 3, 4, 2" onkeydown="if(event.key==='Enter') applyManualRotationOrder()" class="flex-1 bg-black/70 border border-white/20 rounded-lg px-2.5 py-1 font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
+                                <button type="button" onclick="applyManualRotationOrder()" id="rot-wiz-custom" data-i18n="btn_apply" class="px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">APLICAR</button>
                             </div>
                         </div>
                     </div>
@@ -701,12 +770,12 @@
                 <div class="mac-studio-silver px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                     <div class="flex items-center gap-2 text-xs text-slate-300">
                         <i class="fa-brands fa-apple text-base text-white"></i>
-                        <span>Todos los parámetros manuales se guardan automáticamente en la base de datos local de tu dispositivo.</span>
+                        <span data-i18n="msg_auto_saved">Todos los parámetros manuales se guardan automáticamente en la base de datos local de tu dispositivo.</span>
                     </div>
                     <div class="flex items-center gap-2.5">
                         <button onclick="switchMainTab('race')" class="mac-silver-btn px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-gauge-high text-slate-200"></i>
-                            <span>Ir directo a Pista en Vivo</span>
+                            <span data-i18n="btn_go_track">Ir directo a Pista en Vivo</span>
                         </button>
                         <button onclick="goToWizardStep(2)" class="mac-silver-active px-7 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2.5 cursor-pointer">
                             <span data-i18n="btn_next_drivers">Siguiente: Inscribir Pilotos</span>
@@ -725,7 +794,7 @@
                             <input type="text" id="new-driver-name" placeholder="ALBERT, JUAN, MARTA..." onkeydown="if(event.key==='Enter') addDriverFromInput()" class="w-full bg-black/60 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-white">
                         </div>
                         <div class="sm:col-span-3">
-                            <label class="block text-[11px] font-extrabold text-[#5ac8fa] mb-1 uppercase tracking-wider">Categoría del Club</label>
+                            <label data-i18n="lbl_club_cat_single" class="block text-[11px] font-extrabold text-[#5ac8fa] mb-1 uppercase tracking-wider">Categoría del Club</label>
                             <select id="new-driver-category-select" onchange="syncCarInputWithCategory()" class="w-full bg-black/60 border border-[#5ac8fa]/40 rounded-xl px-3 py-2.5 text-sm font-black text-white focus:outline-none focus:border-white"></select>
                         </div>
                         <div class="sm:col-span-3">
@@ -909,9 +978,9 @@
             <!-- Selector Global de los 3 Tipos de Cuadro (BÁSICO, MEDIO, EXPERTO) + Paleta de Colores -->
             <div class="flex items-center gap-1.5">
                 <div class="apple-segmented bg-black/60 p-1" title="3 niveles de cuadro con letra gigante para lectura fácil y telemetría de tiempo/velocidad">
-                    <button onclick="setGlobalCardLayout(1)" id="global-layout-1" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
-                    <button onclick="setGlobalCardLayout(2)" id="global-layout-2" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
-                    <button onclick="setGlobalCardLayout(3)" id="global-layout-3" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
+                    <button onclick="setGlobalCardLayout(1)" id="global-layout-1" data-i18n="layout_basic_num" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
+                    <button onclick="setGlobalCardLayout(2)" id="global-layout-2" data-i18n="layout_med_num" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
+                    <button onclick="setGlobalCardLayout(3)" id="global-layout-3" data-i18n="layout_exp_num" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
                 </div>
                 <button onclick="cycleGlobalCardTheme()" class="mac-silver-btn px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer" title="Cambiar Acabado Gris Plata / Color de los Cuadros">
                     <i class="fa-solid fa-palette text-slate-200"></i>
@@ -954,11 +1023,11 @@
                 </button>
                 <button onclick="toggleAutoSim()" id="btnAutoDemo" class="px-3 py-2 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-car-burst text-[#5ac8fa]"></i>
-                    <span id="btnAutoSimText">SIMULADOR: OFF</span>
+                    <span id="btnAutoSimText" data-i18n="sim_off">SIMULADOR: OFF</span>
                 </button>
                 <button onclick="openLivePreHeatModificationModal()" class="px-3 py-2 bg-[#0a84ff]/25 hover:bg-[#0a84ff]/45 text-[#5ac8fa] border border-[#5ac8fa]/50 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase" title="Modificar pilotos de mangas pendientes o añadir piloto que llega tarde">
                     <i class="fa-solid fa-user-pen"></i>
-                    <span>CAMBIOS MANGAS (YES/NO)</span>
+                    <span data-i18n="btn_modify_heats">CAMBIOS MANGAS (SÍ/NO)</span>
                 </button>
                 <button onclick="toggleTrackCall()" id="btn-track-call" class="px-3 py-2 bg-[#ff9f0a] hover:bg-[#ffb340] text-black font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 uppercase">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1045,13 +1114,47 @@
             <div class="w-16 h-16 mx-auto rounded-2xl btn-neon-green flex items-center justify-center text-2xl font-black">
                 <i class="fa-solid fa-plug-circle-bolt"></i>
             </div>
-            <h2 class="text-2xl font-black text-white">Interfaz de Sensores Ópticos, DS Crono & Teclas Rápidas</h2>
-            <p class="text-sm text-[#94a3b8] max-w-xl mx-auto">
-                Puedes registrar vueltas haciendo clic sobre cada tarjeta de carril en vivo, pulsando las teclas numéricas del teclado (<kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">1</kbd> al <kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">9</kbd>, <kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">0</kbd> = Carril 10), o activando el <b>Simulador IA</b>.
+            <h2 data-i18n="hw_title" class="text-2xl font-black text-white">Interfaz de Sensores Ópticos, DS Crono & Teclas Rápidas</h2>
+            <p data-i18n="hw_desc" class="text-sm text-[#94a3b8] max-w-xl mx-auto">
+                Puedes registrar vueltas haciendo clic sobre cada tarjeta de carril en vivo, pulsando las teclas numéricas del teclado (1 al 9, 0 = Carril 10), o activando el Simulador IA.
             </p>
             <div class="pt-4">
-                <button onclick="switchMainTab('race')" class="btn-neon-blue px-6 py-3 rounded-xl font-black text-xs cursor-pointer">
+                <button onclick="switchMainTab('race')" data-i18n="btn_back_track" class="btn-neon-blue px-6 py-3 rounded-xl font-black text-xs cursor-pointer">
                     VOLVER A PARRILLA EN VIVO
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================================================== -->
+    <!-- MÓDULO 5: QR Y CÓDIGOS DE BARRAS REALES PARA PILOTOS + INGENIERO DE PISTA MÓVIL          -->
+    <!-- ======================================================================================== -->
+    <section id="view-qr" class="hidden flex-1 max-w-7xl w-full mx-auto space-y-3.5 py-2 overflow-y-auto pr-1">
+        <div class="mac-window p-4 flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#ffd60a]"><i class="fa-solid fa-tower-broadcast mr-1"></i>TELEMETRÍA MÓVIL EN VIVO (P2P WEBRTC) & QR / BARCODE</span>
+                    <span id="qr-sync-badge" class="text-[10px] font-black px-2 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">SALA EN VIVO ACTIVA</span>
+                </div>
+                <h2 data-i18n="qr_title" class="text-xl md:text-2xl font-black text-white mt-0.5">QR y Códigos de Barras con Voz y Datos en Tiempo Real al Móvil</h2>
+                <p data-i18n="qr_desc" class="text-xs text-[#94a3b8]">Escanea el QR con el móvil del piloto: incluye datos instantáneos en el QR + conexión directa en vivo para cantar cada vuelta, récord y rivales en el teléfono.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="forceBroadcastLiveStateToMobiles()" class="px-3.5 py-2 btn-neon-purple rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer" title="Enviar datos ahora a todos los móviles conectados">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <span id="connected-mobiles-count">MÓVILES EN VIVO: 0</span>
+                </button>
+                <button onclick="toggleCameraBarcodeScanner()" id="btn-camera-scanner" class="px-4 py-2 btn-neon-green rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-camera"></i>
+                    <span id="btn-camera-scanner-text" data-i18n="btn_scan_cam">ESCANEAR CON CÁMARA</span>
+                </button>
+                <button onclick="exportAllRaceDataJson()" class="px-3.5 py-2 btn-silver rounded-xl text-xs font-extrabold flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-file-arrow-down text-[#5ac8fa]"></i>
+                    <span data-i18n="btn_download_all">DESCARGAR DATOS GENERALES</span>
+                </button>
+                <button onclick="switchMainTab('race')" class="px-4 py-2 btn-neon-blue rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span data-i18n="btn_back_track">VOLVER A PISTA EN VIVO</span>
                 </button>
             </div>
         </div>
@@ -1091,26 +1194,36 @@
         </div>
 
         <!-- Panel de Enlace para Móviles Externos (URL Pública / IP Red WiFi Local + Sala WebRTC) -->
-        <div class="mac-studio-silver p-3.5 flex flex-wrap items-center justify-between gap-3 border border-[#30d158]/40">
-            <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-xl btn-neon-green flex items-center justify-center text-sm font-black">
-                    <i class="fa-solid fa-wifi"></i>
-                </span>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-black text-white uppercase">CONEXIÓN DE VOZ Y DATOS AL MÓVIL DEL PILOTO</span>
-                        <span id="live-room-code-pill" class="px-2 py-0.5 rounded text-[10px] font-mono-num font-black bg-[#0a84ff]/30 text-[#5ac8fa] border border-[#5ac8fa]/50">SALA: KPR-CLUB</span>
-                    </div>
-                    <div class="text-[11px] text-slate-300">
-                        El código QR lleva incrustados los datos del piloto y el código de sala en vivo para recibir tiempos y voz automáticamente en su teléfono.
+        <div class="mac-studio-silver p-3.5 flex flex-col gap-2.5 border border-[#30d158]/40">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-xl btn-neon-green flex items-center justify-center text-sm font-black">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </span>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-black text-white uppercase">QR DE BAJA DENSIDAD (CUADROS GRANDES · LECTURA INSTANTÁNEA)</span>
+                            <span id="live-room-code-pill" class="px-2 py-0.5 rounded text-[10px] font-mono-num font-black bg-[#0a84ff]/30 text-[#5ac8fa] border border-[#5ac8fa]/50">SALA: KPR-CLUB</span>
+                        </div>
+                        <div id="qr-url-warning-banner" class="text-[11px] text-slate-300 mt-0.5">
+                            Haz clic sobre cualquier QR para ampliarlo en gigante. El QR es ultra corto para que la cámara del móvil lo lea al instante.
+                        </div>
                     </div>
                 </div>
+                <div class="flex items-center gap-1.5 apple-segmented bg-black/70 p-1">
+                    <button type="button" onclick="setQrPayloadMode('url')" id="qr-mode-btn-url" class="px-3 py-1 rounded-lg text-[10px] font-black mac-silver-active cursor-pointer">
+                        MODO LINK WEB
+                    </button>
+                    <button type="button" onclick="setQrPayloadMode('text')" id="qr-mode-btn-text" class="px-3 py-1 rounded-lg text-[10px] font-bold text-slate-300 cursor-pointer">
+                        MODO FICHA MÓVIL OFFLINE
+                    </button>
+                </div>
             </div>
-            <div class="flex items-center gap-2 flex-1 min-w-[260px] max-w-xl">
-                <span class="text-[10px] font-extrabold text-[#ffd60a] shrink-0">URL BASE QR:</span>
-                <input type="text" id="custom-qr-host-url" placeholder="URL pública o IP WiFi (ej: https://tu-web.com)" onchange="updateCustomQrHostUrl(this.value)" class="flex-1 bg-black/75 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-mono-num text-white focus:outline-none focus:border-[#5ac8fa]" />
-                <button onclick="regenerateAllQrCards()" class="px-3 py-1.5 rounded-xl mac-silver-active text-[10px] font-black cursor-pointer shrink-0">
-                    ACTUALIZAR QR
+            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-white/10">
+                <span class="text-[10px] font-extrabold text-[#ffd60a] shrink-0"><i class="fa-solid fa-link mr-1"></i>URL PÚBLICA O IP WIFI PARA EL QR:</span>
+                <input type="text" id="custom-qr-host-url" placeholder="Pega aquí la dirección web donde subas este HTML (ej: https://miclub.com/krono.html o http://192.168.1.50:8080)" onchange="updateCustomQrHostUrl(this.value)" class="flex-1 min-w-[240px] bg-black/75 border border-white/20 rounded-xl px-3 py-1.5 text-xs font-mono-num text-white focus:outline-none focus:border-[#5ac8fa]" />
+                <button onclick="regenerateAllQrCards()" class="px-3.5 py-1.5 rounded-xl mac-silver-active text-[10px] font-black cursor-pointer shrink-0">
+                    GENERAR QR LIMPIO
                 </button>
             </div>
         </div>
@@ -1148,6 +1261,28 @@
         <!-- Grid de pases de piloto con QR real + Código de Barras CODE-128 de Alto Contraste -->
         <div id="qr-drivers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pb-4"></div>
     </section>
+
+    <!-- ==================== MODAL ZOOM GIGANTE DE QR PARA ESCANEAR FÁCIL DESDE LEJOS ==================== -->
+    <div id="qrZoomGiantModal" onclick="closeQrZoomModal()" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden items-center justify-center p-4 cursor-pointer">
+        <div onclick="event.stopPropagation()" class="bg-white rounded-3xl p-6 max-w-sm w-full flex flex-col items-center text-center shadow-[0_0_80px_rgba(255,255,255,0.35)] border-4 border-[#30d158]">
+            <div id="qr-zoom-badge" class="px-3 py-1 rounded-full text-xs font-black bg-slate-900 text-[#ffd60a] uppercase mb-1">PASE ÓPTICO PILOTO</div>
+            <h3 id="qr-zoom-name" class="text-2xl font-black text-slate-950 uppercase">PILOTO</h3>
+            <p id="qr-zoom-car" class="text-xs font-bold text-slate-600 mb-3">GT · Scaleauto</p>
+            <div id="qr-zoom-canvas-box" class="p-4 bg-white rounded-2xl border-2 border-slate-200 flex items-center justify-center my-1"></div>
+            <div class="w-full flex justify-center my-2">
+                <svg id="qr-zoom-barcode"></svg>
+            </div>
+            <p id="qr-zoom-payload-preview" class="text-[10px] font-mono-num text-slate-500 break-all px-2 mb-3"></p>
+            <div class="grid grid-cols-2 gap-2 w-full">
+                <button onclick="openMobileFromZoomModal()" class="py-2.5 px-3 rounded-xl btn-neon-blue font-black text-xs cursor-pointer">
+                    ABRIR SPOTTER AQUÍ
+                </button>
+                <button onclick="closeQrZoomModal()" class="py-2.5 px-3 rounded-xl bg-slate-900 text-white font-black text-xs cursor-pointer">
+                    CERRAR ✕
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================== MODAL SIMULADOR / PANTALLA MÓVIL DEL PILOTO (SPOTTER PERSONAL + GUARDADO) ==================== -->
     <div id="mobileDriverModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden items-center justify-center p-2 sm:p-4">
@@ -1275,31 +1410,31 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL OFICIAL YES / NO: "¿DESEA REALIZAR ALGÚN CAMBIO ANTES DE EMPEZAR LA MANGA?" ==================== -->
+    <!-- ==================== MODAL OFICIAL SÍ / NO: "¿DESEA REALIZAR ALGÚN CAMBIO ANTES DE EMPEZAR LA MANGA?" ==================== -->
     <div id="preHeatYesNoModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden items-center justify-center p-3">
         <div class="mac-studio-silver w-full max-w-4xl border-2 border-[#5ac8fa]/60 p-5 space-y-4 max-h-[92vh] overflow-y-auto shadow-[0_0_70px_rgba(10,132,255,0.4)]">
-            <!-- Pregunta principal con botones YES / NO estilo documento PDF -->
+            <!-- Pregunta principal con botones SÍ / NO estilo documento PDF -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-black/60 p-4 rounded-2xl border border-white/15">
                 <div class="space-y-1">
-                    <div id="yesno-modal-badge" class="text-[10px] font-black tracking-widest text-[#ffd60a] uppercase">CONTROL PRE-MANGA · DIRECCIÓN DE CARRERA</div>
-                    <h3 id="yesno-modal-question" class="text-base md:text-lg font-black text-white">
+                    <div id="yesno-modal-badge" data-i18n="modal_yesno_badge" class="text-[10px] font-black tracking-widest text-[#ffd60a] uppercase">CONTROL PRE-MANGA · DIRECCIÓN DE CARRERA</div>
+                    <h3 id="yesno-modal-question" data-i18n="modal_yesno_q" class="text-base md:text-lg font-black text-white">
                         La carrera ya está creada/lista para empezar: ¿Desea realizar algún cambio?
                     </h3>
-                    <p id="yesno-modal-sub" class="text-xs text-slate-300">
-                        Sempre que es pugui, YES-NO: Puedes quitar un piloto (ej. Raúl), cambiar pilotos de manga (Pau ↔ JP) o inscribir a un piloto que llega tarde (ej. Roger en D-1).
+                    <p id="yesno-modal-sub" data-i18n="modal_yesno_sub" class="text-xs text-slate-300">
+                        Control previo (SÍ / NO): Puedes quitar un piloto (ej. Raúl), cambiar pilotos de manga (Pau ↔ JP) o inscribir a un piloto que llega tarde (ej. Roger en D-1).
                     </p>
                 </div>
                 <div class="flex items-center gap-3 shrink-0">
-                    <button onclick="handlePreHeatDecision('YES')" id="btn-decision-yes" class="px-6 py-3 rounded-2xl font-black text-sm border-2 border-[#5ac8fa] bg-[#0a84ff]/25 hover:bg-[#0a84ff] text-white shadow-[0_0_20px_rgba(10,132,255,0.4)] transition cursor-pointer">
-                        YES (HACER CAMBIOS)
+                    <button onclick="handlePreHeatDecision('YES')" id="btn-decision-yes" data-i18n="btn_yes_changes" class="px-6 py-3 rounded-2xl font-black text-sm border-2 border-[#5ac8fa] bg-[#0a84ff]/25 hover:bg-[#0a84ff] text-white shadow-[0_0_20px_rgba(10,132,255,0.4)] transition cursor-pointer">
+                        SÍ (HACER CAMBIOS)
                     </button>
-                    <button onclick="handlePreHeatDecision('NO')" id="btn-decision-no" class="px-6 py-3 rounded-2xl font-black text-sm btn-neon-green transition cursor-pointer">
+                    <button onclick="handlePreHeatDecision('NO')" id="btn-decision-no" data-i18n="btn_no_start" class="px-6 py-3 rounded-2xl font-black text-sm btn-neon-green transition cursor-pointer">
                         NO (EMPEZAR MANGA ▶)
                     </button>
                 </div>
             </div>
 
-            <!-- Panel desplegable cuando se pulsa YES para editar en vivo antes de empezar la manga -->
+            <!-- Panel desplegable cuando se pulsa SÍ para editar en vivo antes de empezar la manga -->
             <div id="yesno-editor-container" class="hidden space-y-4 pt-2 border-t border-white/15">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <!-- Añadir piloto que llega tarde -->
@@ -1374,27 +1509,49 @@
                 nav_race: "1. PISTA EN VIVO", nav_config: "2. CREAR CARRERA", nav_qr: "QR PARA PILOTOS", nav_standings: "3. CLASIFICACIÓN", nav_hardware: "4. SENSORES",
                 qr_title: "QR Y CÓDIGOS DE BARRAS REALES PARA PILOTOS",
                 qr_desc: "ESCANEA EL QR O CÓDIGO DE BARRAS DESDE EL MÓVIL PARA QUE TE CANTE TUS TIEMPOS, EL PILOTO DELANTE Y DETRÁS TUYO, Y GUARDAR TUS DATOS.",
-                btn_home_menu: "INICIO",
+                btn_home_menu: "INICIO", btn_cancel_start: "✕ CANCELAR SALIDA",
                 voice_label: "VOZ:", test_btn: "🔊 TEST", voice_male: "HOMBRE", voice_female: "MUJER",
                 pa_system_label: "MEGAFONÍA & SPOTTER F1:",
                 step1_pill: "OPCIONES DE CARRERA", step2_pill: "PILOTOS Y POLE", step3_pill: "CUADRO DE MANGAS",
-                b1_title: "1. CARRILES DE LA PISTA (1 A 10) Y SECTORES", sectors_label: "SECTORES POR VUELTA:",
-                b2_title: "2. TIEMPO POR MANGA (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODALIDAD: POR TIEMPO (∞) O LÍMITE DE VUELTAS",
-                b4_title: "4. TIPO DE SESIÓN Y NÚMERO DE MANGAS",
-                b5_title: "5. ORDEN DE ROTACIÓN DE CARRILES",
-                rot_club: "OFICIAL CLUB: IMPARES → PARES (1 → 3 → 4 → 2)", rot_random: "SORTEO ALEATORIO DE CARRILES", rot_seq: "LINEAL CONSECUTIVO (1 → 2 → 3 → 4...)",
-                b6_title: "6. ¿CÓMO SE CALCULA EL GANADOR FINAL?",
-                score_laps: "A. POR VUELTAS ACUMULADAS (SUMA TOTAL + MEJOR TIEMPO)", score_time: "B. POR MEJOR CRONO INDIVIDUAL", score_points: "C. POR TABLA DE PUNTOS (1º=10, 2º=8, 3º=6...)",
-                btn_next_drivers: "SIGUIENTE: INSCRIBIR PILOTOS", lbl_driver_name: "NOMBRE DEL PILOTO / EQUIPO", lbl_driver_car: "COCHE / CATEGORÍA",
-                btn_add_driver: "AÑADIR PILOTO", btn_load_pdf: "CARGAR 6 PILOTOS OFICIALES DE EJEMPLO", btn_sim_pole: "SIMULAR POLE", btn_clear_list: "VACIAR LISTA",
+                b0_title: "DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB",
+                b0_sub: "Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac",
+                lbl_event_name: "NOMBRE DEL EVENTO / CAMPEONATO:", lbl_event_date: "FECHA DE LA CARRERA:",
+                lbl_club_cats: "CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):",
+                btn_restore_cats: "RESTAURAR BASE", btn_add_cat: "AÑADIR CATEGORÍA", lbl_club_cat_single: "Categoría del Club",
+                b1_title: "1. CARRILES, SECTORES Y CUERDA", sectors_label: "SECTORES:", lbl_track_len: "CUERDA PISTA (M):", unit_meters: "METROS",
+                b2_title: "2. TIEMPO POR MANGA",
+                b3_title: "3. MODALIDAD: TIEMPO O VUELTAS", btn_by_time_inf: "⏱️ POR TIEMPO (∞)", lbl_manual_laps: "VUELTAS MANUAL:", btn_set: "FIJAR",
+                b4_title: "4. SESIÓN Y Nº DE MANGAS", btn_practice: "ENTRENOS (1M)", btn_official_race: "CARRERA OFICIAL",
+                btn_auto_cycle: "AUTO CICLO", btn_eq_lanes: "= CARRILES", lbl_manual_heats: "Nº MANGAS MANUAL:",
+                b5_title: "5. ROTACIÓN DE CARRILES", btn_odd_even: "IMPAR→PAR", btn_random_draw: "SORTEO 🎲",
+                lbl_manual_order: "ORDEN MANUAL (EJ: 1,3,4,2):", btn_invert_wheel: "INVERTIR RUEDA", btn_apply: "APLICAR",
+                b6_title: "6. CÁLCULO DEL GANADOR",
+                score_laps: "A. POR VUELTAS ACUMULADAS (+ MEJOR TIEMPO)", score_time: "B. POR MEJOR CRONO INDIVIDUAL", score_points: "C. POR TABLA DE PUNTOS (10, 8, 6...)",
+                msg_auto_saved: "Todos los parámetros manuales se guardan automáticamente en la base de datos local de tu dispositivo.",
+                btn_next_drivers: "SIGUIENTE: INSCRIBIR PILOTOS", lbl_driver_name: "NOMBRE DEL PILOTO / EQUIPO", lbl_driver_car: "COCHE / MODELO",
+                btn_add_driver: "AÑADIR", btn_load_pdf: "CARGAR 6 PILOTOS OFICIALES DE EJEMPLO", btn_sim_pole: "SIMULAR POLE", btn_clear_list: "VACIAR LISTA",
                 grid_pole_title: "PARRILLA ORDENADA POR POLE POSITION", btn_back: "VOLVER", btn_gen_heats: "GENERAR CUADRO DE MANGAS",
                 step3_badge: "PASO 3 DE 3 · CALENDARIO OFICIAL", step3_title: "DISTRIBUCIÓN DE MANGAS Y CARRILES", btn_recalc: "RECALCULAR / SORTEAR", btn_go_track: "IR A PISTA EN VIVO",
                 btn_call_drivers: "LLAMAR PILOTOS", f1_start: "SALIDA F1", btn_auto_off: "AUTO-MANGAS: OFF", btn_auto_on: "AUTO-MANGAS: ON",
+                sim_off: "SIMULADOR: OFF", sim_on: "SIMULADOR: ON", btn_modify_heats: "CAMBIOS MANGAS (SÍ/NO)",
+                layout_basic_num: "1. BÁSICO", layout_med_num: "2. MEDIO", layout_exp_num: "3. EXPERTO",
+                layout_basic: "BÁSICO", layout_med: "MEDIO", layout_exp: "EXPERTO",
+                card_last_lap: "ÚLTIMA VUELTA", card_last_short: "ÚLTIMA", card_slowest: "LENTA", card_slowest_long: "▲ MÁS LENTA",
+                card_speed: "VELOCIDAD", card_vel_kmh: "VEL. KM/H", card_consistency: "CONSISTENCIA",
+                card_lap_history: "HISTORIAL VUELTAS", card_time_list: "LISTA DE TIEMPOS", card_pace_chart: "GRÁFICA DE RITMO Y EVOLUCIÓN",
+                card_est_target: "META EST:", card_vs_mean: "VS MEDIA:", card_dev: "DESV:", card_top_speed: "PUNTA:", card_range: "RANGO:",
+                card_tap_laps: "TOCA EL CUADRO PARA REGISTRAR VUELTAS", card_waiting_laps: "ESPERANDO VUELTAS PARA GRÁFICA EN VIVO...",
                 btn_next_heat: "SIG. MANGA", standings_title: "CLASIFICACIÓN GENERAL DE LA CARRERA", standings_desc: "CAMBIA EN VIVO EL CRITERIO DEL REGLAMENTO PARA COMPROBAR EL GANADOR.",
                 score_laps_short: "A. POR VUELTAS", score_time_short: "B. MEJOR CRONO", score_points_short: "C. POR PUNTOS",
                 th_driver: "PILOTO", th_heats_breakdown: "MANGAS", th_laps: "VUELTAS", th_best_lap: "RÉCORD", th_points: "PUNTOS",
-                lane: "CARRIL", laps: "VUELTAS", mean_lap: "VUELTA MEDIA", record: "RÉCORD", finish_line: "META",
+                hw_title: "Interfaz de Sensores Ópticos, DS Crono & Teclas Rápidas",
+                hw_desc: "Puedes registrar vueltas haciendo clic sobre cada tarjeta de carril en vivo, pulsando las teclas numéricas del teclado (1 al 9, 0 = Carril 10), o activando el Simulador IA.",
+                btn_back_track: "VOLVER A PISTA EN VIVO", btn_scan_cam: "ESCANEAR CON CÁMARA", btn_download_all: "DESCARGAR DATOS GENERALES",
+                modal_yesno_badge: "CONTROL PRE-MANGA · DIRECCIÓN DE CARRERA",
+                modal_yesno_q: "La carrera ya está creada/lista para empezar: ¿Desea realizar algún cambio?",
+                modal_yesno_sub: "Control previo (SÍ / NO): Puedes quitar un piloto, cambiar pilotos de manga o inscribir a un piloto que llega tarde.",
+                btn_yes_changes: "SÍ (HACER CAMBIOS)", btn_no_start: "NO (EMPEZAR MANGA ▶)",
+                lane: "CARRIL", laps: "VUELTAS", mean_lap: "MEDIA", record: "RÉCORD", finish_line: "META",
                 word_heat: "MANGA", word_finished: "ACABADA", word_marshals: "COMISARIOS",
                 tts_test: "Prueba de audio del sistema Krono Pro Race. Todo listo en pista.",
                 tts_false_start: "Atención, salida falsa en el carril",
@@ -1412,27 +1569,49 @@
                 nav_race: "1. PISTA EN VIU", nav_config: "2. CREAR CURSA", nav_qr: "QR PER A PILOTS", nav_standings: "3. CLASSIFICACIÓ", nav_hardware: "4. SENSORS",
                 qr_title: "QR I CODIS DE BARRES REALS PER A PILOTS",
                 qr_desc: "ESCANEJA EL QR O CODI DE BARRES DES DEL MÒBIL PER ESCOLTAR ELS TEUS TEMPS, QUI PORTES DAVANT I DARRERE, I DESAR LES DADES.",
-                btn_home_menu: "INICI",
+                btn_home_menu: "INICI", btn_cancel_start: "✕ CANCEL·LAR SORTIDA",
                 voice_label: "VEU:", test_btn: "🔊 PROVAR", voice_male: "HOME", voice_female: "DONA",
                 pa_system_label: "MEGAFONIA & SPOTTER F1:",
                 step1_pill: "OPCIONS DE CURSA", step2_pill: "PILOTS I POLE", step3_pill: "QUADRE DE MÀNIGUES",
-                b1_title: "1. CARRILS DE LA PISTA (1 A 10) I SECTORS", sectors_label: "SECTORS PER VOLTA:",
-                b2_title: "2. TEMPS PER MÀNIGA (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODALITAT: PER TEMPS (∞) O LÍMIT DE VOLTES",
-                b4_title: "4. TIPUS DE SESSIÓ I NOMBRE DE MÀNIGUES",
-                b5_title: "5. ORDRE DE ROTACIÓ DE CARRILS",
-                rot_club: "OFICIAL CLUB: SENARS → PARELLS (1 → 3 → 4 → 2)", rot_random: "SORTEIG ALEATORI DE CARRILS", rot_seq: "LINEAL CONSECUTIU (1 → 2 → 3 → 4...)",
-                b6_title: "6. COM ES CALCULA EL GUANYADOR FINAL?",
-                score_laps: "A. PER VOLTES ACUMULADES", score_time: "B. PER MILLOR CRONO INDIVIDUAL", score_points: "C. PER TAULA DE PUNTS (1R=10, 2N=8, 3R=6...)",
-                btn_next_drivers: "SEGÜENT: INSCRIURE PILOTS", lbl_driver_name: "NOM DEL PILOT / EQUIP", lbl_driver_car: "COTXE / CATEGORIA",
-                btn_add_driver: "AFEGIR PILOT", btn_load_pdf: "CARREGAR 6 PILOTS D'EXEMPLE", btn_sim_pole: "SIMULAR POLE", btn_clear_list: "BUIDAR LLISTA",
+                b0_title: "DADES DE L'ESDEVENIMENT, DATA I CATEGORIES DEL CLUB",
+                b0_sub: "Es desa automàticament a la memòria interna de la teva Tauleta, PC o Mac",
+                lbl_event_name: "NOM DE L'ESDEVENIMENT / CAMPIONAT:", lbl_event_date: "DATA DE LA CURSA:",
+                lbl_club_cats: "CATEGORIES DEL CLUB (PREM PER TRIAR O ✕ PER ESBORRAR):",
+                btn_restore_cats: "RESTAURAR BASE", btn_add_cat: "AFEGIR CATEGORIA", lbl_club_cat_single: "Categoria del Club",
+                b1_title: "1. CARRILS, SECTORS I CORDA", sectors_label: "SECTORS:", lbl_track_len: "CORDA PISTA (M):", unit_meters: "METRES",
+                b2_title: "2. TEMPS PER MÀNIGA",
+                b3_title: "3. MODALITAT: TEMPS O VOLTES", btn_by_time_inf: "⏱️ PER TEMPS (∞)", lbl_manual_laps: "VOLTES MANUAL:", btn_set: "FIXAR",
+                b4_title: "4. SESSIÓ I Nº DE MÀNIGUES", btn_practice: "ENTRENAMENTS (1M)", btn_official_race: "CURSA OFICIAL",
+                btn_auto_cycle: "AUTO CICLE", btn_eq_lanes: "= CARRILS", lbl_manual_heats: "Nº MÀNIGUES MANUAL:",
+                b5_title: "5. ROTACIÓ DE CARRILS", btn_odd_even: "SENAR→PARELL", btn_random_draw: "SORTEIG 🎲",
+                lbl_manual_order: "ORDRE MANUAL (EX: 1,3,4,2):", btn_invert_wheel: "INVERTIR RODA", btn_apply: "APLICAR",
+                b6_title: "6. CÀLCUL DEL GUANYADOR",
+                score_laps: "A. PER VOLTES ACUMULADES (+ MILLOR TEMPS)", score_time: "B. PER MILLOR CRONO INDIVIDUAL", score_points: "C. PER TAULA DE PUNTS (10, 8, 6...)",
+                msg_auto_saved: "Tots els paràmetres es desen automàticament a la base de dades local del teu dispositiu.",
+                btn_next_drivers: "SEGÜENT: INSCRIURE PILOTS", lbl_driver_name: "NOM DEL PILOT / EQUIP", lbl_driver_car: "COTXE / MODEL",
+                btn_add_driver: "AFEGIR", btn_load_pdf: "CARREGAR 6 PILOTS D'EXEMPLE", btn_sim_pole: "SIMULAR POLE", btn_clear_list: "BUIDAR LLISTA",
                 grid_pole_title: "GRAELLA ORDENADA PER POLE POSITION", btn_back: "TORNAR", btn_gen_heats: "GENERAR QUADRE DE MÀNIGUES",
                 step3_badge: "PAS 3 DE 3 · CALENDARI OFICIAL", step3_title: "DISTRIBUCIÓ DE MÀNIGUES I CARRILS", btn_recalc: "RECALCULAR / SORTEJAR", btn_go_track: "ANAR A PISTA EN VIU",
                 btn_call_drivers: "CRIDAR PILOTS", f1_start: "SORTIDA F1", btn_auto_off: "AUTO-MÀNIGUES: OFF", btn_auto_on: "AUTO-MÀNIGUES: ON",
+                sim_off: "SIMULADOR: OFF", sim_on: "SIMULADOR: ON", btn_modify_heats: "CANVIS MÀNIGUES (SÍ/NO)",
+                layout_basic_num: "1. BÀSIC", layout_med_num: "2. MITJÀ", layout_exp_num: "3. EXPERT",
+                layout_basic: "BÀSIC", layout_med: "MITJÀ", layout_exp: "EXPERT",
+                card_last_lap: "ÚLTIMA VOLTA", card_last_short: "ÚLTIMA", card_slowest: "LENTA", card_slowest_long: "▲ MÉS LENTA",
+                card_speed: "VELOCITAT", card_vel_kmh: "VEL. KM/H", card_consistency: "CONSISTÈNCIA",
+                card_lap_history: "HISTORIAL VOLTES", card_time_list: "LLISTA DE TEMPS", card_pace_chart: "GRÀFICA DE RITME I EVOLUCIÓ",
+                card_est_target: "META EST:", card_vs_mean: "VS MITJANA:", card_dev: "DESV:", card_top_speed: "PUNTA:", card_range: "RANG:",
+                card_tap_laps: "TOCA EL QUADRE PER REGISTRAR VOLTES", card_waiting_laps: "ESPERANT VOLTES PER A LA GRÀFICA EN VIU...",
                 btn_next_heat: "SEG. MÀNIGA", standings_title: "CLASSIFICACIÓ GENERAL DE LA CURSA", standings_desc: "CANVIA EN VIU EL CRITERI DEL REGLAMENT PER COMPROVAR EL GUANYADOR.",
                 score_laps_short: "A. PER VOLTES", score_time_short: "B. MILLOR CRONO", score_points_short: "C. PER PUNTS",
                 th_driver: "PILOT", th_heats_breakdown: "MÀNIGUES", th_laps: "VOLTES", th_best_lap: "RÈCORD", th_points: "PUNTS",
-                lane: "CARRIL", laps: "VOLTES", mean_lap: "VOLTA MITJANA", record: "RÈCORD", finish_line: "META",
+                hw_title: "Interfície de Sensors Òptics, DS Crono & Tecles Ràpides",
+                hw_desc: "Pots registrar voltes fent clic sobre cada targeta de carril en viu, prement les tecles numèriques (1 al 9, 0 = Carril 10), o activant el Simulador IA.",
+                btn_back_track: "TORNAR A PISTA EN VIU", btn_scan_cam: "ESCANEJAR AMB CÀMERA", btn_download_all: "DESCARREGAR DADES GENERALS",
+                modal_yesno_badge: "CONTROL PRE-MÀNIGA · DIRECCIÓ DE CURSA",
+                modal_yesno_q: "La cursa ja està creada/llesta per començar: Voleu fer algun canvi?",
+                modal_yesno_sub: "Control previ (SÍ / NO): Pots retirar un pilot, intercanviar pilots de màniga o inscriure un pilot que arriba tard.",
+                btn_yes_changes: "SÍ (FER CANVIS)", btn_no_start: "NO (COMENÇAR MÀNIGA ▶)",
+                lane: "CARRIL", laps: "VOLTES", mean_lap: "MITJANA", record: "RÈCORD", finish_line: "META",
                 word_heat: "MÀNIGA", word_finished: "ACABADA", word_marshals: "COMISSARIS",
                 tts_test: "Prova d'àudio del sistema Krono Pro Race. Tot a punt a la pista.",
                 tts_false_start: "Atenció, sortida falsa al carril",
@@ -1450,27 +1629,49 @@
                 nav_race: "1. ZUZENEKO PISTA", nav_config: "2. LASTERKETA SORTU", nav_qr: "GIDARIEN QR", nav_standings: "3. SAILKAPENA", nav_hardware: "4. SENTSOREAK",
                 qr_title: "GIDARIENTZAKO QR ETA BARRA-KODE ERREALAK",
                 qr_desc: "ESKANEATU MUGIKORRETIK DENBORAK, AURREKO ETA ATZEKO GIDARIAK ENTZUTEKO ETA DATUAK GORDETZEKO.",
-                btn_home_menu: "HASIERA",
+                btn_home_menu: "HASIERA", btn_cancel_start: "✕ IRTEERA EZEZTATU",
                 voice_label: "AHOTSA:", test_btn: "🔊 PROBATU", voice_male: "GIZONA", voice_female: "EMAKUMEA",
                 pa_system_label: "MEGAFONIA & F1 SPOTTER:",
                 step1_pill: "LASTERKETA AUKERAK", step2_pill: "GIDARIAK ETA POLE", step3_pill: "TXANDEN KOADROA",
-                b1_title: "1. PISTAREN ERREIAK (1-10) ETA SEKTOREAK", sectors_label: "SEKTOREAK ITZULIKO:",
-                b2_title: "2. TXANDA DENBORA (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODALITATEA: DENBORAZ (∞) EDO ITZULI MUGA",
-                b4_title: "4. SAIO MOTA ETA TXANDA KOPURUA",
-                b5_title: "5. ERREIEN TXANDAKATZE ORDENA",
-                rot_club: "KLUB OFIZIALA: BAKOITIAK → BIKOITIAK (1 → 3 → 4 → 2)", rot_random: "ZOZKETA AUSAZKOA", rot_seq: "LINEALA (1 → 2 → 3 → 4...)",
+                b0_title: "EKITALDIAREN DATUAK, DATA ETA KLUBAREN KATEGORIAK",
+                b0_sub: "Zure Tablet, PC edo Mac gailuaren barne-memorian automatikoki gordetzen da",
+                lbl_event_name: "EKITALDIAREN / TXAPELKETAREN IZENA:", lbl_event_date: "LASTERKETAREN DATA:",
+                lbl_club_cats: "KLUBAREN KATEGORIAK (SAKATU AUKERATZEKO EDO ✕ EZABATZEKO):",
+                btn_restore_cats: "OINARRIA BERRESKURATU", btn_add_cat: "KATEGORIA GEHITU", lbl_club_cat_single: "Klubaren Kategoria",
+                b1_title: "1. ERREIAK, SEKTOREAK ETA LUZERA", sectors_label: "SEKTOREAK:", lbl_track_len: "PISTA LUZERA (M):", unit_meters: "METRO",
+                b2_title: "2. TXANDA BAKOITZEKO DENBORA",
+                b3_title: "3. MODALITATEA: DENBORAZ EDO ITZULIAK", btn_by_time_inf: "⏱️ DENBORAZ (∞)", lbl_manual_laps: "ITZULIAK ESKUZ:", btn_set: "EZARRI",
+                b4_title: "4. SAIO MOTA ETA TXANDA KOPURUA", btn_practice: "ENTRENAMENDUAK (1T)", btn_official_race: "LASTERKETA OFIZIALA",
+                btn_auto_cycle: "ZIKLO AUTO", btn_eq_lanes: "= ERREIAK", lbl_manual_heats: "TXANDA KOP. ESKUZ:",
+                b5_title: "5. ERREIEN TXANDAKATZE ORDENA", btn_odd_even: "BAKOITI→BIKOITI", btn_random_draw: "ZOZKETA 🎲",
+                lbl_manual_order: "ORDENA ESKUZ (ADIB: 1,3,4,2):", btn_invert_wheel: "GURPILA ALDERANTZIKATU", btn_apply: "APLIKATU",
                 b6_title: "6. IRABAZLEA KALKULATZEKO IRIZPIDEA",
                 score_laps: "A. METATUTAKO ITZULIAK", score_time: "B. DENBORA ONENA", score_points: "C. PUNTU TAULA (10, 8, 6...)",
-                btn_next_drivers: "HURRENGOA: GIDARIAK IZENA EMAN", lbl_driver_name: "GIDARIAREN IZENA", lbl_driver_car: "AUTOA / KATEGORIA",
-                btn_add_driver: "GIDARIA GEHITU", btn_load_pdf: "6 GIDARI ADIBIDEA KARGATU", btn_sim_pole: "POLE SIMULATU", btn_clear_list: "ZERRENDA HUSTU",
+                msg_auto_saved: "Parametro guztiak automatikoki gordetzen dira zure gailuko datu-base lokalean.",
+                btn_next_drivers: "HURRENGOA: GIDARIAK IZENA EMAN", lbl_driver_name: "GIDARIAREN IZENA", lbl_driver_car: "AUTOA / MODELOA",
+                btn_add_driver: "GEHITU", btn_load_pdf: "6 GIDARI ADIBIDEA KARGATU", btn_sim_pole: "POLE SIMULATU", btn_clear_list: "ZERRENDA HUSTU",
                 grid_pole_title: "POLE POSITION PARRILLA", btn_back: "ITZULI", btn_gen_heats: "TXANDAK SORTU",
                 step3_badge: "3 / 3 URRATSA · EGUTEGI OFIZIALA", step3_title: "TXANDEN ETA ERREIEN BANAKETA", btn_recalc: "BIRKALKULATU", btn_go_track: "ZUZENEKO PISTARA JOAN",
                 btn_call_drivers: "GIDARIAK DEITU", f1_start: "F1 IRTEERA", btn_auto_off: "AUTO-TXANDAK: OFF", btn_auto_on: "AUTO-TXANDAK: ON",
+                sim_off: "SIMULATZAILEA: OFF", sim_on: "SIMULATZAILEA: ON", btn_modify_heats: "TXANDA ALDAKETAK (BAI/EZ)",
+                layout_basic_num: "1. OINARRIZKOA", layout_med_num: "2. ERTAINA", layout_exp_num: "3. ADITUA",
+                layout_basic: "OINARRIZKOA", layout_med: "ERTAINA", layout_exp: "ADITUA",
+                card_last_lap: "AZKEN ITZULIA", card_last_short: "AZKENA", card_slowest: "MOTELENA", card_slowest_long: "▲ MOTELENA",
+                card_speed: "ABIADURA", card_vel_kmh: "ABIAD. KM/H", card_consistency: "ERRITMOA",
+                card_lap_history: "ITZULIEN HISTORIA", card_time_list: "DENBORA ZERRENDA", card_pace_chart: "ERRITMO GRAFIKOA",
+                card_est_target: "HELMUGA EST:", card_vs_mean: "VS BATEZ:", card_dev: "DESB:", card_top_speed: "MAX:", card_range: "TARTEA:",
+                card_tap_laps: "SAKATU KOADROA ITZULIAK GEHITZEKO", card_waiting_laps: "ITZULIEN ZAIN GRAFIKOA MARRAZTEKO...",
                 btn_next_heat: "HURRENGO TXANDA", standings_title: "LASTERKETAREN SAILKAPEN OROKORRA", standings_desc: "ALDATU IRIZPIDEA IRABAZLEA IKUSTEKO.",
                 score_laps_short: "A. ITZULIAK", score_time_short: "B. DENBORA", score_points_short: "C. PUNTUAK",
                 th_driver: "GIDARIA", th_heats_breakdown: "TXANDAK", th_laps: "ITZULIAK", th_best_lap: "ERREKORRA", th_points: "PUNTUAK",
-                lane: "ERREIA", laps: "ITZULIAK", mean_lap: "BATEZ BESTEKOA", record: "ERREKORRA", finish_line: "HELMUGA",
+                hw_title: "Sentsore Optikoen Interfazea, DS Crono & Tekla Azkarrak",
+                hw_desc: "Itzuliak erregistratu ditzakezu errei bakoitzaren gainean klik eginez, zenbaki-teklak sakatuz (1-9, 0 = 10. Erreia) edo IA Simulatzailea aktibatuz.",
+                btn_back_track: "ITZULI ZUZENEKO PISTARA", btn_scan_cam: "KAMERAREKIN ESKANEATU", btn_download_all: "DATU OROKORRAK DESKARGATU",
+                modal_yesno_badge: "TXANDA AURREKO KONTROLA · LASTERKETA ZUZENDARITZA",
+                modal_yesno_q: "Lasterketa prest dago hasteko: Aldaketarik egin nahi duzu?",
+                modal_yesno_sub: "Aurretiko kontrola (BAI / EZ): Gidari bat kendu, txandaz aldatu edo berandu datorren gidari bat gehitu dezakezu.",
+                btn_yes_changes: "BAI (ALDAKETAK EGIN)", btn_no_start: "EZ (HASI TXANDA ▶)",
+                lane: "ERREIA", laps: "ITZULIAK", mean_lap: "BATEZ BESTE", record: "ERREKORRA", finish_line: "HELMUGA",
                 word_heat: "TXANDA", word_finished: "AMAITUTA", word_marshals: "KOMISARIOAK",
                 tts_test: "Krono Pro Race sistemaren soinu proba. Dena prest pistan.",
                 tts_false_start: "Adi, irteera faltsua erreian",
@@ -1488,27 +1689,49 @@
                 nav_race: "1. LIVE TRACK", nav_config: "2. CREATE RACE", nav_qr: "QR FOR DRIVERS", nav_standings: "3. STANDINGS", nav_hardware: "4. SENSORS",
                 qr_title: "REAL QR & BARCODES FOR DRIVERS",
                 qr_desc: "SCAN ON YOUR PHONE FOR LIVE VOICE LAP TIMES, CAR AHEAD & BEHIND GAPS, AND MOBILE TELEMETRY EXPORT.",
-                btn_home_menu: "HOME",
+                btn_home_menu: "HOME", btn_cancel_start: "✕ CANCEL START",
                 voice_label: "VOICE:", test_btn: "🔊 TEST", voice_male: "MALE", voice_female: "FEMALE",
                 pa_system_label: "PA VOICE & F1 SPOTTER:",
                 step1_pill: "RACE OPTIONS", step2_pill: "DRIVERS & POLE", step3_pill: "HEATS SCHEDULE",
-                b1_title: "1. TRACK LANES (1 TO 10) & SECTORS", sectors_label: "SECTORS PER LAP:",
-                b2_title: "2. HEAT DURATION (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODE: BY TIME (∞) OR LAP LIMIT",
-                b4_title: "4. SESSION TYPE & TOTAL HEATS",
-                b5_title: "5. LANE ROTATION ORDER",
-                rot_club: "OFFICIAL CLUB: ODDS → EVENS (1 → 3 → 4 → 2)", rot_random: "RANDOM LANE DRAW", rot_seq: "SEQUENTIAL LINEAR (1 → 2 → 3 → 4...)",
+                b0_title: "EVENT DETAILS, DATE & CLUB CATEGORIES",
+                b0_sub: "Automatically saved to the internal database on your Tablet, PC, or Mac",
+                lbl_event_name: "EVENT / CHAMPIONSHIP NAME:", lbl_event_date: "RACE DATE:",
+                lbl_club_cats: "CLUB CATEGORIES (CLICK TO SELECT OR ✕ TO DELETE):",
+                btn_restore_cats: "RESTORE DEFAULTS", btn_add_cat: "ADD CATEGORY", lbl_club_cat_single: "Club Category",
+                b1_title: "1. LANES, SECTORS & TRACK LENGTH", sectors_label: "SECTORS:", lbl_track_len: "TRACK LENGTH (M):", unit_meters: "METERS",
+                b2_title: "2. HEAT DURATION",
+                b3_title: "3. MODE: BY TIME OR LAPS", btn_by_time_inf: "⏱️ BY TIME (∞)", lbl_manual_laps: "MANUAL LAPS:", btn_set: "SET",
+                b4_title: "4. SESSION TYPE & HEATS", btn_practice: "PRACTICE (1H)", btn_official_race: "OFFICIAL RACE",
+                btn_auto_cycle: "AUTO CYCLE", btn_eq_lanes: "= LANES", lbl_manual_heats: "MANUAL HEATS:",
+                b5_title: "5. LANE ROTATION ORDER", btn_odd_even: "ODD→EVEN", btn_random_draw: "RANDOM 🎲",
+                lbl_manual_order: "MANUAL ORDER (E.G. 1,3,4,2):", btn_invert_wheel: "INVERT WHEEL", btn_apply: "APPLY",
                 b6_title: "6. FINAL WINNER CALCULATION",
-                score_laps: "A. BY TOTAL LAPS", score_time: "B. BY FASTEST LAP RECORD", score_points: "C. BY POINTS TABLE (1ST=10, 2ND=8, 3RD=6...)",
-                btn_next_drivers: "NEXT: REGISTER DRIVERS", lbl_driver_name: "DRIVER / TEAM NAME", lbl_driver_car: "CAR / CATEGORY",
-                btn_add_driver: "ADD DRIVER", btn_load_pdf: "LOAD 6 EXAMPLE DRIVERS", btn_sim_pole: "SIMULATE POLE", btn_clear_list: "CLEAR LIST",
+                score_laps: "A. BY TOTAL LAPS (+ FASTEST TIME)", score_time: "B. BY FASTEST LAP RECORD", score_points: "C. BY POINTS TABLE (10, 8, 6...)",
+                msg_auto_saved: "All manual parameters are automatically saved to your device's local database.",
+                btn_next_drivers: "NEXT: REGISTER DRIVERS", lbl_driver_name: "DRIVER / TEAM NAME", lbl_driver_car: "CAR / MODEL",
+                btn_add_driver: "ADD", btn_load_pdf: "LOAD 6 EXAMPLE DRIVERS", btn_sim_pole: "SIMULATE POLE", btn_clear_list: "CLEAR LIST",
                 grid_pole_title: "STARTING GRID ORDERED BY POLE POSITION", btn_back: "BACK", btn_gen_heats: "GENERATE HEATS SCHEDULE",
                 step3_badge: "STEP 3 OF 3 · OFFICIAL SCHEDULE", step3_title: "HEATS & LANES DISTRIBUTION", btn_recalc: "RECALCULATE", btn_go_track: "GO TO LIVE TRACK",
                 btn_call_drivers: "CALL DRIVERS", f1_start: "F1 START", btn_auto_off: "AUTO-HEATS: OFF", btn_auto_on: "AUTO-HEATS: ON",
+                sim_off: "SIMULATOR: OFF", sim_on: "SIMULATOR: ON", btn_modify_heats: "HEAT CHANGES (YES/NO)",
+                layout_basic_num: "1. BASIC", layout_med_num: "2. MEDIUM", layout_exp_num: "3. EXPERT",
+                layout_basic: "BASIC", layout_med: "MEDIUM", layout_exp: "EXPERT",
+                card_last_lap: "LAST LAP", card_last_short: "LAST", card_slowest: "SLOWEST", card_slowest_long: "▲ SLOWEST LAP",
+                card_speed: "SPEED", card_vel_kmh: "SPD KM/H", card_consistency: "CONSISTENCY",
+                card_lap_history: "LAP HISTORY", card_time_list: "LAP TIMES LIST", card_pace_chart: "LIVE PACE & EVOLUTION CHART",
+                card_est_target: "EST LAPS:", card_vs_mean: "VS MEAN:", card_dev: "DEV:", card_top_speed: "TOP:", card_range: "RANGE:",
+                card_tap_laps: "TAP CARD TO REGISTER LAPS", card_waiting_laps: "WAITING FOR LAPS TO DRAW LIVE CHART...",
                 btn_next_heat: "NEXT HEAT", standings_title: "OVERALL RACE STANDINGS", standings_desc: "SWITCH SCORING CRITERIA LIVE TO VERIFY THE WINNER.",
                 score_laps_short: "A. BY LAPS", score_time_short: "B. BEST LAP", score_points_short: "C. BY POINTS",
                 th_driver: "DRIVER", th_heats_breakdown: "HEATS", th_laps: "LAPS", th_best_lap: "RECORD", th_points: "POINTS",
-                lane: "LANE", laps: "LAPS", mean_lap: "MEAN LAP", record: "RECORD", finish_line: "FINISH",
+                hw_title: "Optical Sensors, DS Chrono & Hotkeys Interface",
+                hw_desc: "Register laps by clicking each lane card live, pressing number keys (1 to 9, 0 = Lane 10), or enabling the AI Simulator.",
+                btn_back_track: "BACK TO LIVE TRACK", btn_scan_cam: "SCAN WITH CAMERA", btn_download_all: "DOWNLOAD ALL DATA",
+                modal_yesno_badge: "PRE-HEAT CHECK · RACE CONTROL",
+                modal_yesno_q: "The race/heat is ready to start: Would you like to make any changes?",
+                modal_yesno_sub: "Pre-heat check (YES / NO): Remove a driver, swap drivers between heats, or register a late arrival.",
+                btn_yes_changes: "YES (MAKE CHANGES)", btn_no_start: "NO (START HEAT ▶)",
+                lane: "LANE", laps: "LAPS", mean_lap: "MEAN", record: "RECORD", finish_line: "FINISH",
                 word_heat: "HEAT", word_finished: "FINISHED", word_marshals: "MARSHALS",
                 tts_test: "Krono Pro Race audio system check. Track is ready.",
                 tts_false_start: "Warning, false start on lane",
@@ -1526,27 +1749,49 @@
                 nav_race: "1. PISTE EN DIRECT", nav_config: "2. CRÉER COURSE", nav_qr: "QR PILOTES", nav_standings: "3. CLASSEMENT", nav_hardware: "4. CAPTEURS",
                 qr_title: "QR ET CODES-BARRES RÉELS POUR PILOTES",
                 qr_desc: "SCANNEZ DEPUIS VOTRE MOBILE POUR ÉCOUTER VOS TEMPS, LE PILOTE DEVANT ET DERRIÈRE, ET SAUVEGARDER VOS DONNÉES.",
-                btn_home_menu: "ACCUEIL",
+                btn_home_menu: "ACCUEIL", btn_cancel_start: "✕ ANNULER DÉPART",
                 voice_label: "VOIX:", test_btn: "🔊 TEST", voice_male: "HOMME", voice_female: "FEMME",
                 pa_system_label: "ANNONCE & SPOTTER F1:",
                 step1_pill: "OPTIONS COURSE", step2_pill: "PILOTES & POLE", step3_pill: "GRILLE DES MANCHES",
-                b1_title: "1. VOIES DE LA PISTE (1 À 10) & SECTEURS", sectors_label: "SECTEURS PAR TOUR:",
-                b2_title: "2. TEMPS PAR MANCHE (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODE: AU TEMPS (∞) OU LIMITE DE TOURS",
-                b4_title: "4. TYPE DE SÉANCE & MANCHES",
-                b5_title: "5. ORDRE DE ROTATION DES VOIES",
-                rot_club: "OFFICIEL CLUB: IMPAIRS → PAIRS (1 → 3 → 4 → 2)", rot_random: "TIRAGE ALÉATOIRE", rot_seq: "LINÉAIRE (1 → 2 → 3 → 4...)",
+                b0_title: "DÉTAILS DE L'ÉVÉNEMENT, DATE ET CATÉGORIES DU CLUB",
+                b0_sub: "Enregistré automatiquement dans la mémoire interne de votre Tablette, PC ou Mac",
+                lbl_event_name: "NOM DE L'ÉVÉNEMENT / CHAMPIONNAT:", lbl_event_date: "DATE DE LA COURSE:",
+                lbl_club_cats: "CATÉGORIES DU CLUB (CLIQUER POUR CHOISIR OU ✕ POUR SUPPRIMER):",
+                btn_restore_cats: "RESTAURER BASE", btn_add_cat: "AJOUTER CATÉGORIE", lbl_club_cat_single: "Catégorie du Club",
+                b1_title: "1. VOIES, SECTEURS ET LONGUEUR", sectors_label: "SECTEURS:", lbl_track_len: "LONGUEUR PISTE (M):", unit_meters: "MÈTRES",
+                b2_title: "2. TEMPS PAR MANCHE",
+                b3_title: "3. MODE: AU TEMPS OU TOURS", btn_by_time_inf: "⏱️ AU TEMPS (∞)", lbl_manual_laps: "TOURS MANUEL:", btn_set: "FIXER",
+                b4_title: "4. TYPE DE SÉANCE & MANCHES", btn_practice: "ESSAIS (1M)", btn_official_race: "COURSE OFFICIELLE",
+                btn_auto_cycle: "CYCLE AUTO", btn_eq_lanes: "= VOIES", lbl_manual_heats: "Nº MANCHES MANUEL:",
+                b5_title: "5. ORDRE DE ROTATION DES VOIES", btn_odd_even: "IMPAIR→PAIR", btn_random_draw: "TIRAGE 🎲",
+                lbl_manual_order: "ORDRE MANUEL (EX: 1,3,4,2):", btn_invert_wheel: "INVERSER ROUE", btn_apply: "APPLIQUER",
                 b6_title: "6. CALCUL DU VAINQUEUR FINAL",
-                score_laps: "A. PAR TOURS CUMULÉS", score_time: "B. PAR MEILLEUR TEMPS", score_points: "C. PAR POINTS (10, 8, 6...)",
-                btn_next_drivers: "SUIVANT: INSCRIRE PILOTES", lbl_driver_name: "NOM DU PILOTE", lbl_driver_car: "VOITURE / CATÉGORIE",
-                btn_add_driver: "AJOUTER PILOTE", btn_load_pdf: "CHARGER 6 PILOTES EXEMPLE", btn_sim_pole: "SIMULER POLE", btn_clear_list: "VIDER LISTE",
+                score_laps: "A. PAR TOURS CUMULÉS (+ MEILLEUR TEMPS)", score_time: "B. PAR MEILLEUR TEMPS", score_points: "C. PAR POINTS (10, 8, 6...)",
+                msg_auto_saved: "Tous les paramètres manuels sont sauvegardés automatiquement sur votre appareil.",
+                btn_next_drivers: "SUIVANT: INSCRIRE PILOTES", lbl_driver_name: "NOM DU PILOTE", lbl_driver_car: "VOITURE / MODÈLE",
+                btn_add_driver: "AJOUTER", btn_load_pdf: "CHARGER 6 PILOTES EXEMPLE", btn_sim_pole: "SIMULER POLE", btn_clear_list: "VIDER LISTE",
                 grid_pole_title: "GRILLE ORDONNÉE PAR POLE POSITION", btn_back: "RETOUR", btn_gen_heats: "GÉNÉRER LES MANCHES",
                 step3_badge: "ÉTAPE 3 SUR 3 · CALENDRIER OFFICIEL", step3_title: "DISTRIBUTION DES MANCHES ET VOIES", btn_recalc: "RECALCULER", btn_go_track: "ALLER EN PISTE EN DIRECT",
                 btn_call_drivers: "APPELER PILOTES", f1_start: "DÉPART F1", btn_auto_off: "AUTO-MANCHES: OFF", btn_auto_on: "AUTO-MANCHES: ON",
+                sim_off: "SIMULATEUR: OFF", sim_on: "SIMULATEUR: ON", btn_modify_heats: "MODIFIER MANCHES (OUI/NON)",
+                layout_basic_num: "1. BASIQUE", layout_med_num: "2. MOYEN", layout_exp_num: "3. EXPERT",
+                layout_basic: "BASIQUE", layout_med: "MOYEN", layout_exp: "EXPERT",
+                card_last_lap: "DERNIER TOUR", card_last_short: "DERNIER", card_slowest: "LENT", card_slowest_long: "▲ PLUS LENT",
+                card_speed: "VITESSE", card_vel_kmh: "VIT. KM/H", card_consistency: "RÉGULARITÉ",
+                card_lap_history: "HISTORIQUE TOURS", card_time_list: "LISTE DES TEMPS", card_pace_chart: "GRAPHIQUE DE RYTHME EN DIRECT",
+                card_est_target: "ESTIMATION:", card_vs_mean: "VS MOY:", card_dev: "ÉCART:", card_top_speed: "MAX:", card_range: "PLAGE:",
+                card_tap_laps: "TOUCHEZ LA CARTE POUR AJOUTER UN TOUR", card_waiting_laps: "EN ATTENTE DE TOURS POUR LE GRAPHIQUE...",
                 btn_next_heat: "MANCHE SUIV.", standings_title: "CLASSEMENT GÉNÉRAL", standings_desc: "CHANGEZ LE CRITÈRE POUR VÉRIFIER LE VAINQUEUR.",
                 score_laps_short: "A. PAR TOURS", score_time_short: "B. MEILLEUR TEMPS", score_points_short: "C. PAR POINTS",
                 th_driver: "PILOTE", th_heats_breakdown: "MANCHES", th_laps: "TOURS", th_best_lap: "RECORD", th_points: "POINTS",
-                lane: "VOIE", laps: "TOURS", mean_lap: "TOUR MOYEN", record: "RECORD", finish_line: "ARRIVÉE",
+                hw_title: "Interface Capteurs Optiques, DS Chrono & Raccourcis",
+                hw_desc: "Enregistrez des tours en cliquant sur chaque voie, avec les touches 1 à 9 (0 = Voie 10) ou via le Simulateur IA.",
+                btn_back_track: "RETOUR PISTE EN DIRECT", btn_scan_cam: "SCANNER AVEC CAMÉRA", btn_download_all: "TÉLÉCHARGER LES DONNÉES",
+                modal_yesno_badge: "CONTRÔLE PRÉ-MANCHE · DIRECTION DE COURSE",
+                modal_yesno_q: "La manche est prête à démarrer : Souhaitez-vous apporter des modifications ?",
+                modal_yesno_sub: "Contrôle préalable (OUI / NON) : Retirer un pilote, échanger deux pilotes ou inscrire un retardataire.",
+                btn_yes_changes: "OUI (MODIFIER)", btn_no_start: "NON (DÉMARRER ▶)",
+                lane: "VOIE", laps: "TOURS", mean_lap: "MOYENNE", record: "RECORD", finish_line: "ARRIVÉE",
                 word_heat: "MANCHE", word_finished: "TERMINÉE", word_marshals: "COMMISSAIRES",
                 tts_test: "Test audio du système Krono Pro Race. La piste est prête.",
                 tts_false_start: "Attention, faux départ sur la voie",
@@ -1564,27 +1809,49 @@
                 nav_race: "1. PISTA LIVE", nav_config: "2. CREA GARA", nav_qr: "QR PILOTI", nav_standings: "3. CLASSIFICA", nav_hardware: "4. SENSORI",
                 qr_title: "QR E CODICI A BARRE REALI PER PILOTI",
                 qr_desc: "SCANSIONA DAL CELLULARE PER ASCOLTARE I TEMPI, CHI È DAVANTI E DIETRO, E SALVARE I DATI SUL TELEFONO.",
-                btn_home_menu: "INIZIO",
+                btn_home_menu: "INIZIO", btn_cancel_start: "✕ ANNULLA PARTENZA",
                 voice_label: "VOCE:", test_btn: "🔊 PROVA", voice_male: "UOMO", voice_female: "DONNA",
                 pa_system_label: "AUDIO & SPOTTER F1:",
                 step1_pill: "OPZIONI GARA", step2_pill: "PILOTI & POLE", step3_pill: "TABELLONE MANCHE",
-                b1_title: "1. CORSIE DELLA PISTA (1-10) & SETTORI", sectors_label: "SETTORI PER GIRO:",
-                b2_title: "2. TEMPO PER MANCHE (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODALITÀ: A TEMPO (∞) O LIMITE GIRI",
-                b4_title: "4. TIPO SESSIONE & MANCHE",
-                b5_title: "5. ORDINE ROTAZIONE CORSIE",
-                rot_club: "UFFICIALE CLUB: DISPARI → PARI (1 → 3 → 4 → 2)", rot_random: "SORTEGGIO CASUALE", rot_seq: "LINEARE (1 → 2 → 3 → 4...)",
+                b0_title: "DATI EVENTO, DATA E CATEGORIE DEL CLUB",
+                b0_sub: "Salvato automaticamente nella memoria interna di Tablet, PC o Mac",
+                lbl_event_name: "NOME EVENTO / CAMPIONATO:", lbl_event_date: "DATA DELLA GARA:",
+                lbl_club_cats: "CATEGORIE DEL CLUB (CLICCA PER SCEGLIERE O ✕ PER ELIMINARE):",
+                btn_restore_cats: "RIPRISTINA BASE", btn_add_cat: "AGGIUNGI CATEGORIA", lbl_club_cat_single: "Categoria del Club",
+                b1_title: "1. CORSIE, SETTORI E LUNGHEZZA", sectors_label: "SETTORI:", lbl_track_len: "SVILUPPO PISTA (M):", unit_meters: "METRI",
+                b2_title: "2. TEMPO PER MANCHE",
+                b3_title: "3. MODALITÀ: A TEMPO O GIRI", btn_by_time_inf: "⏱️ A TEMPO (∞)", lbl_manual_laps: "GIRI MANUALI:", btn_set: "FISSA",
+                b4_title: "4. TIPO SESSIONE & MANCHE", btn_practice: "PROVE LIBERE (1M)", btn_official_race: "GARA UFFICIALE",
+                btn_auto_cycle: "CICLO AUTO", btn_eq_lanes: "= CORSIE", lbl_manual_heats: "Nº MANCHE MANUALE:",
+                b5_title: "5. ORDINE ROTAZIONE CORSIE", btn_odd_even: "DISPARI→PARI", btn_random_draw: "SORTEGGIO 🎲",
+                lbl_manual_order: "ORDINE MANUALE (ES: 1,3,4,2):", btn_invert_wheel: "INVERTI RUOTA", btn_apply: "APPLICA",
                 b6_title: "6. CALCOLO VINCITORE FINALE",
-                score_laps: "A. PER GIRI ACCUMULATI", score_time: "B. PER MIGLIOR TEMPO", score_points: "C. PER PUNTI (10, 8, 6...)",
-                btn_next_drivers: "AVANTI: ISCRIVI PILOTI", lbl_driver_name: "NOME PILOTA", lbl_driver_car: "AUTO / CATEGORIA",
-                btn_add_driver: "AGGIUNGI PILOTA", btn_load_pdf: "CARICA 6 PILOTI ESEMPIO", btn_sim_pole: "SIMULA POLE", btn_clear_list: "SVUOTA LISTA",
+                score_laps: "A. PER GIRI ACCUMULATI (+ MIGLIOR TEMPO)", score_time: "B. PER MIGLIOR TEMPO", score_points: "C. PER PUNTI (10, 8, 6...)",
+                msg_auto_saved: "Tutti i parametri vengono salvati automaticamente nel database locale del dispositivo.",
+                btn_next_drivers: "AVANTI: ISCRIVI PILOTI", lbl_driver_name: "NOME PILOTA", lbl_driver_car: "AUTO / MODELLO",
+                btn_add_driver: "AGGIUNGI", btn_load_pdf: "CARICA 6 PILOTI ESEMPIO", btn_sim_pole: "SIMULA POLE", btn_clear_list: "SVUOTA LISTA",
                 grid_pole_title: "GRIGLIA ORDINATA PER POLE POSITION", btn_back: "INDIETRO", btn_gen_heats: "GENERA TABELLONE MANCHE",
                 step3_badge: "PASSO 3 DI 3 · CALENDARIO UFFICIALE", step3_title: "DISTRIBUZIONE MANCHE E CORSIE", btn_recalc: "RICALCOLA", btn_go_track: "VAI ALLA PISTA LIVE",
                 btn_call_drivers: "CHIAMA PILOTI", f1_start: "PARTENZA F1", btn_auto_off: "AUTO-MANCHE: OFF", btn_auto_on: "AUTO-MANCHE: ON",
+                sim_off: "SIMULATORE: OFF", sim_on: "SIMULATORE: ON", btn_modify_heats: "CAMBI MANCHE (SÌ/NO)",
+                layout_basic_num: "1. BASE", layout_med_num: "2. MEDIO", layout_exp_num: "3. ESPERTO",
+                layout_basic: "BASE", layout_med: "MEDIO", layout_exp: "ESPERTO",
+                card_last_lap: "ULTIMO GIRO", card_last_short: "ULTIMO", card_slowest: "LENTO", card_slowest_long: "▲ PIÙ LENTO",
+                card_speed: "VELOCITÀ", card_vel_kmh: "VEL. KM/H", card_consistency: "COSTANZA",
+                card_lap_history: "CRONOLOGIA GIRI", card_time_list: "LISTA DEI TEMPI", card_pace_chart: "GRAFICO RITMO ED EVOLUZIONE",
+                card_est_target: "STIMA GIRI:", card_vs_mean: "VS MEDIA:", card_dev: "DEV:", card_top_speed: "MAX:", card_range: "RANGE:",
+                card_tap_laps: "TOCCA IL RIQUADRO PER REGISTRARE I GIRI", card_waiting_laps: "IN ATTESA DI GIRI PER IL GRAFICO LIVE...",
                 btn_next_heat: "MANCHE SUCC.", standings_title: "CLASSIFICA GENERALE", standings_desc: "CAMBIA IL CRITERIO IN TEMPO REALE PER VERIFICARE IL VINCITORE.",
                 score_laps_short: "A. PER GIRI", score_time_short: "B. MIGLIOR TEMPO", score_points_short: "C. PER PUNTI",
-                th_driver: "PILOTA", th_heats_breakdown: "MANCHE", th_laps: "GIRI", th_best_lap: "RECORD", th_points: "POINTS",
-                lane: "CORSIA", laps: "GIRI", mean_lap: "GIRO MEDIO", record: "RECORD", finish_line: "TRAGUARDO",
+                th_driver: "PILOTA", th_heats_breakdown: "MANCHE", th_laps: "GIRI", th_best_lap: "RECORD", th_points: "PUNTI",
+                hw_title: "Interfaccia Sensori Ottici, DS Crono & Tasti Rapidi",
+                hw_desc: "Registra i giri cliccando sulle corsie, usando i tasti numerici (1-9, 0 = Corsia 10) o attivando il Simulatore IA.",
+                btn_back_track: "TORNA ALLA PISTA LIVE", btn_scan_cam: "SCANSIONA CON FOTOCAMERA", btn_download_all: "SCARICA TUTTI I DATI",
+                modal_yesno_badge: "CONTROLLO PRE-MANCHE · DIREZIONE GARA",
+                modal_yesno_q: "La manche è pronta per iniziare: Vuoi apportare qualche modifica?",
+                modal_yesno_sub: "Controllo pre-manche (SÌ / NO): Rimuovi un pilota, scambia piloti o iscrivi un pilota in ritardo.",
+                btn_yes_changes: "SÌ (MODIFICA)", btn_no_start: "NO (AVVIA MANCHE ▶)",
+                lane: "CORSIA", laps: "GIRI", mean_lap: "MEDIA", record: "RECORD", finish_line: "TRAGUARDO",
                 word_heat: "MANCHE", word_finished: "FINITA", word_marshals: "COMMISSARI",
                 tts_test: "Prova audio del sistema Krono Pro Race. Pista pronta.",
                 tts_false_start: "Attenzione, falsa partenza in corsia",
@@ -1602,27 +1869,49 @@
                 nav_race: "1. LIVE-STRECKE", nav_config: "2. RENNEN ERSTELLEN", nav_qr: "FAHRER-QR", nav_standings: "3. WERTUNG", nav_hardware: "4. SENSOREN",
                 qr_title: "ECHTE QR- & BARCODES FÜR FAHRER",
                 qr_desc: "MIT DEM HANDY SCANNEN FÜR RUNDENZEITEN-ANSAGE, VORDER- UND HINTERMANN SOWIE DATENSPEICHERUNG.",
-                btn_home_menu: "STARTMENÜ",
+                btn_home_menu: "STARTMENÜ", btn_cancel_start: "✕ START ABBRECHEN",
                 voice_label: "STIMME:", test_btn: "🔊 TEST", voice_male: "MANN", voice_female: "FRAU",
                 pa_system_label: "DURCHSAGE & F1 SPOTTER:",
                 step1_pill: "RENNOPTIONEN", step2_pill: "FAHRER & POLE", step3_pill: "RENNLÄUFE",
-                b1_title: "1. BAHNSPUREN (1 BIS 10) & SEKTOREN", sectors_label: "SEKTOREN PRO RUNDE:",
-                b2_title: "2. ZEIT PRO LAUF (2, 3, 5, 10, 15, 30, 60, 90, 120 MIN)",
-                b3_title: "3. MODUS: NACH ZEIT (∞) ODER RUNDENLIMIT",
-                b4_title: "4. SITZUNGSTYP & LÄUFE",
-                b5_title: "5. SPURWECHSEL-REIHENFOLGE",
-                rot_club: "OFFIZIELL CLUB: UNGERADE → GERADE (1 → 3 → 4 → 2)", rot_random: "ZUFÄLLIGE SPURAUSLOSUNG", rot_seq: "LINEAR (1 → 2 → 3 → 4...)",
+                b0_title: "EVENT-DATEN, DATUM & CLUB-KATEGORIEN",
+                b0_sub: "Wird automatisch im internen Speicher Ihres Tablets, PCs oder Macs gespeichert",
+                lbl_event_name: "EVENT- / MEISTERSCHAFTSNAME:", lbl_event_date: "RENNDATUM:",
+                lbl_club_cats: "CLUB-KATEGORIEN (KLICKEN ZUM WÄHLEN ODER ✕ ZUM LÖSCHEN):",
+                btn_restore_cats: "STANDARD LADEN", btn_add_cat: "KATEGORIE +", lbl_club_cat_single: "Club-Kategorie",
+                b1_title: "1. SPUREN, SEKTOREN & STRECKENLÄNGE", sectors_label: "SEKTOREN:", lbl_track_len: "STRECKENLÄNGE (M):", unit_meters: "METER",
+                b2_title: "2. ZEIT PRO LAUF",
+                b3_title: "3. MODUS: NACH ZEIT ODER RUNDEN", btn_by_time_inf: "⏱️ NACH ZEIT (∞)", lbl_manual_laps: "RUNDEN MANUELL:", btn_set: "SETZEN",
+                b4_title: "4. SITZUNGSTYP & LÄUFE", btn_practice: "TRAINING (1L)", btn_official_race: "OFFIZIELLES RENNEN",
+                btn_auto_cycle: "AUTO-ZYKLUS", btn_eq_lanes: "= SPUREN", lbl_manual_heats: "LÄUFE MANUELL:",
+                b5_title: "5. SPURWECHSEL-REIHENFOLGE", btn_odd_even: "UNGERADE→GERADE", btn_random_draw: "AUSLOSUNG 🎲",
+                lbl_manual_order: "MANUELLE FOLGE (Z.B. 1,3,4,2):", btn_invert_wheel: "UMKEHREN", btn_apply: "ANWENDEN",
                 b6_title: "6. BERECHNUNG DES GESAMTSIEGERS",
-                score_laps: "A. NACH GESAMTRUNDEN", score_time: "B. NACH BESTER RUNDENZEIT", score_points: "C. NACH PUNKTETABELLE (10, 8, 6...)",
-                btn_next_drivers: "WEITER: FAHRER EINTRAGEN", lbl_driver_name: "FAHRERNAME", lbl_driver_car: "AUTO / KATEGORIA",
-                btn_add_driver: "FAHRER HINZUFÜGEN", btn_load_pdf: "6 BEISPIELFAHRER LADEN", btn_sim_pole: "POLE SIMULIEREN", btn_clear_list: "LISTE LEEREN",
+                score_laps: "A. NACH GESAMTRUNDEN (+ BESTZEIT)", score_time: "B. NACH BESTER RUNDENZEIT", score_points: "C. NACH PUNKTETABELLE (10, 8, 6...)",
+                msg_auto_saved: "Alle Parameter werden automatisch in der lokalen Datenbank Ihres Geräts gespeichert.",
+                btn_next_drivers: "WEITER: FAHRER EINTRAGEN", lbl_driver_name: "FAHRERNAME", lbl_driver_car: "AUTO / MODELL",
+                btn_add_driver: "HINZUFÜGEN", btn_load_pdf: "6 BEISPIELFAHRER LADEN", btn_sim_pole: "POLE SIMULIEREN", btn_clear_list: "LISTE LEEREN",
                 grid_pole_title: "STARTAUFSTELLUNG NACH POLE POSITION", btn_back: "ZURÜCK", btn_gen_heats: "RENNLÄUFE GENERIEREN",
                 step3_badge: "SCHRITT 3 VON 3 · ZEITPLAN", step3_title: "EINTEILUNG DER LÄUFE UND SPUREN", btn_recalc: "NEU BERECHNEN", btn_go_track: "ZUR LIVE-STRECKE",
-                btn_call_drivers: "FAHRER AUFROFEN", f1_start: "F1 START", btn_auto_off: "AUTO-LÄUFE: AUS", btn_auto_on: "AUTO-LÄUFE: EIN",
+                btn_call_drivers: "FAHRER AUFRUFEN", f1_start: "F1 START", btn_auto_off: "AUTO-LÄUFE: AUS", btn_auto_on: "AUTO-LÄUFE: EIN",
+                sim_off: "SIMULATOR: AUS", sim_on: "SIMULATOR: EIN", btn_modify_heats: "LAUF-ÄNDERUNGEN (JA/NEIN)",
+                layout_basic_num: "1. BASIS", layout_med_num: "2. MITTEL", layout_exp_num: "3. EXPERTE",
+                layout_basic: "BASIS", layout_med: "MITTEL", layout_exp: "EXPERTE",
+                card_last_lap: "LETZTE RUNDE", card_last_short: "LETZTE", card_slowest: "LANGSAMSTE", card_slowest_long: "▲ LANGSAMSTE",
+                card_speed: "TEMPO", card_vel_kmh: "KM/H", card_consistency: "KONSTANZ",
+                card_lap_history: "RUNDENVERLAUF", card_time_list: "ZEITENLISTE", card_pace_chart: "LIVE-PACE & KURVENDIAGRAMM",
+                card_est_target: "ZIEL PROG.:", card_vs_mean: "VS SCHNITT:", card_dev: "ABW.:", card_top_speed: "SPITZE:", card_range: "SPANNE:",
+                card_tap_laps: "KARTE ANTIPPEN FÜR RUNDENZÄHLUNG", card_waiting_laps: "WARTE AUF RUNDEN FÜR LIVE-DIAGRAMM...",
                 btn_next_heat: "NÄCHSTER LAUF", standings_title: "GESAMTWERTUNG DES RENNENS", standings_desc: "WECHSELN SIE LIVE DAS WERTUNGSKRITERIUM.",
                 score_laps_short: "A. NACH RUNDEN", score_time_short: "B. BESTE ZEIT", score_points_short: "C. NACH PUNKTEN",
                 th_driver: "FAHRER", th_heats_breakdown: "LÄUFE", th_laps: "RUNDEN", th_best_lap: "REKORD", th_points: "PUNKTE",
-                lane: "SPUR", laps: "RUNDEN", mean_lap: "DURCHSCHNITT", record: "REKORD", finish_line: "ZIEL",
+                hw_title: "Optische Sensoren, DS Chrono & Schnelltasten",
+                hw_desc: "Runden zählen per Klick auf die Spurkarte, per Zahlentasten (1-9, 0 = Spur 10) oder mit dem KI-Simulator.",
+                btn_back_track: "ZURÜCK ZUR STRECKE", btn_scan_cam: "MIT KAMERA SCANNEN", btn_download_all: "ALLE DATEN HERUNTERLADEN",
+                modal_yesno_badge: "VORLAUF-KONTROLLE · RENNLEITUNG",
+                modal_yesno_q: "Der Lauf ist startbereit: Möchten Sie noch Änderungen vornehmen?",
+                modal_yesno_sub: "Vorlauf-Check (JA / NEIN): Fahrer entfernen, Läufe tauschen oder Nachzügler eintragen.",
+                btn_yes_changes: "JA (ÄNDERN)", btn_no_start: "NEIN (LAUF STARTEN ▶)",
+                lane: "SPUR", laps: "RUNDEN", mean_lap: "SCHNITT", record: "REKORD", finish_line: "ZIEL",
                 word_heat: "LAUF", word_finished: "BEENDET", word_marshals: "STRECKENPOSTEN",
                 tts_test: "Audiotest des Krono Pro Race Systems. Die Strecke ist bereit.",
                 tts_false_start: "Achtung, Frühstart auf Spur",
@@ -1786,6 +2075,8 @@
         let mobileSpotterVoiceEnabled = true;
         let mobileAudioUnlocked = false;
         let customQrBaseUrl = '';
+        let qrPayloadMode = 'url'; // 'url' (Enlace web ultracorto) | 'text' (Ficha de texto directa para cualquier cámara sin internet)
+        let zoomedDriverId = null;
 
         // ==================== MOTOR P2P EN TIEMPO REAL (WEBRTC PEERJS + BROADCAST LOCAL) ENTRE PC/TABLET Y MÓVILES ====================
         let roomCodeId = localStorage.getItem('krono_live_room_code') || ('KPR' + Math.floor(1000 + Math.random() * 9000));
@@ -2489,6 +2780,9 @@
                 if (I18N[newLang][key]) el.textContent = I18N[newLang][key];
             });
 
+            const simTxt = document.getElementById('btnAutoSimText');
+            if (simTxt) simTxt.textContent = state.autoSimActive ? t('sim_on') : t('sim_off');
+
             updateVoiceLabels();
             updateAutoButtonUI();
             renderWizardStep1();
@@ -2496,6 +2790,8 @@
             if (state.heats.length > 0) renderWizardStep3();
             renderLiveRaceView();
             renderStandingsView();
+            if (state.mainTab === 'qr') renderDriversQRView();
+            if (activeMobileDriverId) updateMobileCompanionModalUI();
             updateHeaderSummary();
             saveLocalDatabase();
         }
@@ -2657,43 +2953,123 @@
             };
         }
 
+        function isUnreachablePreviewUrl(urlStr) {
+            if (!urlStr) return true;
+            const lower = urlStr.toLowerCase();
+            return lower.startsWith('blob:') ||
+                   lower.startsWith('file:') ||
+                   lower.startsWith('about:') ||
+                   lower.startsWith('data:') ||
+                   lower.includes('usercontent.goog') ||
+                   lower.includes('localhost') ||
+                   lower.includes('127.0.0.1');
+        }
+
+        function setQrPayloadMode(mode) {
+            qrPayloadMode = mode === 'text' ? 'text' : 'url';
+            const bUrl = document.getElementById('qr-mode-btn-url');
+            const bTxt = document.getElementById('qr-mode-btn-text');
+            if (bUrl) bUrl.className = qrPayloadMode === 'url'
+                ? "px-3 py-1 rounded-lg text-[10px] font-black mac-silver-active cursor-pointer"
+                : "px-3 py-1 rounded-lg text-[10px] font-bold text-slate-300 cursor-pointer";
+            if (bTxt) bTxt.className = qrPayloadMode === 'text'
+                ? "px-3 py-1 rounded-lg text-[10px] font-black mac-silver-active cursor-pointer"
+                : "px-3 py-1 rounded-lg text-[10px] font-bold text-slate-300 cursor-pointer";
+            renderDriversQRView();
+        }
+
         function buildDriverShareableUrl(driverId) {
+            const drvIdx = state.drivers.findIndex(d => d.id === driverId);
+            const shortPilotIndex = drvIdx >= 0 ? (drvIdx + 1) : 1;
+            const barcodeCode = getDriverBarcodeId(drvIdx >= 0 ? drvIdx : 0);
             const ctx = getDriverLiveTelemetryContext(driverId);
+
+            // Modo Ficha Móvil Offline: Texto ultra corto que cualquier cámara iPhone/Android muestra directamente en pantalla sin necesitar servidor web
+            if (qrPayloadMode === 'text' && ctx) {
+                const ass = ctx.assignment;
+                const posStr = ctx.position ? `P${ctx.position}` : 'BOX';
+                const laneStr = ass ? `C${ass.lane}` : 'COM';
+                const bestStr = ctx.careerBestLap < Infinity ? `${ctx.careerBestLap.toFixed(3)}s` : '--';
+                return `KRONO PRO: ${ctx.driver.name} (${barcodeCode}) | M${ctx.heatNumber} ${laneStr} ${posStr} | Vueltas:${ctx.totalCareerLaps} | Record:${bestStr}`;
+            }
+
             const defaultBase = window.location.href.split('?')[0].split('#')[0];
             const baseUrl = (customQrBaseUrl && customQrBaseUrl.trim()) ? customQrBaseUrl.trim() : defaultBase;
-            if (!ctx) return baseUrl;
 
-            // Empaquetamos una instantánea ultraligera en Base64 URL-safe para que aunque el móvil esté en 4G/5G fuera del WiFi, cargue todos los datos del piloto al instante
-            const ass = ctx.assignment;
-            const miniSnap = {
-                id: ctx.driver.id,
-                n: ctx.driver.name,
-                c: ctx.driver.car,
-                cat: ctx.driver.category || state.activeClubCategory || 'GT',
-                ev: state.eventName || 'CLUB',
-                dt: state.eventDate || '',
-                h: ctx.heatNumber,
-                th: state.heats.length || 1,
-                l: ass ? ass.lane : 0,
-                p: ctx.position || 1,
-                lp: ass ? ass.laps : 0,
-                ll: ass && ass.lastLap > 0 ? +ass.lastLap.toFixed(3) : 0,
-                bl: ctx.careerBestLap < Infinity ? +ctx.careerBestLap.toFixed(3) : 0,
-                ml: ass && getDriverMeanLap(ass) > 0 ? +getDriverMeanLap(ass).toFixed(3) : 0,
-                tl: ctx.totalCareerLaps || 0,
-                ah: ctx.ahead ? `${ctx.ahead.driverName} (C${ctx.ahead.lane})` : '',
-                ga: ctx.gapAheadText || '',
-                bh: ctx.behind ? `${ctx.behind.driverName} (C${ctx.behind.lane})` : '',
-                gb: ctx.gapBehindText || '',
-                hs: ass ? ass.history.slice(-8).map(x => +x.toFixed(3)) : []
-            };
+            // Si estamos en un entorno local/preview sin URL pública configurada, usar código corto para que el QR tenga cuadros gigantes y legibles
+            if (isUnreachablePreviewUrl(baseUrl) && (!customQrBaseUrl || isUnreachablePreviewUrl(customQrBaseUrl))) {
+                const warnEl = document.getElementById('qr-url-warning-banner');
+                if (warnEl) {
+                    warnEl.innerHTML = `<span class="text-[#ffd60a] font-black">⚠ Estás en modo Previsualización Privada:</span> Para abrir la web en otro móvil, sube el archivo HTML a tu web/servidor WiFi y pega su dirección abajo, o usa el lector integrado con el código <b>${barcodeCode}</b>.`;
+                }
+            }
 
-            let encodedSnap = '';
-            try {
-                encodedSnap = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(miniSnap)))));
-            } catch (e) {}
+            // URL ULTRA CORTA (< 45 caracteres) para que el QR sea Versión 3-4 con cuadros grandes y la cámara del móvil lo lea en 0.2 segundos
+            return `${baseUrl}?p=${shortPilotIndex}&r=${encodeURIComponent(roomCodeId)}`;
+        }
 
-            return `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}&room=${encodeURIComponent(roomCodeId)}&snap=${encodedSnap}`;
+        function openQrZoomModal(driverId) {
+            const drvIdx = state.drivers.findIndex(d => d.id === driverId);
+            if (drvIdx === -1) return;
+            const drv = state.drivers[drvIdx];
+            zoomedDriverId = driverId;
+            const barcodeCode = getDriverBarcodeId(drvIdx);
+            const qrPayload = buildDriverShareableUrl(driverId);
+
+            document.getElementById('qr-zoom-badge').textContent = `PASE ÓPTICO #${drvIdx + 1} · ${barcodeCode}`;
+            document.getElementById('qr-zoom-name').textContent = drv.name;
+            document.getElementById('qr-zoom-car').textContent = drv.car;
+            document.getElementById('qr-zoom-payload-preview').textContent = qrPayload;
+
+            const modal = document.getElementById('qrZoomGiantModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            const qrBox = document.getElementById('qr-zoom-canvas-box');
+            if (qrBox && typeof QRCode !== 'undefined') {
+                qrBox.innerHTML = '';
+                new QRCode(qrBox, {
+                    text: qrPayload,
+                    width: 250,
+                    height: 250,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+
+            const bcSvg = document.getElementById('qr-zoom-barcode');
+            if (bcSvg && typeof JsBarcode !== 'undefined') {
+                try {
+                    JsBarcode(bcSvg, barcodeCode, {
+                        format: "CODE128",
+                        lineColor: "#000000",
+                        background: "#ffffff",
+                        width: 2.8,
+                        height: 60,
+                        displayValue: true,
+                        fontSize: 15,
+                        fontOptions: "bold",
+                        margin: 10
+                    });
+                } catch (e) {}
+            }
+        }
+
+        function closeQrZoomModal() {
+            const modal = document.getElementById('qrZoomGiantModal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        function openMobileFromZoomModal() {
+            const target = zoomedDriverId;
+            closeQrZoomModal();
+            if (target) openMobileCompanion(target);
         }
 
         function updateCustomQrHostUrl(val) {
@@ -2771,15 +3147,25 @@
             const clean = String(rawCode).trim();
             if (!clean) return;
 
-            // 1. Si es una URL con ?pilot= (y opcionalmente &snap= y &room=)
-            if (clean.includes('pilot=')) {
+            // 1. Si es una URL con ?pilot= o el nuevo parámetro corto ?p= (y opcionalmente &r= o &room=)
+            if (clean.includes('pilot=') || clean.includes('?p=') || clean.includes('&p=')) {
                 try {
                     const urlObj = new URL(clean, window.location.origin);
                     const pId = urlObj.searchParams.get('pilot');
+                    const pShort = urlObj.searchParams.get('p');
                     const snapParam = urlObj.searchParams.get('snap');
-                    const roomParam = urlObj.searchParams.get('room');
+                    const roomParam = urlObj.searchParams.get('r') || urlObj.searchParams.get('room');
                     if (snapParam) hydrateStateFromUrlSnapshot(snapParam);
                     if (roomParam) connectMobileClientToHostRoom(roomParam);
+
+                    if (pShort) {
+                        const idx = parseInt(pShort, 10) - 1;
+                        if (state.drivers[idx]) {
+                            playTone(1200, 140, 'sine', 0.85);
+                            openMobileCompanion(state.drivers[idx].id);
+                            return;
+                        }
+                    }
                     if (pId) {
                         const found = state.drivers.find(d => d.id === pId);
                         if (found) {
@@ -2890,9 +3276,10 @@
 
             const urlInp = document.getElementById('custom-qr-host-url');
             if (urlInp && !urlInp.value) {
-                const savedUrl = localStorage.getItem('krono_custom_qr_url') || window.location.href.split('?')[0].split('#')[0];
-                urlInp.value = savedUrl;
-                customQrBaseUrl = savedUrl;
+                const savedUrl = localStorage.getItem('krono_custom_qr_url') || '';
+                const defaultUrl = window.location.href.split('?')[0].split('#')[0];
+                urlInp.value = savedUrl || (isUnreachablePreviewUrl(defaultUrl) ? '' : defaultUrl);
+                customQrBaseUrl = urlInp.value;
             }
             const pill = document.getElementById('live-room-code-pill');
             if (pill) pill.textContent = `SALA EN VIVO: ${roomCodeId}`;
@@ -2942,20 +3329,19 @@
                         </div>
                     </div>
 
-                    <!-- Tarjeta Blanca de Alto Contraste con Zona Silenciosa (Quiet Zone) Oficial para Escáneres Ópticos -->
-                    <div onclick="processScannedCode('${barcodeCode}')" title="Haz clic o escanea este código para abrir el Spotter Móvil del piloto" class="bg-white rounded-2xl p-3.5 flex flex-col items-center justify-center gap-3 shadow-inner cursor-pointer hover:ring-4 hover:ring-[#30d158]/50 transition">
-                        <!-- Código de Barras CODE-128 a ancho completo sin deformación CSS -->
-                        <div class="w-full flex flex-col items-center justify-center bg-white px-2 pt-1 border-b border-slate-200 pb-2">
-                            <svg id="barcode-${drv.id}"></svg>
+                    <!-- Tarjeta Blanca de Alto Contraste con Zona Silenciosa (Quiet Zone) Amplia para Cámaras Móviles -->
+                    <div onclick="openQrZoomModal('${drv.id}')" title="Toca para ampliar este QR a pantalla gigante o escanéalo con el móvil" class="bg-white rounded-2xl p-4 flex flex-col items-center justify-center gap-3 shadow-inner cursor-pointer hover:ring-4 hover:ring-[#30d158] transition">
+                        <!-- Código QR Grande Centrado con Margen Blanco (Quiet Zone) de 16px para Enfoque Instantáneo -->
+                        <div class="flex flex-col items-center justify-center bg-white p-3 rounded-xl border-2 border-slate-200">
+                            <div id="qr-box-${drv.id}" class="flex items-center justify-center bg-white"></div>
                         </div>
-                        <!-- Código QR de baja densidad (módulos grandes de fácil lectura) -->
-                        <div class="flex items-center justify-between w-full gap-3 px-1">
-                            <div id="qr-box-${drv.id}" class="p-1.5 bg-white rounded-lg flex items-center justify-center border border-slate-200 shrink-0"></div>
-                            <div class="text-left flex-1">
-                                <div class="text-[10px] font-black text-slate-900 uppercase">PASE ÓPTICO PILOTO #${idx + 1}</div>
-                                <div class="text-xs font-mono-num font-black text-[#0070e0] mt-0.5">${barcodeCode} · ${drv.name}</div>
-                                <div class="text-[10px] font-semibold text-slate-600 mt-1 leading-tight">Escanea el Código de Barras o el QR, o toca aquí para activar voz en móvil.</div>
-                            </div>
+                        <div class="text-center">
+                            <div class="text-xs font-mono-num font-black text-slate-950 uppercase">${barcodeCode} · ${drv.name}</div>
+                            <div class="text-[10px] font-bold text-[#0070e0] mt-0.5"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i>TOCA EL QR PARA AGRANDARLO EN PANTALLA</div>
+                        </div>
+                        <!-- Código de Barras CODE-128 debajo -->
+                        <div class="w-full flex flex-col items-center justify-center bg-white pt-2 border-t border-slate-200">
+                            <svg id="barcode-${drv.id}"></svg>
                         </div>
                     </div>
 
@@ -2973,7 +3359,7 @@
                 </div>`;
             }).join('');
 
-            // Renderizar QR y Código de Barras CODE-128 con dimensiones exactas sin escalado CSS que distorsione las barras
+            // Renderizar QR de Baja Densidad (168x168px) con bloques grandes para lectura inmediata en iPhone y Android
             requestAnimationFrame(() => {
                 state.drivers.forEach((drv, idx) => {
                     const qrContainer = document.getElementById(`qr-box-${drv.id}`);
@@ -2982,11 +3368,11 @@
                         qrContainer.innerHTML = '';
                         new QRCode(qrContainer, {
                             text: shareUrl,
-                            width: 112,
-                            height: 112,
+                            width: 168,
+                            height: 168,
                             colorDark: "#000000",
                             colorLight: "#ffffff",
-                            correctLevel: QRCode.CorrectLevel.L
+                            correctLevel: QRCode.CorrectLevel.M
                         });
                     }
 
@@ -2998,14 +3384,14 @@
                                 format: "CODE128",
                                 lineColor: "#000000",
                                 background: "#ffffff",
-                                width: 2.6,
-                                height: 56,
+                                width: 2.3,
+                                height: 44,
                                 displayValue: true,
-                                fontSize: 14,
+                                fontSize: 13,
                                 fontOptions: "bold",
                                 font: "JetBrains Mono",
-                                textMargin: 4,
-                                margin: 14
+                                textMargin: 3,
+                                margin: 8
                             });
                         } catch (e) {}
                     }
@@ -4959,7 +5345,7 @@
         function buildLapSparklineSVG(history, bestLap, worstLap, meanLap, accentHex) {
             if (!history || history.length === 0) {
                 return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase tracking-wider" style="font-size:clamp(0.7rem, min(5cqw, 16cqh), 1.15rem);">
-                    <i class="fa-solid fa-chart-line mr-2 opacity-60"></i>ESPERANDO VUELTAS PARA GRÁFICA EN VIVO...
+                    <i class="fa-solid fa-chart-line mr-2 opacity-60"></i>${t('card_waiting_laps')}
                 </div>`;
             }
             const recent = history.slice(-14);
@@ -5019,7 +5405,7 @@
         function buildLapHistoryListHtml(history, bestLap, worstLap, maxItems = 6) {
             if (!history || history.length === 0) {
                 return `<div class="w-full h-full flex items-center justify-center text-slate-400 font-bold uppercase text-center px-2" style="font-size:clamp(0.7rem, min(5.5cqw, 16cqh), 1.1rem);">
-                    TOCA EL CUADRO PARA REGISTRAR VUELTAS
+                    ${t('card_tap_laps')}
                 </div>`;
             }
             const items = [];
@@ -5189,14 +5575,14 @@
                             <!-- Bloque Izquierdo: VUELTAS GIGANTES + PROYECCIÓN + REGULARIDAD -->
                             <div class="col-span-4 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
                                 <div class="w-full flex items-center justify-between px-1">
-                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">VUELTAS</span>
+                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">${t('laps')}</span>
                                     <span class="fluid-label font-mono-num font-black text-[#d982ff]">${consistencyPct}% REG</span>
                                 </div>
                                 <div class="flex-1 flex items-center justify-center w-full min-h-0">
                                     <span class="fluid-num-hero font-mono-num font-black text-white">${a.laps}</span>
                                 </div>
                                 <div class="w-full pt-1 border-t border-white/15 flex items-center justify-between px-1">
-                                    <span class="fluid-label font-bold text-slate-300">META EST:</span>
+                                    <span class="fluid-label font-bold text-slate-300">${t('card_est_target')}</span>
                                     <span class="fluid-sub font-mono-num font-black text-[#ffd60a]">${projectedLaps}V (${a.nextAction})</span>
                                 </div>
                             </div>
@@ -5204,7 +5590,7 @@
                             <!-- Bloque Central: ÚLTIMA VUELTA CON FLECHA VERDE/ROJA + VUELTA MEDIA + RÉCORD Y LENTA -->
                             <div class="col-span-5 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
                                 <div class="w-full flex items-center justify-between px-1">
-                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">ÚLTIMA VUELTA</span>
+                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">${t('card_last_lap')}</span>
                                     <span class="fluid-label font-mono-num">${trendVsPrevArrow}</span>
                                 </div>
                                 <div class="flex-1 flex items-center justify-center w-full min-h-0">
@@ -5212,15 +5598,15 @@
                                 </div>
                                 <div class="w-full pt-1 border-t border-white/15 grid grid-cols-3 gap-1 text-center">
                                     <div>
-                                        <div class="fluid-label font-black text-[#30d158]">RÉCORD</div>
+                                        <div class="fluid-label font-black text-[#30d158]">${t('record')}</div>
                                         <div class="fluid-sub font-mono-num font-black text-[#30d158]">${bestLapStr}</div>
                                     </div>
                                     <div class="border-x border-white/10">
-                                        <div class="fluid-label font-black text-slate-200">MEDIA</div>
+                                        <div class="fluid-label font-black text-slate-200">${t('mean_lap')}</div>
                                         <div class="fluid-sub font-mono-num font-black text-white">${meanLapStr}</div>
                                     </div>
                                     <div>
-                                        <div class="fluid-label font-black text-[#ff453a]">LENTA</div>
+                                        <div class="fluid-label font-black text-[#ff453a]">${t('card_slowest')}</div>
                                         <div class="fluid-sub font-mono-num font-black text-[#ff8a84]">${worstLapStr}</div>
                                     </div>
                                 </div>
@@ -5228,7 +5614,7 @@
 
                             <!-- Bloque Derecho: VELOCIDAD KM/H + ESCALA 1:32 + MEDIA -->
                             <div class="col-span-3 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
-                                <span class="fluid-label font-black tracking-wider text-[#5ac8fa] uppercase w-full">VEL. KM/H</span>
+                                <span class="fluid-label font-black tracking-wider text-[#5ac8fa] uppercase w-full">${t('card_vel_kmh')}</span>
                                 <div class="flex-1 flex items-center justify-center w-full min-h-0">
                                     <span class="fluid-num-xl font-mono-num font-black text-[#5ac8fa]">${curSpeedStr}</span>
                                 </div>
@@ -5249,7 +5635,7 @@
                                 <!-- 1. Vueltas y Proyección -->
                                 <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200 uppercase">VUELTAS</span>
+                                        <span class="fluid-label font-black text-slate-200 uppercase">${t('laps')}</span>
                                         <span class="fluid-label font-mono-num font-black text-[#ffd60a]">EST ${projectedLaps}V</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
@@ -5264,14 +5650,14 @@
                                 <!-- 2. Última Vuelta + Flecha Verde/Roja vs Anterior -->
                                 <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200 uppercase">ÚLTIMA</span>
+                                        <span class="fluid-label font-black text-slate-200 uppercase">${t('card_last_short')}</span>
                                         <span class="fluid-label font-mono-num">${trendVsPrevArrow}</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-white">${lastLapStr}</span>
                                     </div>
                                     <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">VS MEDIA:</span>
+                                        <span class="fluid-label text-slate-300">${t('card_vs_mean')}</span>
                                         <span class="fluid-label font-mono-num">${trendVsMeanHtml}</span>
                                     </div>
                                 </div>
@@ -5279,14 +5665,14 @@
                                 <!-- 3. Vuelta Media + Consistencia (%) -->
                                 <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#5ac8fa] uppercase">V. MEDIA</span>
+                                        <span class="fluid-label font-black text-[#5ac8fa] uppercase">${t('mean_lap')}</span>
                                         <span class="fluid-label font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span>
                                     </div>
                                     <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">DESV:</span>
+                                        <span class="fluid-label text-slate-300">${t('card_dev')}</span>
                                         <span class="fluid-label font-mono-num font-black text-[#d982ff]">${stdDevStr}</span>
                                     </div>
                                 </div>
@@ -5294,14 +5680,14 @@
                                 <!-- 4. Récord Personal (Mejor Vuelta) -->
                                 <div class="mac-silver-well well-cq p-2 h-full border border-[#30d158]/40">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#30d158] uppercase">▼ RÉCORD</span>
-                                        <span class="fluid-label font-mono-num font-bold text-[#30d158]">MEJOR</span>
+                                        <span class="fluid-label font-black text-[#30d158] uppercase">▼ ${t('record')}</span>
+                                        <span class="fluid-label font-mono-num font-bold text-[#30d158]">★</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
                                     </div>
                                     <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">PUNTA:</span>
+                                        <span class="fluid-label text-slate-300">${t('card_top_speed')}</span>
                                         <span class="fluid-label font-mono-num font-black text-[#30d158]">${maxSpeedStr} km/h</span>
                                     </div>
                                 </div>
@@ -5309,14 +5695,14 @@
                                 <!-- 5. Vuelta Más Lenta -->
                                 <div class="mac-silver-well well-cq p-2 h-full border border-[#ff453a]/35">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#ff453a] uppercase">▲ MÁS LENTA</span>
-                                        <span class="fluid-label font-mono-num font-bold text-[#ff8a84]">PEOR</span>
+                                        <span class="fluid-label font-black text-[#ff453a] uppercase">${t('card_slowest_long')}</span>
+                                        <span class="fluid-label font-mono-num font-bold text-[#ff8a84]">⚠</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-[#ff8a84]">${worstLapStr}</span>
                                     </div>
                                     <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">RANGO:</span>
+                                        <span class="fluid-label text-slate-300">${t('card_range')}</span>
                                         <span class="fluid-label font-mono-num font-black text-white">${bestLapVal > 0 ? (worstLapVal - bestLapVal).toFixed(3) : '0.000'}</span>
                                     </div>
                                 </div>
@@ -5324,7 +5710,7 @@
                                 <!-- 6. Velocidad Actual y Escala 1:32 -->
                                 <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#ffd60a] uppercase">VELOCIDAD</span>
+                                        <span class="fluid-label font-black text-[#ffd60a] uppercase">${t('card_speed')}</span>
                                         <span class="fluid-label font-mono-num font-bold text-slate-200">KM/H</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
@@ -5340,8 +5726,8 @@
                             <!-- Derecha (4 cols): LISTA DE TIEMPOS EN VIVO CON FLECHAS VERDES (▼) Y ROJAS (▲) -->
                             <div class="col-span-4 mac-silver-well well-cq p-2 h-full border border-white/20">
                                 <div class="flex items-center justify-between border-b border-white/15 pb-1 mb-1 shrink-0">
-                                    <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-list-ol mr-1 text-[#5ac8fa]"></i>HISTORIAL VUELTAS</span>
-                                    <span class="fluid-label font-mono-num font-black text-[#30d158]">▼MEJORA <span class="text-[#ff453a]">▲PEOR</span></span>
+                                    <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-list-ol mr-1 text-[#5ac8fa]"></i>${t('card_lap_history')}</span>
+                                    <span class="fluid-label font-mono-num font-black text-[#30d158]">▼ <span class="text-[#ff453a]">▲</span></span>
                                 </div>
                                 <div class="flex-1 min-h-0 overflow-hidden">
                                     ${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 6)}
@@ -5359,7 +5745,7 @@
                                 <!-- 1. Vueltas y Estimación -->
                                 <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200">VUELTAS</span>
+                                        <span class="fluid-label font-black text-slate-200">${t('laps')}</span>
                                         <span class="fluid-label font-mono-num font-black text-[#ffd60a]">→${projectedLaps}V</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
@@ -5371,7 +5757,7 @@
                                 <!-- 2. Última Vuelta + Flecha Verde/Roja -->
                                 <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200">ÚLTIMA</span>
+                                        <span class="fluid-label font-black text-slate-200">${t('card_last_short')}</span>
                                         <span class="fluid-label font-mono-num">${trendMainIconOnly}</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
@@ -5382,7 +5768,7 @@
 
                                 <!-- 3. Vuelta Media + Delta vs Media -->
                                 <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <span class="fluid-label font-black text-[#5ac8fa]">V. MEDIA</span>
+                                    <span class="fluid-label font-black text-[#5ac8fa]">${t('mean_lap')}</span>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span>
                                     </div>
@@ -5391,26 +5777,26 @@
 
                                 <!-- 4. Récord vs Vuelta Más Lenta -->
                                 <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-[#30d158]/40">
-                                    <span class="fluid-label font-black text-[#30d158]">▼RÉCORD / ▲LENTA</span>
+                                    <span class="fluid-label font-black text-[#30d158]">▼${t('record')}</span>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
                                     </div>
-                                    <span class="fluid-label font-mono-num font-black text-[#ff8a84] text-center border-t border-white/10 pt-0.5">▲ Lenta: ${worstLapStr}</span>
+                                    <span class="fluid-label font-mono-num font-black text-[#ff8a84] text-center border-t border-white/10 pt-0.5">▲ ${worstLapStr}</span>
                                 </div>
 
                                 <!-- 5. Consistencia (%) y Desviación Estándar (±σ) -->
                                 <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <span class="fluid-label font-black text-[#d982ff]">CONSISTENCIA</span>
+                                    <span class="fluid-label font-black text-[#d982ff]">${t('card_consistency')}</span>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
                                         <span class="fluid-num-lg font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span>
                                     </div>
-                                    <span class="fluid-label font-mono-num font-bold text-slate-200 text-center border-t border-white/10 pt-0.5">Desv: ${stdDevStr}</span>
+                                    <span class="fluid-label font-mono-num font-bold text-slate-200 text-center border-t border-white/10 pt-0.5">${t('card_dev')} ${stdDevStr}</span>
                                 </div>
 
                                 <!-- 6. Velocidad Real, Media y Escala 1:32 -->
                                 <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
                                     <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#ffd60a]">VEL. KM/H</span>
+                                        <span class="fluid-label font-black text-[#ffd60a]">${t('card_vel_kmh')}</span>
                                         <span class="fluid-label font-mono-num text-slate-300">M:${avgSpeedStr}</span>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center min-h-0">
@@ -5425,8 +5811,8 @@
                                 <!-- Gráfica de Evolución de Tiempos con Línea Amarilla de Media -->
                                 <div class="col-span-7 mac-silver-well well-cq p-2 h-full border border-white/20">
                                     <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
-                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-chart-area mr-1 text-[#30d158]"></i>GRÁFICA DE RITMO Y EVOLUCIÓN</span>
-                                        <span class="fluid-label font-mono-num font-bold text-[#ffd60a]">--- MEDIA ${meanLapStr}</span>
+                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-chart-area mr-1 text-[#30d158]"></i>${t('card_pace_chart')}</span>
+                                        <span class="fluid-label font-mono-num font-bold text-[#ffd60a]">--- ${t('mean_lap')} ${meanLapStr}</span>
                                     </div>
                                     <div class="flex-1 min-h-0 w-full">
                                         ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanLapVal, accentHex)}
@@ -5436,7 +5822,7 @@
                                 <!-- Lista de Tiempos Vuelta a Vuelta con Flechas Verdes y Rojas -->
                                 <div class="col-span-5 mac-silver-well well-cq p-2 h-full border border-white/20">
                                     <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
-                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-stopwatch mr-1 text-[#5ac8fa]"></i>LISTA DE TIEMPOS</span>
+                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-stopwatch mr-1 text-[#5ac8fa]"></i>${t('card_time_list')}</span>
                                         <span class="fluid-label font-mono-num font-black text-[#30d158]">▼ <span class="text-[#ff453a]">▲</span></span>
                                     </div>
                                     <div class="flex-1 min-h-0 overflow-hidden">
@@ -5450,9 +5836,9 @@
                 }
 
                 const levelLabels = [
-                    { num: 1, label: 'BÁSICO' },
-                    { num: 2, label: 'MEDIO' },
-                    { num: 3, label: 'EXPERTO' }
+                    { num: 1, label: t('layout_basic') },
+                    { num: 2, label: t('layout_med') },
+                    { num: 3, label: t('layout_exp') }
                 ];
                 const layoutBtnsHtml = levelLabels.map(item => `
                     <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="px-2.5 py-1 rounded-lg text-[11px] font-black transition cursor-pointer ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/10 text-slate-200 hover:text-white'}" title="Vista ${item.label}">
@@ -5777,21 +6163,31 @@
             }
             changeLanguage(state.lang || 'es');
 
-            // Si un piloto abre el enlace escaneado desde su código QR en el móvil, hidratar sus datos instantáneos del QR, conectar a la sala WebRTC y abrir su Spotter Móvil
+            // Si un piloto abre el enlace escaneado desde su código QR en el móvil (?p=1&r=KPRXXXX o ?pilot=d1)
             const params = new URLSearchParams(window.location.search);
             const scannedPilotId = params.get('pilot');
+            const shortPilotIdx = params.get('p');
             const snapParam = params.get('snap');
-            const roomParam = params.get('room');
+            const roomParam = params.get('r') || params.get('room');
 
             if (snapParam) {
                 hydrateStateFromUrlSnapshot(snapParam);
             }
-            if (scannedPilotId) {
+
+            let resolvedPilotId = scannedPilotId;
+            if (!resolvedPilotId && shortPilotIdx) {
+                const idx = parseInt(shortPilotIdx, 10) - 1;
+                if (state.drivers[idx]) {
+                    resolvedPilotId = state.drivers[idx].id;
+                }
+            }
+
+            if (resolvedPilotId) {
                 if (roomParam) {
                     connectMobileClientToHostRoom(roomParam);
                 }
                 switchMainTab('qr');
-                setTimeout(() => openMobileCompanion(scannedPilotId), 250);
+                setTimeout(() => openMobileCompanion(resolvedPilotId), 250);
             } else {
                 initHostRealtimeServer();
                 switchMainTab(state.mainTab || 'race');
