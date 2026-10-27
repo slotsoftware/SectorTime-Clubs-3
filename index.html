@@ -295,103 +295,105 @@
         </button>
     </div>
 
-    <!-- ==================== NIVEL 1: BARRA SUPERIOR COMPACTA TODO-EN-UNO (CON MEGAFONÍA Y DB LOCAL) ==================== -->
-    <header id="main-app-header" class="mac-window px-3 py-1.5 flex items-center justify-between gap-2 shrink-0 z-30">
-        <!-- Identidad + Estado -->
-        <div class="flex items-center gap-2.5 shrink-0">
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#ff453a] via-[#0a84ff] to-[#30d158] flex items-center justify-center font-black text-xs text-white shadow-[0_0_15px_rgba(10,132,255,0.5)]">
-                <i class="fa-solid fa-flag-checkered"></i>
+    <!-- ==================== NIVEL 1: BARRA SUPERIOR EN DOS FILAS CON BOTONES MÁS GRANDES ==================== -->
+    <header id="main-app-header" class="mac-window px-3.5 py-2.5 flex flex-col gap-2 shrink-0 z-30">
+        <!-- FILA 1: Identidad + Megafonía (Spotter) + Controles de Sistema Más Grandes -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 w-full">
+            <!-- Identidad + Estado -->
+            <div class="flex items-center gap-2.5 shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#ff453a] via-[#0a84ff] to-[#30d158] flex items-center justify-center font-black text-sm text-white shadow-[0_0_15px_rgba(10,132,255,0.5)]">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm md:text-base font-black tracking-tight text-white leading-none">
+                            KRONO <span class="text-[#5ac8fa]">PRO RACE</span>
+                        </h1>
+                        <span id="badge-category" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40">CLUB · 3 Min ★</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <span class="text-[10px] font-extrabold text-[#ffd60a] tracking-wide">by Albert Closa</span>
+                        <span class="text-[10px] text-white/25">·</span>
+                        <span id="header-summary" class="text-[10px] font-semibold text-[#94a3b8] tracking-wider hidden lg:inline">4 Carriles · 3 Sect</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <div class="flex items-center gap-1.5">
-                    <h1 class="text-xs md:text-sm font-black tracking-tight text-white leading-none">
-                        KRONO <span class="text-[#5ac8fa]">PRO RACE</span>
-                    </h1>
-                    <span id="badge-category" class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#0a84ff]/20 text-[#5ac8fa] border border-[#0a84ff]/40">CLUB · 3 Min ★</span>
+
+            <!-- Cuadro de Megafonía Integrado Arriba -->
+            <div class="mac-group-box px-3 py-1.5 flex items-center gap-2 flex-1 min-w-[200px] max-w-xl overflow-hidden border border-white/10">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-pulse shrink-0"></span>
+                <span class="text-[10px] font-extrabold text-[#94a3b8] uppercase shrink-0 hidden sm:inline">SPOTTER:</span>
+                <span id="pa-live-transcript" class="text-xs font-bold text-[#ffd60a] italic truncate flex-1">Sistema listo en pista...</span>
+                <span id="auto-countdown-banner" class="hidden text-[10px] font-black bg-[#bf5af2]/25 text-[#d982ff] border border-[#bf5af2]/50 px-2 py-0.5 rounded shrink-0">AUTO</span>
+                <span id="relay-power-badge" class="hidden xl:inline text-[10px] font-black px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/15 shrink-0">RELÉ: STANDBY</span>
+            </div>
+
+            <!-- Controles de Sistema (Más Grandes): Poner Todo a Cero + DB Local + Idioma + Voz + Pantalla Completa -->
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="zeroOutAllRaceDataAndGoHome()" class="px-3.5 py-2 rounded-xl bg-[#ff453a]/20 hover:bg-[#ff453a] text-[#ff6961] hover:text-white border border-[#ff453a]/45 text-xs font-black transition cursor-pointer flex items-center gap-1.5" title="Poner todos los tiempos, vueltas y mangas a cero">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span data-i18n="btn_zero_all" class="hidden sm:inline">PONER TODO A CERO</span>
+                </button>
+
+                <div class="mac-control-pill px-3 py-2 flex items-center gap-1.5" title="Base de datos local IndexedDB activa">
+                    <i class="fa-solid fa-database text-xs text-[#30d158]"></i>
+                    <span id="local-db-status" class="text-[11px] font-extrabold text-[#30d158] hidden xl:inline">DB LOCAL OK</span>
                 </div>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="text-[9px] font-extrabold text-[#ffd60a] tracking-wide">by Albert Closa</span>
-                    <span class="text-[9px] text-white/25">·</span>
-                    <span id="header-summary" class="text-[9px] font-semibold text-[#94a3b8] tracking-wider hidden xl:inline">4 Carriles · 3 Sect</span>
+
+                <!-- Banderas SVG -->
+                <div class="relative mac-control-pill px-3 py-2 flex items-center" id="customLangDropdown">
+                    <button type="button" onclick="toggleLangMenu(event)" class="flex items-center gap-1.5 text-xs font-bold text-white focus:outline-none cursor-pointer">
+                        <span id="currentLangFlag" class="w-5 h-3.5 flex items-center justify-center rounded-[2px] overflow-hidden border border-white/25"></span>
+                        <span id="currentLangLabel" class="hidden md:inline">ES</span>
+                        <span class="text-[10px] text-[#94a3b8]">▼</span>
+                    </button>
+                    <div id="langMenuPopup" class="hidden absolute top-full right-0 mt-2 w-48 mac-window p-1.5 z-50 flex-col gap-1 border border-white/20 shadow-2xl"></div>
                 </div>
+
+                <!-- Selector de Voz Nativo -->
+                <div class="flex items-center gap-1.5 mac-control-pill px-3 py-1.5">
+                    <select id="headerVoiceSelect" onchange="saveLocalDatabase(); testVoice();" class="bg-transparent text-xs font-bold text-[#5ac8fa] focus:outline-none cursor-pointer max-w-[130px] truncate">
+                        <option value="AUTO_MALE" class="bg-[#161820] text-white">👨 HOMBRE</option>
+                        <option value="AUTO_FEMALE" class="bg-[#161820] text-white">👩 MUJER</option>
+                    </select>
+                    <button onclick="testVoice()" data-i18n="test_btn" class="px-2 py-1 bg-[#0a84ff]/20 hover:bg-[#0a84ff] text-[#5ac8fa] hover:text-white border border-[#0a84ff]/40 rounded-lg text-[10px] font-extrabold transition cursor-pointer">
+                        🔊
+                    </button>
+                </div>
+
+                <button onclick="toggleFullScreenMode()" class="px-3 py-2 mac-control-pill text-[#5ac8fa] hover:text-white text-sm font-bold cursor-pointer" title="Modo Horizontal Pantalla Completa">
+                    ⛶
+                </button>
             </div>
         </div>
 
-        <!-- Navegación Unificada de Módulos (INICIO + PISTA + CREAR CARRERA + QR + CLASIFICACIÓN + SENSORES) -->
-        <nav class="apple-segmented overflow-x-auto shrink-0 uppercase">
-            <button onclick="switchMainTab('home')" id="tab-btn-home" class="px-2.5 py-1 rounded-[8px] text-[11px] font-bold btn-neon-blue transition cursor-pointer shrink-0 flex items-center gap-1 uppercase">
+        <!-- FILA 2: Navegación Principal de Módulos con Botones Grandes a Ancho Completo -->
+        <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 w-full pt-1 border-t border-white/10 uppercase">
+            <button onclick="switchMainTab('home')" id="tab-btn-home" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-black btn-neon-blue transition cursor-pointer flex items-center justify-center gap-2 uppercase">
                 <i class="fa-solid fa-house"></i>
                 <span data-i18n="btn_home_menu">INICIO</span>
             </button>
-            <button onclick="switchMainTab('race')" id="tab-btn-race" class="px-2.5 py-1 rounded-[8px] text-[11px] font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1 uppercase">
+            <button onclick="switchMainTab('race')" id="tab-btn-race" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold mac-silver-btn text-[#94a3b8] hover:text-white transition cursor-pointer flex items-center justify-center gap-2 uppercase">
                 <i class="fa-solid fa-gauge-high"></i>
                 <span data-i18n="nav_race">1. PISTA EN VIVO</span>
             </button>
-            <button onclick="switchMainTab('config')" id="tab-btn-config" class="px-2.5 py-1 rounded-[8px] text-[11px] font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1 uppercase">
+            <button onclick="switchMainTab('config')" id="tab-btn-config" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold mac-silver-btn text-[#94a3b8] hover:text-white transition cursor-pointer flex items-center justify-center gap-2 uppercase">
                 <i class="fa-solid fa-sliders"></i>
                 <span data-i18n="nav_config">2. CREAR CARRERA</span>
             </button>
-            <button onclick="switchMainTab('qr')" id="tab-btn-qr" class="px-2.5 py-1 rounded-[8px] text-[11px] font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1 uppercase">
+            <button onclick="switchMainTab('qr')" id="tab-btn-qr" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold mac-silver-btn text-[#94a3b8] hover:text-white transition cursor-pointer flex items-center justify-center gap-2 uppercase">
                 <i class="fa-solid fa-qrcode text-[#ffd60a]"></i>
                 <span data-i18n="nav_qr">QR PARA PILOTOS</span>
             </button>
-            <button onclick="switchMainTab('standings')" id="tab-btn-standings" class="px-2.5 py-1 rounded-[8px] text-[11px] font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1 uppercase">
+            <button onclick="switchMainTab('standings')" id="tab-btn-standings" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold mac-silver-btn text-[#94a3b8] hover:text-white transition cursor-pointer flex items-center justify-center gap-2 uppercase">
                 <i class="fa-solid fa-trophy"></i>
                 <span data-i18n="nav_standings">3. CLASIFICACIÓN</span>
             </button>
-            <button onclick="switchMainTab('hardware')" id="tab-btn-hardware" class="px-2.5 py-1 rounded-[8px] text-[11px] font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1 uppercase">
+            <button onclick="switchMainTab('hardware')" id="tab-btn-hardware" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold mac-silver-btn text-[#94a3b8] hover:text-white transition cursor-pointer flex items-center justify-center gap-2 uppercase">
                 <i class="fa-solid fa-microchip text-[#30d158]"></i>
                 <span data-i18n="nav_hardware">4. SENSORES</span>
             </button>
         </nav>
-
-        <!-- Cuadro de Megafonía Integrado Arriba -->
-        <div class="mac-group-box px-2.5 py-1 flex items-center gap-2 flex-1 min-w-[160px] max-w-md overflow-hidden border border-white/10">
-            <span class="w-2 h-2 rounded-full bg-[#30d158] animate-pulse shrink-0"></span>
-            <span class="text-[9px] font-extrabold text-[#94a3b8] uppercase shrink-0 hidden sm:inline">SPOTTER:</span>
-            <span id="pa-live-transcript" class="text-[11px] font-bold text-[#ffd60a] italic truncate flex-1">Sistema listo en pista...</span>
-            <span id="auto-countdown-banner" class="hidden text-[9px] font-black bg-[#bf5af2]/25 text-[#d982ff] border border-[#bf5af2]/50 px-1.5 py-0.5 rounded shrink-0">AUTO</span>
-        </div>
-
-        <!-- Base de Datos Local + Poner Todo a Cero + Idioma + Voz + Pantalla Completa -->
-        <div class="flex items-center gap-1.5 shrink-0">
-            <!-- Botón Directo para Poner Todo a Cero -->
-            <button onclick="zeroOutAllRaceDataAndGoHome()" class="px-2.5 py-1 rounded-xl bg-[#ff453a]/20 hover:bg-[#ff453a] text-[#ff6961] hover:text-white border border-[#ff453a]/45 text-[10px] font-black transition cursor-pointer flex items-center gap-1.5" title="Poner todos los tiempos, vueltas y mangas a cero">
-                <i class="fa-solid fa-power-off"></i>
-                <span data-i18n="btn_zero_all" class="hidden sm:inline">PONER TODO A CERO</span>
-            </button>
-
-            <!-- Indicador de Base de Datos Local del Dispositivo -->
-            <div class="mac-control-pill px-2 py-1 flex items-center gap-1.5" title="Base de datos local IndexedDB activa en este dispositivo (Tablet, PC o Mac)">
-                <i class="fa-solid fa-database text-[10px] text-[#30d158]"></i>
-                <span id="local-db-status" class="text-[10px] font-extrabold text-[#30d158] hidden xl:inline">DB LOCAL OK</span>
-            </div>
-
-            <!-- Banderas SVG -->
-            <div class="relative mac-control-pill px-2.5 py-1 flex items-center" id="customLangDropdown">
-                <button type="button" onclick="toggleLangMenu(event)" class="flex items-center gap-1.5 text-[11px] font-bold text-white focus:outline-none cursor-pointer">
-                    <span id="currentLangFlag" class="w-4 h-3 flex items-center justify-center rounded-[2px] overflow-hidden border border-white/25"></span>
-                    <span id="currentLangLabel" class="hidden lg:inline">ES</span>
-                    <span class="text-[9px] text-[#94a3b8]">▼</span>
-                </button>
-                <div id="langMenuPopup" class="hidden absolute top-full right-0 mt-2 w-48 mac-window p-1.5 z-50 flex-col gap-1 border border-white/20 shadow-2xl"></div>
-            </div>
-
-            <!-- Selector de Voz Nativo (Hombre / Mujer) -->
-            <div class="flex items-center gap-1 mac-control-pill px-2 py-1">
-                <select id="headerVoiceSelect" onchange="saveLocalDatabase(); testVoice();" class="bg-transparent text-[11px] font-bold text-[#5ac8fa] focus:outline-none cursor-pointer max-w-[115px] truncate">
-                    <option value="AUTO_MALE" class="bg-[#161820] text-white">👨 HOMBRE</option>
-                    <option value="AUTO_FEMALE" class="bg-[#161820] text-white">👩 MUJER</option>
-                </select>
-                <button onclick="testVoice()" data-i18n="test_btn" class="px-1.5 py-0.5 bg-[#0a84ff]/20 hover:bg-[#0a84ff] text-[#5ac8fa] hover:text-white border border-[#0a84ff]/40 rounded text-[9px] font-extrabold transition cursor-pointer">
-                    🔊
-                </button>
-            </div>
-
-            <button onclick="toggleFullScreenMode()" class="px-2 py-1 mac-control-pill text-[#5ac8fa] hover:text-white text-xs font-bold cursor-pointer" title="Modo Horizontal Pantalla Completa">
-                ⛶
-            </button>
-        </div>
     </header>
 
     <!-- ======================================================================================== -->
@@ -415,46 +417,17 @@
                 </h2>
             </div>
 
-            <!-- MARCO DE IMAGEN CENTRAL (Carga directamente fondo.jpg y permite también guardarla en la memoria del dispositivo) -->
-            <div class="relative flex-1 w-full max-w-4xl min-h-[200px] rounded-3xl mac-silver-well border-2 border-white/20 overflow-hidden flex items-center justify-center group z-10 shadow-2xl bg-black/70">
-                <!-- Imagen central del usuario: fondo.jpg -->
-                <img id="home-central-custom-img" src="fondo.jpg" alt="fondo.jpg" class="w-full h-full object-contain p-1" onload="this.classList.remove('hidden'); document.getElementById('home-central-default-art').classList.add('hidden');" onerror="if(!state || !state.homeCustomImage){ this.classList.add('hidden'); document.getElementById('home-central-default-art').classList.remove('hidden'); }" />
+            <!-- MARCO DE IMAGEN CENTRAL (Sin dibujo SVG de relleno para ahorrar líneas de código) -->
+            <div class="relative flex-1 w-full max-w-4xl min-h-[180px] rounded-3xl mac-silver-well border-2 border-white/20 overflow-hidden flex items-center justify-center group z-10 shadow-2xl bg-black/70">
+                <img id="home-central-custom-img" src="fondo.jpg" alt="fondo.jpg" class="w-full h-full object-contain p-1" onload="this.classList.remove('hidden');" onerror="if(!state.homeCustomImage){ this.classList.add('hidden'); }" />
 
-                <!-- Arte Central de respaldo solo si aún no está fondo.jpg en la carpeta -->
-                <div id="home-central-default-art" class="hidden w-full h-full flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-slate-900/60 via-slate-950/80 to-black/90">
-                    <svg viewBox="0 0 640 240" class="w-full max-w-lg h-auto max-h-48 drop-shadow-[0_0_30px_rgba(10,132,255,0.45)]">
-                        <defs>
-                            <linearGradient id="kronoTrackGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#ff453a"/>
-                                <stop offset="50%" stop-color="#0a84ff"/>
-                                <stop offset="100%" stop-color="#30d158"/>
-                            </linearGradient>
-                            <linearGradient id="kronoSilverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stop-color="#ffffff"/>
-                                <stop offset="100%" stop-color="#94a3b8"/>
-                            </linearGradient>
-                        </defs>
-                        <!-- Trazado estilizado de pista Slot / Motorsport -->
-                        <path d="M 60 175 C 60 75, 200 45, 320 115 C 440 185, 580 155, 580 75 C 580 25, 450 25, 320 115 C 190 205, 60 225, 60 175 Z" fill="none" stroke="url(#kronoTrackGrad)" stroke-width="10" stroke-linecap="round"/>
-                        <path d="M 60 175 C 60 75, 200 45, 320 115 C 440 185, 580 155, 580 75 C 580 25, 450 25, 320 115 C 190 205, 60 225, 60 175 Z" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="10 8" opacity="0.65"/>
-                        <!-- Cronómetro central -->
-                        <circle cx="320" cy="115" r="46" fill="#0b0d12" stroke="url(#kronoSilverGrad)" stroke-width="4"/>
-                        <text x="320" y="123" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="900" font-family="JetBrains Mono">00.000</text>
-                        <text x="320" y="96" text-anchor="middle" fill="#5ac8fa" font-size="9" font-weight="800" font-family="Inter">fondo.jpg</text>
-                    </svg>
-                    <p data-i18n="home_img_hint" class="text-xs font-bold text-slate-300 mt-2 tracking-wide uppercase">
-                        COLOCA TU ARCHIVO "fondo.jpg" EN LA MISMA CARPETA O PULSA ABAJO PARA CARGARLO
-                    </p>
-                </div>
-
-                <!-- Botón discreto por si quieres seleccionar fondo.jpg directamente desde el explorador -->
-                <div class="absolute bottom-3 right-3 flex items-center gap-2 z-20 opacity-75 hover:opacity-100 transition">
+                <div class="absolute bottom-3 right-3 flex items-center gap-2 z-20 opacity-80 hover:opacity-100 transition">
                     <input type="file" id="home-image-upload-input" accept="image/*" class="hidden" onchange="handleHomeImageUpload(event)" />
-                    <button type="button" onclick="document.getElementById('home-image-upload-input').click()" class="px-3 py-1 rounded-xl bg-black/80 hover:bg-black text-white border border-white/25 text-[10px] font-black flex items-center gap-1.5 shadow-lg cursor-pointer transition" title="Cargar fondo.jpg desde tu dispositivo">
+                    <button type="button" onclick="document.getElementById('home-image-upload-input').click()" class="px-3.5 py-1.5 rounded-xl bg-black/80 hover:bg-black text-white border border-white/25 text-xs font-black flex items-center gap-1.5 shadow-lg cursor-pointer transition">
                         <i class="fa-solid fa-folder-open text-[#5ac8fa]"></i>
-                        <span data-i18n="home_btn_change_img">fondo.jpg</span>
+                        <span>fondo.jpg</span>
                     </button>
-                    <button type="button" id="home-btn-remove-img" onclick="removeCustomHomeImage()" class="hidden px-2.5 py-1 rounded-xl bg-[#ff453a]/80 hover:bg-[#ff453a] text-white text-[10px] font-black cursor-pointer transition" title="Restaurar ruta fondo.jpg">
+                    <button type="button" id="home-btn-remove-img" onclick="removeCustomHomeImage()" class="hidden px-3 py-1.5 rounded-xl bg-[#ff453a]/80 hover:bg-[#ff453a] text-white text-xs font-black cursor-pointer transition">
                         ✕
                     </button>
                 </div>
@@ -516,7 +489,7 @@
             <!-- Acción Rápida a Pista -->
             <button onclick="switchMainTab('race')" class="mac-silver-active px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-flag-checkered"></i>
-                <span data-i18n="btn_go_live_now">IR A PISTA EN VIVO</span>
+                <span>IR A PISTA EN VIVO</span>
             </button>
         </div>
 
@@ -534,8 +507,8 @@
                                 <i class="fa-solid fa-calendar-check text-xs"></i>
                             </span>
                             <div>
-                                <div data-i18n="event_block_title" class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
-                                <div data-i18n="event_block_sub" class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
+                                <div class="text-xs font-black text-white uppercase tracking-tight">DATOS DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB</div>
+                                <div class="text-[10px] text-slate-300">Se guarda automáticamente en la memoria interna de tu Tablet, PC o Mac</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -549,7 +522,7 @@
                         <!-- Nombre del Evento -->
                         <div class="lg:col-span-4 mac-silver-well p-3 space-y-1.5">
                             <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i><span data-i18n="event_name_lbl">NOMBRE DEL EVENTO / CAMPEONATO:</span>
+                                <i class="fa-solid fa-trophy mr-1 text-[#ffd60a]"></i>NOMBRE DEL EVENTO / CAMPEONATO:
                             </label>
                             <input type="text" id="event-name-input" placeholder="Ej: CAMPEONATO SOCIAL SLOT CLUB" oninput="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-black text-white uppercase focus:outline-none focus:border-[#5ac8fa]"/>
                         </div>
@@ -557,7 +530,7 @@
                         <!-- Fecha del Evento -->
                         <div class="lg:col-span-3 mac-silver-well p-3 space-y-1.5">
                             <label class="block text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i><span data-i18n="event_date_lbl">FECHA DE LA CARRERA:</span>
+                                <i class="fa-solid fa-calendar-day mr-1 text-[#5ac8fa]"></i>FECHA DE LA CARRERA:
                             </label>
                             <input type="date" id="event-date-input" onchange="updateEventMetadata()" class="w-full bg-black/75 border border-white/20 rounded-xl px-3 py-2 text-xs font-mono-num font-black text-white focus:outline-none focus:border-[#5ac8fa]"/>
                         </div>
@@ -566,9 +539,9 @@
                         <div class="lg:col-span-5 mac-silver-well p-3 space-y-2">
                             <div class="flex items-center justify-between gap-2">
                                 <label class="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">
-                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i><span data-i18n="event_cats_lbl">CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):</span>
+                                    <i class="fa-solid fa-tags mr-1 text-[#30d158]"></i>CATEGORÍAS DEL CLUB (PULSA PARA ELEGIR O ✕ PARA BORRAR):
                                 </label>
-                                <button type="button" onclick="restoreDefaultClubCategories()" data-i18n="btn_restore_cats" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer" title="Restaurar GT, DTM, CLÁSICOS, F1, CAMIONES">
+                                <button type="button" onclick="restoreDefaultClubCategories()" class="text-[9px] font-bold text-slate-400 hover:text-white underline cursor-pointer" title="Restaurar GT, DTM, CLÁSICOS, F1, CAMIONES">
                                     RESTAURAR BASE
                                 </button>
                             </div>
@@ -581,7 +554,7 @@
                                 <input type="text" id="new-club-category-input" placeholder="Nueva categoría (ej: RALLY, LMP, GRUPO C, NINCO...)" onkeydown="if(event.key==='Enter') addClubCategoryFromInput()" class="flex-1 bg-black/75 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-black text-white uppercase focus:outline-none focus:border-[#30d158]"/>
                                 <button type="button" onclick="addClubCategoryFromInput()" class="px-3 py-1.5 rounded-lg btn-neon-green text-[10px] font-black cursor-pointer shrink-0 flex items-center gap-1">
                                     <i class="fa-solid fa-plus"></i>
-                                    <span data-i18n="btn_add_cat">AÑADIR CATEGORÍA</span>
+                                    <span>AÑADIR CATEGORÍA</span>
                                 </button>
                             </div>
                         </div>
@@ -614,12 +587,12 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-white/10">
-                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i><span data-i18n="track_len_lbl">CUERDA PISTA (M):</span></span>
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-ruler-horizontal mr-1 text-slate-400"></i>CUERDA PISTA (M):</span>
                                 <div class="flex items-center gap-1.5">
                                     <button type="button" onclick="stepTrackLength(-2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                     <input type="number" id="manual-track-length" min="5" max="250" step="0.5" value="28" onchange="applyManualTrackLength(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-0.5 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                     <button type="button" onclick="stepTrackLength(2)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
-                                    <span data-i18n="meters_unit" class="text-[10px] font-bold text-slate-400">METROS</span>
+                                    <span class="text-[10px] font-bold text-slate-400">METROS</span>
                                 </div>
                             </div>
                         </div>
@@ -646,7 +619,7 @@
 
                         <!-- Ajuste Manual de Tiempo (Minutos y Segundos exactos) -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-sliders mr-1 text-slate-400"></i><span data-i18n="manual_time_lbl">MANUAL:</span></span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-sliders mr-1 text-slate-400"></i>MANUAL:</span>
                             <div class="flex items-center gap-1.5">
                                 <input type="number" id="manual-dur-min" min="0" max="999" value="3" onchange="applyManualDuration()" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white" title="Minutos">
                                 <span class="text-[10px] font-bold text-slate-400">MIN</span>
@@ -678,12 +651,12 @@
 
                         <!-- Meta de Vueltas Manual o Cuenta Atrás / Adelante -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i><span data-i18n="manual_laps_lbl">VUELTAS MANUAL:</span></span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-pen-ruler mr-1 text-slate-400"></i>VUELTAS MANUAL:</span>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="stepManualTargetLaps(-5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                 <input type="number" id="manual-target-laps-input" min="1" max="9999" placeholder="∞" onchange="applyManualTargetLaps(this.value)" class="w-16 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
                                 <button type="button" onclick="stepManualTargetLaps(5)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">+</button>
-                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" data-i18n="btn_fix" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
+                                <button type="button" onclick="applyManualTargetLaps(document.getElementById('manual-target-laps-input').value)" class="px-2.5 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">FIJAR</button>
                             </div>
                         </div>
                     </div>
@@ -712,7 +685,7 @@
 
                         <!-- Selector Manual del Número de Mangas -->
                         <div class="mac-silver-well p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-hashtag mr-1 text-slate-400"></i><span data-i18n="manual_heats_lbl">Nº MANGAS MANUAL:</span></span>
+                            <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-hashtag mr-1 text-slate-400"></i>Nº MANGAS MANUAL:</span>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="stepManualHeats(-1)" class="w-6 h-6 rounded-lg mac-silver-btn text-xs font-black flex items-center justify-center cursor-pointer">-</button>
                                 <input type="number" id="manual-heats-input" min="1" max="99" value="6" onchange="applyManualHeatsCount(this.value)" class="w-14 bg-black/70 border border-white/20 rounded-lg px-2 py-1 text-center font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
@@ -747,12 +720,12 @@
                         <!-- Entrada Manual del Orden de Rotación de Carriles -->
                         <div class="mac-silver-well p-2.5 space-y-1.5">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-keyboard mr-1 text-slate-400"></i><span data-i18n="manual_rot_lbl">ORDEN MANUAL (EJ: 1,3,4,2):</span></span>
-                                <button type="button" onclick="invertCurrentRotationOrder()" data-i18n="btn_invert_wheel" class="text-[9px] font-black text-slate-300 hover:text-white underline cursor-pointer">INVERTIR RUEDA</button>
+                                <span class="text-[10px] font-extrabold text-slate-300 uppercase"><i class="fa-solid fa-keyboard mr-1 text-slate-400"></i>ORDEN MANUAL (EJ: 1,3,4,2):</span>
+                                <button type="button" onclick="invertCurrentRotationOrder()" class="text-[9px] font-black text-slate-300 hover:text-white underline cursor-pointer">INVERTIR RUEDA</button>
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <input type="text" id="manual-rotation-input" placeholder="1, 3, 4, 2" onkeydown="if(event.key==='Enter') applyManualRotationOrder()" class="flex-1 bg-black/70 border border-white/20 rounded-lg px-2.5 py-1 font-mono-num text-xs font-black text-white focus:outline-none focus:border-white">
-                                <button type="button" onclick="applyManualRotationOrder()" id="rot-wiz-custom" data-i18n="btn_apply" class="px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">APLICAR</button>
+                                <button type="button" onclick="applyManualRotationOrder()" id="rot-wiz-custom" class="px-3 py-1 rounded-lg mac-silver-active text-[10px] font-black cursor-pointer">APLICAR</button>
                             </div>
                         </div>
                     </div>
@@ -794,7 +767,7 @@
                     <div class="flex items-center gap-2.5">
                         <button onclick="switchMainTab('race')" class="mac-silver-btn px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-gauge-high text-slate-200"></i>
-                            <span data-i18n="btn_go_live_now">Ir directo a Pista en Vivo</span>
+                            <span>Ir directo a Pista en Vivo</span>
                         </button>
                         <button onclick="goToWizardStep(2)" class="mac-silver-active px-7 py-2.5 rounded-xl font-black text-xs sm:text-sm flex items-center space-x-2.5 cursor-pointer">
                             <span data-i18n="btn_next_drivers">Siguiente: Inscribir Pilotos</span>
@@ -984,7 +957,7 @@
     </section>
 
     <!-- ======================================================================================== -->
-    <!-- MÓDULO 2: PARRILLA EN VIVO FUSIONADA (3 VISTAS BENTO + COLORES PERSONALIZABLES)          -->
+    <!-- MÓDULO 2: PARRILLA EN VIVO FUSIONADA (5 VISTAS BENTO + COLORES PERSONALIZABLES)          -->
     <!-- ======================================================================================== -->
     <section id="view-race" class="hidden flex-1 flex flex-col gap-2 min-h-0 overflow-hidden">
 
@@ -1007,13 +980,10 @@
                 </button>
             </div>
 
-            <!-- Semáforo FIA Compacto + Crono Maestro + Relé -->
+            <!-- Semáforo FIA Compacto + Crono Maestro -->
             <div class="mac-silver-well px-3.5 py-1 flex items-center gap-3.5">
                 <div class="flex flex-col items-center gap-0.5">
-                    <div class="flex items-center gap-1.5">
-                        <span id="live-heat-title" class="group-label text-slate-300">MANGA 1</span>
-                        <span id="relay-power-badge" class="text-[9px] font-black px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/15">RELÉ: STANDBY</span>
-                    </div>
+                    <span id="live-heat-title" class="group-label text-slate-300">MANGA 1</span>
                     <div class="flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
                         <div class="f1-light" id="f1L1"></div>
                         <div class="f1-light" id="f1L2"></div>
@@ -1139,12 +1109,12 @@
             <div class="w-16 h-16 mx-auto rounded-2xl btn-neon-green flex items-center justify-center text-2xl font-black">
                 <i class="fa-solid fa-plug-circle-bolt"></i>
             </div>
-            <h2 data-i18n="hw_title" class="text-2xl font-black text-white">Interfaz de Sensores Ópticos, DS Crono & Teclas Rápidas</h2>
+            <h2 class="text-2xl font-black text-white">Interfaz de Sensores Ópticos, DS Crono & Teclas Rápidas</h2>
             <p class="text-sm text-[#94a3b8] max-w-xl mx-auto">
                 Puedes registrar vueltas haciendo clic sobre cada tarjeta de carril en vivo, pulsando las teclas numéricas del teclado (<kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">1</kbd> al <kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">9</kbd>, <kbd class="px-2 py-0.5 bg-black rounded border border-white/20 text-[#5ac8fa]">0</kbd> = Carril 10), o activando el <b>Simulador IA</b>.
             </p>
             <div class="pt-4">
-                <button onclick="switchMainTab('race')" data-i18n="btn_go_live_now" class="btn-neon-blue px-6 py-3 rounded-xl font-black text-xs cursor-pointer">
+                <button onclick="switchMainTab('race')" class="btn-neon-blue px-6 py-3 rounded-xl font-black text-xs cursor-pointer">
                     VOLVER A PARRILLA EN VIVO
                 </button>
             </div>
@@ -1171,15 +1141,15 @@
                 </button>
                 <button onclick="toggleCameraBarcodeScanner()" id="btn-camera-scanner" class="px-4 py-2 btn-neon-green rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-camera"></i>
-                    <span id="btn-camera-scanner-text" data-i18n="qr_scan_cam">ESCANEAR CON CÁMARA</span>
+                    <span id="btn-camera-scanner-text">ESCANEAR CON CÁMARA</span>
                 </button>
                 <button onclick="exportAllRaceDataJson()" class="px-3.5 py-2 btn-silver rounded-xl text-xs font-extrabold flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-file-arrow-down text-[#5ac8fa]"></i>
-                    <span data-i18n="qr_download_all">DESCARGAR DATOS GENERALES</span>
+                    <span>DESCARGAR DATOS GENERALES</span>
                 </button>
                 <button onclick="switchMainTab('race')" class="px-4 py-2 btn-neon-blue rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-gauge-high"></i>
-                    <span data-i18n="btn_go_live_now">VOLVER A PISTA EN VIVO</span>
+                    <span>VOLVER A PISTA EN VIVO</span>
                 </button>
             </div>
         </div>
@@ -1227,13 +1197,13 @@
                         <i class="fa-solid fa-barcode"></i>
                     </span>
                     <div>
-                        <div data-i18n="qr_direct_reader" class="text-xs font-black text-white uppercase">Lector Directo de Código de Barras y QR</div>
+                        <div class="text-xs font-black text-white uppercase">Lector Directo de Código de Barras y QR</div>
                         <div class="text-[11px] text-[#94a3b8]">Compatible con cámara móvil, lector láser USB/Bluetooth o clic sobre cualquier código de barras</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-1 max-w-md">
                     <input type="text" id="barcode-manual-input" placeholder="Ej: KPR01 o escanea aquí con lector..." onkeydown="if(event.key==='Enter') processScannedCode(this.value)" class="flex-1 bg-black/70 border border-white/20 rounded-xl px-3 py-2 text-xs font-mono-num text-white focus:outline-none focus:border-[#30d158]" />
-                    <button onclick="processScannedCode(document.getElementById('barcode-manual-input').value)" data-i18n="qr_read_btn" class="px-3.5 py-2 rounded-xl btn-neon-blue text-xs font-black cursor-pointer">
+                    <button onclick="processScannedCode(document.getElementById('barcode-manual-input').value)" class="px-3.5 py-2 rounded-xl btn-neon-blue text-xs font-black cursor-pointer">
                         LEER CÓDIGO
                     </button>
                 </div>
@@ -1389,13 +1359,13 @@
 
             <!-- Pie de Guardado de Datos en el Móvil del Piloto -->
             <div class="p-3 bg-black/80 border-t border-white/10 grid grid-cols-2 gap-2">
-                <button onclick="downloadDriverTelemetryCSV()" class="py-2.5 px-3 rounded-xl btn-neon-green font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-download"></i>
-                    <span>GUARDAR CSV EN MÓVIL</span>
+                <button onclick="downloadDriverTelemetryHTML()" class="py-2.5 px-3 rounded-xl btn-neon-green font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-file-code"></i>
+                    <span>BAJAR INFORME HTML</span>
                 </button>
-                <button onclick="downloadDriverTelemetryJSON()" class="py-2.5 px-3 rounded-xl btn-silver font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-mobile-screen-button text-[#5ac8fa]"></i>
-                    <span>GUARDAR TELEMETRÍA JSON</span>
+                <button onclick="downloadDriverTelemetryCSV()" class="py-2.5 px-3 rounded-xl btn-silver font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-file-csv text-[#5ac8fa]"></i>
+                    <span>GUARDAR TABLA CSV</span>
                 </button>
             </div>
         </div>
@@ -1494,7 +1464,7 @@
             de: { locale: 'de-DE', MALE: { label: 'Conrad', keywords: ['conrad', 'markus', 'stefan', 'male', 'mann'] }, FEMALE: { label: 'Katja', keywords: ['katja', 'anna', 'hedda', 'female', 'frau'] } }
         };
 
-        // Traducciones extra de Interfaz y Cuadros de Piloto (7 idiomas completos)
+        // Traducciones extra de Interfaz y Cuadros de Piloto (7 idiomas)
         const UI_EXTRA_TRANSLATIONS = {
             es: {
                 layout_1_btn: "1. BÁSICO", layout_2_btn: "2. MEDIO", layout_3_btn: "3. EXPERTO",
@@ -1548,7 +1518,7 @@
                 btn_zero_short: "A CERO",
                 home_btn_new_race: "EMPEZAR NUEVA CARRERA",
                 home_btn_sim_race: "SIMULAR UNA CARRERA",
-                home_btn_change_img: "fondo.jpg",
+                home_btn_change_img: "CAMBIAR IMAGEN CENTRAL",
                 home_img_hint: "COLOCA TU ARCHIVO \"fondo.jpg\" EN LA MISMA CARPETA O PULSA ABAJO PARA CARGARLO"
             },
             ca: {
@@ -1603,8 +1573,8 @@
                 btn_zero_short: "A ZERO",
                 home_btn_new_race: "COMENÇAR NOVA CURSA",
                 home_btn_sim_race: "SIMULAR UNA CURSA",
-                home_btn_change_img: "fondo.jpg",
-                home_img_hint: "COL·LOCA L'ARXIU \"fondo.jpg\" A LA MATEIXA CARPETA O PREM A SOTA PER CARREGAR-LO"
+                home_btn_change_img: "CANVIAR IMATGE CENTRAL",
+                home_img_hint: "COL·LOCA EL TEU FITXER \"fondo.jpg\" A LA MATEIXA CARPETA O PREM A SOTA PER CARREGAR-LO"
             },
             eu: {
                 layout_1_btn: "1. OINARRIZKOA", layout_2_btn: "2. ERTAINA", layout_3_btn: "3. ADITUA",
@@ -1658,7 +1628,7 @@
                 btn_zero_short: "ZERORA",
                 home_btn_new_race: "LASTERKETA BERRIA HASI",
                 home_btn_sim_race: "LASTERKETA SIMULATU",
-                home_btn_change_img: "fondo.jpg",
+                home_btn_change_img: "ERDIKO IRUDIA ALDATU",
                 home_img_hint: "JARRI \"fondo.jpg\" KARPETA BEREAN EDO SAKATU BEHEAN KARGATZEKO"
             },
             en: {
@@ -1713,7 +1683,7 @@
                 btn_zero_short: "ZERO OUT",
                 home_btn_new_race: "START NEW RACE",
                 home_btn_sim_race: "SIMULATE A RACE",
-                home_btn_change_img: "fondo.jpg",
+                home_btn_change_img: "CHANGE CENTER IMAGE",
                 home_img_hint: "PLACE YOUR \"fondo.jpg\" IN THE SAME FOLDER OR CLICK BELOW TO UPLOAD"
             },
             fr: {
@@ -1735,10 +1705,10 @@
                 card_waiting_laps: "EN ATTENTE DE TOURS POUR LE GRAPHIQUE...",
                 card_touch_to_log: "TOUCHEZ LA CARTE POUR COMPTER UN TOUR",
                 card_improve: "▼MIEUX", card_worse: "▲MOINS",
-                card_best_tag: "RECORD", card_worst_tag: "LENT",
+                card_best_tag: "MEILLEUR", card_worst_tag: "PIRE",
                 card_sector: "SECTEUR",
-                event_block_title: "DÉTAILS DE L'ÉVÉNEMENT, DATE ET CATÉGORIES DU CLUB",
-                event_block_sub: "Sauvegardé automatiquement dans la mémoire interne de votre appareil",
+                event_block_title: "DÉTAILS DE L'ÉVÉNEMENT, DATE & CATÉGORIES DU CLUB",
+                event_block_sub: "Sauvegardé automatiquement dans la mémoire de votre appareil",
                 event_name_lbl: "NOM DE L'ÉVÉNEMENT / CHAMPIONNAT:",
                 event_date_lbl: "DATE DE LA COURSE:",
                 event_cats_lbl: "CATÉGORIES DU CLUB (CLIQUEZ POUR CHOISIR OU ✕ POUR SUPPRIMER):",
@@ -1757,7 +1727,7 @@
                 hm_auto: "CYCLE AUTO", hm_lanes: "= VOIES", hm_6: "6 MANCHES", hm_10: "10 MANCHES",
                 by_time_inf: "⏱️ AU TEMPS (∞)",
                 yes_make_changes: "OUI (MODIFIER)", no_start_heat: "NON (DÉMARRER ▶)",
-                yesno_question_1: "La course est prête à commencer : Souhaitez-vous apporter des modifications ?",
+                yesno_question_1: "La course est prête à commencer : souhaitez-vous faire un changement ?",
                 btn_go_live_now: "ALLER EN PISTE EN DIRECT",
                 hw_title: "Interface Capteurs Optiques, DS Chrono & Raccourcis",
                 qr_scan_cam: "SCANNER AVEC CAMÉRA", qr_stop_cam: "ARRÊTER CAMÉRA",
@@ -1768,7 +1738,7 @@
                 btn_zero_short: "À ZÉRO",
                 home_btn_new_race: "DÉMARRER NOUVELLE COURSE",
                 home_btn_sim_race: "SIMULER UNE COURSE",
-                home_btn_change_img: "fondo.jpg",
+                home_btn_change_img: "CHANGER L'IMAGE CENTRALE",
                 home_img_hint: "PLACEZ VOTRE FICHIER \"fondo.jpg\" DANS LE MÊME DOSSIER OU CLIQUEZ CI-DESSOUS"
             },
             it: {
@@ -1785,12 +1755,12 @@
                 card_dist: "DIST:", card_vs_mean: "VS MEDIA:",
                 card_std_dev: "DEV:", card_top_speed: "PUNTA:",
                 card_range: "RANGE:", card_consistency: "COSTANZA",
-                card_lap_history: "STORICO GIRI", card_time_list: "LISTA TEMPI",
+                card_lap_history: "STORICO GIRI", card_time_list: "LISTA DEI TEMPI",
                 card_pace_chart: "GRAFICO RITMO ED EVOLUZIONE",
                 card_waiting_laps: "IN ATTESA DI GIRI PER IL GRAFICO LIVE...",
                 card_touch_to_log: "TOCCA IL RIQUADRO PER REGISTRARE I GIRI",
                 card_improve: "▼MIGLIORA", card_worse: "▲PEGGIORA",
-                card_best_tag: "MIGLIOR", card_worst_tag: "PEGGIOR",
+                card_best_tag: "MIGLIORE", card_worst_tag: "PEGGIORE",
                 card_sector: "SETTORE",
                 event_block_title: "DATI EVENTO, DATA E CATEGORIE DEL CLUB",
                 event_block_sub: "Salvato automaticamente nella memoria interna del tuo dispositivo",
@@ -1799,7 +1769,7 @@
                 event_cats_lbl: "CATEGORIE DEL CLUB (CLICCA PER SCEGLIERE O ✕ PER ELIMINARE):",
                 btn_restore_cats: "RIPRISTINA BASE",
                 btn_add_cat: "AGGIUNGI CATEGORIA",
-                track_len_lbl: "LUNGHEZZA PISTA (M):",
+                track_len_lbl: "SVILUPPO PISTA (M):",
                 meters_unit: "METRI",
                 manual_time_lbl: "MANUALE:",
                 manual_laps_lbl: "GIRI MANUALI:",
@@ -1808,11 +1778,11 @@
                 manual_rot_lbl: "ORDINE MANUALE (ES: 1,3,4,2):",
                 btn_invert_wheel: "INVERTI RUOTA",
                 btn_apply: "APPLICA",
-                sess_practice: "PROVE (1M)", sess_official: "GARA UFFICIALE",
+                sess_practice: "PROVE LIBERE (1M)", sess_official: "GARA UFFICIALE",
                 hm_auto: "CICLO AUTO", hm_lanes: "= CORSIE", hm_6: "6 MANCHE", hm_10: "10 MANCHE",
                 by_time_inf: "⏱️ A TEMPO (∞)",
-                yes_make_changes: "SÌ (MODIFICA)", no_start_heat: "NO (INIZIA MANCHE ▶)",
-                yesno_question_1: "La gara è pronta per iniziare: Vuoi apportare qualche modifica?",
+                yes_make_changes: "SÌ (FAI MODIFICHE)", no_start_heat: "NO (INIZIA MANCHE ▶)",
+                yesno_question_1: "La gara è pronta per iniziare: vuoi apportare qualche modifica?",
                 btn_go_live_now: "VAI ALLA PISTA LIVE",
                 hw_title: "Interfaccia Sensori Ottici, DS Crono & Tasti Rapidi",
                 qr_scan_cam: "SCANSIONA CON FOTOCAMERA", qr_stop_cam: "FERMA FOTOCAMERA",
@@ -1823,8 +1793,8 @@
                 btn_zero_short: "AZZERA",
                 home_btn_new_race: "INIZIA NUOVA GARA",
                 home_btn_sim_race: "SIMULA UNA GARA",
-                home_btn_change_img: "fondo.jpg",
-                home_img_hint: "INSERISCI IL FILE \"fondo.jpg\" NELLA STESSA CARTELLA O CLICCA SOTTO"
+                home_btn_change_img: "CAMBIA IMMAGINE CENTRALE",
+                home_img_hint: "INSERISCI IL FILE \"fondo.jpg\" NELLA STESSA CARTELLA O CLICCA SOTTO PER CARICARLO"
             },
             de: {
                 layout_1_btn: "1. BASIS", layout_2_btn: "2. MITTEL", layout_3_btn: "3. EXPERTE",
@@ -1832,18 +1802,18 @@
                 theme_silver: "MAC SILBER", heat_clock_lbl: "LAUF-TIMER",
                 sim_off: "SIMULATOR: AUS", sim_on: "SIMULATOR: EIN",
                 btn_changes_yesno: "LAUF-ÄNDERUNGEN (JA/NEIN)",
-                resume_track: "RENNEN FORTSETZEN",
+                resume_track: "STRECKE FREIGEBEN",
                 card_last_lap: "LETZTE RUNDE", card_last_short: "LETZTE",
                 card_slowest: "LANGSAMSTE", card_slow_short: "LANGSAM",
                 card_speed: "GESCHW. KM/H", card_speed_full: "TEMPO",
-                card_est_goal: "ZIEL PROG:", card_est_short: "PROG",
-                card_dist: "DIST:", card_vs_mean: "VS SCHNITT:",
+                card_est_goal: "PROGNOSE:", card_est_short: "PROG",
+                card_dist: "DIST:", card_vs_mean: "VS MITTEL:",
                 card_std_dev: "ABW:", card_top_speed: "SPITZE:",
                 card_range: "SPANNE:", card_consistency: "KONSTANZ",
                 card_lap_history: "RUNDENVERLAUF", card_time_list: "ZEITENLISTE",
-                card_pace_chart: "LIVE-TEMPO & ENTWICKLUNGSKURVE",
-                card_waiting_laps: "WARTE AUF RUNDEN FÜR LIVE-GRAFIK...",
-                card_touch_to_log: "KARTE ANTIPPEN ZUM RUNDENZÄHLEN",
+                card_pace_chart: "LIVE-PACE & ENTWICKLUNG",
+                card_waiting_laps: "WARTE AUF RUNDEN FÜR LIVE-DIAGRAMM...",
+                card_touch_to_log: "KACHEL ANTIPPEN ZUM RUNDENZÄHLEN",
                 card_improve: "▼BESSER", card_worse: "▲SCHLECHTER",
                 card_best_tag: "BESTE", card_worst_tag: "SCHLECHTESTE",
                 card_sector: "SEKTOR",
@@ -1851,22 +1821,22 @@
                 event_block_sub: "Wird automatisch im internen Speicher Ihres Geräts gespeichert",
                 event_name_lbl: "EVENT- / MEISTERSCHAFTSNAME:",
                 event_date_lbl: "RENNDATUM:",
-                event_cats_lbl: "CLUB-KATEGORIEN (KLICKEN ZUM WÄHLEN ODER ✕ ZUM LÖSCHEN):",
+                event_cats_lbl: "CLUB-KATEGORIEN (ZUM AUSWÄHLEN KLICKEN ODER ✕ ZUM LÖSCHEN):",
                 btn_restore_cats: "STANDARD LADEN",
                 btn_add_cat: "KATEGORIE +",
-                track_len_lbl: "BAHNLÄNGE (M):",
+                track_len_lbl: "STRECKENLÄNGE (M):",
                 meters_unit: "METER",
                 manual_time_lbl: "MANUELL:",
-                manual_laps_lbl: "RUNDEN MANUELL:",
+                manual_laps_lbl: "MANUELLE RUNDEN:",
                 btn_fix: "SETZEN",
-                manual_heats_lbl: "LÄUFE MANUELL:",
-                manual_rot_lbl: "MANUELLE FOLGE (Z.B. 1,3,4,2):",
-                btn_invert_wheel: "RAD UMKEHREN",
+                manual_heats_lbl: "MANUELLE LÄUFE:",
+                manual_rot_lbl: "MANUELLE REIHENFOLGE (Z.B. 1,3,4,2):",
+                btn_invert_wheel: "UMKEHREN",
                 btn_apply: "ANWENDEN",
                 sess_practice: "TRAINING (1L)", sess_official: "OFFIZIELLES RENNEN",
                 hm_auto: "AUTO-ZYKLUS", hm_lanes: "= SPUREN", hm_6: "6 LÄUFE", hm_10: "10 LÄUFE",
                 by_time_inf: "⏱️ NACH ZEIT (∞)",
-                yes_make_changes: "JA (ÄNDERN)", no_start_heat: "NEIN (LAUF STARTEN ▶)",
+                yes_make_changes: "JA (ÄNDERN)", no_start_heat: "NEIN (STARTEN ▶)",
                 yesno_question_1: "Das Rennen ist startbereit: Möchten Sie noch Änderungen vornehmen?",
                 btn_go_live_now: "ZUR LIVE-STRECKE",
                 hw_title: "Optische Sensoren, DS Chrono & Tastaturkürzel",
@@ -1878,8 +1848,8 @@
                 btn_zero_short: "AUF NULL",
                 home_btn_new_race: "NEUES RENNEN STARTEN",
                 home_btn_sim_race: "RENNEN SIMULIEREN",
-                home_btn_change_img: "fondo.jpg",
-                home_img_hint: "LEGEN SIE DIE DATEI \"fondo.jpg\" IN DENSELBEN ORDNER ODER KLICKEN SIE UNTEN"
+                home_btn_change_img: "ZENTRALBILD ÄNDERN",
+                home_img_hint: "LEGEN SIE IHRE DATEI \"fondo.jpg\" IN DENSELBEN ORDNER ODER KLICKEN SIE UNTEN"
             }
         };
 
@@ -2129,11 +2099,11 @@
                 rot_club: "OFFIZIELL CLUB: UNGERADE → GERADE (1 → 3 → 4 → 2)", rot_random: "ZUFÄLLIGE SPURAUSLOSUNG", rot_seq: "LINEAR (1 → 2 → 3 → 4...)",
                 b6_title: "6. BERECHNUNG DES GESAMTSIEGERS",
                 score_laps: "A. NACH GESAMTRUNDEN", score_time: "B. NACH BESTER RUNDENZEIT", score_points: "C. NACH PUNKTETABELLE (10, 8, 6...)",
-                btn_next_drivers: "WEITER: FAHRER EINTRAGEN", lbl_driver_name: "FAHRERNAME", lbl_driver_car: "AUTO / KATEGORIE",
+                btn_next_drivers: "WEITER: FAHRER EINTRAGEN", lbl_driver_name: "FAHRERNAME", lbl_driver_car: "AUTO / KATEGORIA",
                 btn_add_driver: "FAHRER HINZUFÜGEN", btn_load_pdf: "6 BEISPIELFAHRER LADEN", btn_sim_pole: "POLE SIMULIEREN", btn_clear_list: "LISTE LEEREN",
                 grid_pole_title: "STARTAUFSTELLUNG NACH POLE POSITION", btn_back: "ZURÜCK", btn_gen_heats: "RENNLÄUFE GENERIEREN",
                 step3_badge: "SCHRITT 3 VON 3 · ZEITPLAN", step3_title: "EINTEILUNG DER LÄUFE UND SPUREN", btn_recalc: "NEU BERECHNEN", btn_go_track: "ZUR LIVE-STRECKE",
-                btn_call_drivers: "FAHRER AUFRUFEN", f1_start: "F1 START", btn_auto_off: "AUTO-LÄUFE: AUS", btn_auto_on: "AUTO-LÄUFE: EIN",
+                btn_call_drivers: "FAHRER AUFROFEN", f1_start: "F1 START", btn_auto_off: "AUTO-LÄUFE: AUS", btn_auto_on: "AUTO-LÄUFE: EIN",
                 btn_next_heat: "NÄCHSTER LAUF", standings_title: "GESAMTWERTUNG DES RENNENS", standings_desc: "WECHSELN SIE LIVE DAS WERTUNGSKRITERIUM.",
                 score_laps_short: "A. NACH RUNDEN", score_time_short: "B. BESTE ZEIT", score_points_short: "C. NACH PUNKTEN",
                 th_driver: "FAHRER", th_heats_breakdown: "LÄUFE", th_laps: "RUNDEN", th_best_lap: "REKORD", th_points: "PUNKTE",
@@ -2301,9 +2271,90 @@
         let activeMobileDriverId = null;
         let mobileSpotterVoiceEnabled = true;
         let mobileAudioUnlocked = false;
+        let mobileKeepAliveInterval = null;
+        let mobileWakeLock = null;
+        let speakDebounceTimer = null;
         let customQrBaseUrl = '';
         let qrPayloadMode = 'url'; // 'url' (Enlace web ultracorto) | 'text' (Ficha de texto directa para cualquier cámara sin internet)
         let zoomedDriverId = null;
+
+        // ==================== MOTOR DE DESBLOQUEO Y PROTECCIÓN DE VOZ PARA MÓVILES (iOS SAFARI & ANDROID CHROME) ====================
+        async function requestMobileWakeLock() {
+            if ('wakeLock' in navigator && !mobileWakeLock) {
+                try {
+                    mobileWakeLock = await navigator.wakeLock.request('screen');
+                    mobileWakeLock.addEventListener('release', () => { mobileWakeLock = null; });
+                } catch (e) {}
+            }
+        }
+
+        function startMobileSpeechKeepAlive() {
+            if (mobileKeepAliveInterval) clearInterval(mobileKeepAliveInterval);
+            // Evita que iOS Safari y Android Chrome duerman el motor speechSynthesis entre vuelta y vuelta
+            mobileKeepAliveInterval = setInterval(() => {
+                if ('speechSynthesis' in window && window.speechSynthesis.paused) {
+                    try { window.speechSynthesis.resume(); } catch (e) {}
+                }
+            }, 4000);
+        }
+
+        function primeMobileSpeechEngine() {
+            try {
+                const ctx = getAudioContext();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+                // Micro-pulso inaudible para abrir el canal de hardware de audio en iOS/Android
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.04);
+            } catch (e) {}
+
+            if ('speechSynthesis' in window) {
+                try {
+                    loadSystemVoices();
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.resume();
+                    // Locución silenciosa de cebado obligatoria en iOS Safari dentro del evento táctil
+                    const unlockUtter = new SpeechSynthesisUtterance(' ');
+                    unlockUtter.volume = 0.01;
+                    unlockUtter.rate = 2.0;
+                    window.speechSynthesis.speak(unlockUtter);
+                } catch (e) {}
+            }
+        }
+
+        // Listener global para desbloquear el audio del móvil en el primer toque en cualquier parte de la pantalla
+        function setupGlobalMobileTouchUnlock() {
+            const onFirstTouch = () => {
+                if (!mobileAudioUnlocked) {
+                    mobileAudioUnlocked = true;
+                    primeMobileSpeechEngine();
+                    startMobileSpeechKeepAlive();
+                    requestMobileWakeLock();
+                    updateMobileUnlockBannerUI();
+                }
+            };
+            window.addEventListener('touchstart', onFirstTouch, { passive: true, once: true });
+            window.addEventListener('click', onFirstTouch, { passive: true, once: true });
+        }
+
+        function updateMobileUnlockBannerUI() {
+            const banner = document.getElementById('mob-audio-unlock-banner');
+            if (!banner) return;
+            if (mobileAudioUnlocked) {
+                banner.className = "p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer";
+                banner.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-sm"></i>
+                        <span class="text-xs font-black uppercase">SPOTTER DE VOZ ACTIVO EN ESTE MÓVIL (CANTANDO CADA VUELTA)</span>
+                    </div>
+                    <span class="text-[10px] font-mono-num font-bold underline">PROBAR VOZ</span>
+                `;
+            }
+        }
 
         // ==================== MOTOR P2P EN TIEMPO REAL (WEBRTC PEERJS + BROADCAST LOCAL) ENTRE PC/TABLET Y MÓVILES ====================
         let roomCodeId = localStorage.getItem('krono_live_room_code') || ('KPR' + Math.floor(1000 + Math.random() * 9000));
@@ -2379,6 +2430,7 @@
 
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
+                // Si el paquete corresponde a una vuelta nueva de este piloto, el móvil la canta inmediatamente
                 if (packet.triggerDriverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
                     speakMobileDriverStatusNow();
                 }
@@ -2406,6 +2458,7 @@
 
                     conn.on('open', () => {
                         updateConnectedMobilesBadge();
+                        // Enviar estado completo al móvil recién conectado
                         conn.send(buildCompactLivePacket(null, null));
                     });
 
@@ -2469,41 +2522,26 @@
             } catch (e) {}
         }
 
+        // Desbloqueo explícito de Voz y Audio en iPhone (iOS Safari) y Android Chrome
         function unlockMobileVoiceAndAudio() {
             mobileAudioUnlocked = true;
             mobileSpotterVoiceEnabled = true;
 
-            try {
-                const ctx = getAudioContext();
-                if (ctx && ctx.state === 'suspended') ctx.resume();
-                playTone(1046, 90, 'sine', 0.5);
-            } catch (e) {}
+            primeMobileSpeechEngine();
+            startMobileSpeechKeepAlive();
+            requestMobileWakeLock();
+            playTone(1046, 90, 'sine', 0.5);
 
-            if ('speechSynthesis' in window) {
-                try {
-                    window.speechSynthesis.cancel();
-                    window.speechSynthesis.resume();
-                } catch (e) {}
-            }
-
-            const banner = document.getElementById('mob-audio-unlock-banner');
-            if (banner) {
-                banner.className = "p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer";
-                banner.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check text-sm"></i>
-                        <span class="text-xs font-black uppercase">SPOTTER DE VOZ ACTIVO EN ESTE MÓVIL (CANTANDO CADA VUELTA)</span>
-                    </div>
-                    <span class="text-[10px] font-mono-num font-bold underline">PROBAR VOZ</span>
-                `;
-            }
+            updateMobileUnlockBannerUI();
 
             const btn = document.getElementById('mob-voice-btn');
             const txt = document.getElementById('mob-voice-status');
             if (btn) btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer";
             if (txt) txt.textContent = "VOZ ON";
 
-            speakMobileDriverStatusNow();
+            setTimeout(() => {
+                speakMobileDriverStatusNow();
+            }, 120);
         }
 
         // ==================== MOTOR DE BASE DE DATOS LOCAL (IndexedDB) POR DISPOSITIVO ====================
@@ -2601,6 +2639,7 @@
                     }))
                 };
 
+                // Respaldo inmediato en localStorage del dispositivo (Tablet, PC o Mac)
                 try {
                     localStorage.setItem('krono_device_profile_backup', JSON.stringify(snapshot));
                 } catch (e) {}
@@ -2695,6 +2734,7 @@
                     });
                     if (loadedFromIdb) return true;
                 }
+                // Fallback por si el navegador limpió IndexedDB pero mantiene localStorage
                 const rawBackup = localStorage.getItem('krono_device_profile_backup');
                 if (rawBackup) {
                     const parsed = JSON.parse(rawBackup);
@@ -2740,7 +2780,6 @@
         // ==================== PANTALLA DE INICIO LIMPIA Y FUNCIONES DE PONER TODO A CERO ====================
         function renderHomeCenterImage() {
             const imgEl = document.getElementById('home-central-custom-img');
-            const defEl = document.getElementById('home-central-default-art');
             const rmBtn = document.getElementById('home-btn-remove-img');
             const pill = document.getElementById('home-event-pill');
 
@@ -2748,12 +2787,11 @@
                 pill.textContent = `${state.eventName || 'CAMPEONATO SOCIAL SLOT CLUB'} · ${state.eventDate || ''} · ${state.activeClubCategory || 'GT'}`;
             }
 
-            if (!imgEl || !defEl) return;
+            if (!imgEl) return;
 
             if (state.homeCustomImage) {
                 imgEl.src = state.homeCustomImage;
                 imgEl.classList.remove('hidden');
-                defEl.classList.add('hidden');
                 if (rmBtn) rmBtn.classList.remove('hidden');
             } else {
                 if (imgEl.getAttribute('src') !== 'fondo.jpg') {
@@ -2783,6 +2821,7 @@
             saveLocalDatabase();
         }
 
+        // Pone todos los contadores, tiempos, vueltas, sectores y mangas a cero mantendo la configuración del club
         function zeroOutCurrentRaceCounters() {
             stopAllTimers();
             state.autoSimActive = false;
@@ -2923,14 +2962,17 @@
                     osc1.start(now); osc2.start(now); sub.start(now);
                     osc1.stop(now + duration); osc2.stop(now + duration); sub.stop(now + duration);
                 } else if (stage === 'GREEN') {
+                    // BOCINAZO DE SALIDA DE CIRCUITO (AIR HORN TRIPLE DE ALTA POTENCIA)
                     const duration = 1.45;
-                    const hornFreqs = [311.13, 392.00, 466.16, 622.25, 155.56];
+                    const hornFreqs = [311.13, 392.00, 466.16, 622.25, 155.56]; // Acorde de bocina neumática de camión/circuito con subgrave
                     
+                    // Filtro resonante de trompeta/bocina
                     const hornFilter = c.createBiquadFilter();
                     hornFilter.type = 'lowpass';
                     hornFilter.frequency.setValueAtTime(2400, now);
                     hornFilter.Q.setValueAtTime(3.2, now);
 
+                    // Saturación cálida (WaveShaper) para darle cuerpo de bocina real
                     const shaper = c.createWaveShaper();
                     const curve = new Float32Array(4096);
                     for (let i = 0; i < 4096; i++) {
@@ -2941,7 +2983,7 @@
 
                     const masterHornGain = c.createGain();
                     masterHornGain.gain.setValueAtTime(0.01, now);
-                    masterHornGain.gain.linearRampToValueAtTime(1.0, now + 0.035);
+                    masterHornGain.gain.linearRampToValueAtTime(1.0, now + 0.035); // Ataque explosivo de aire
                     masterHornGain.gain.setValueAtTime(0.98, now + duration - 0.22);
                     masterHornGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
@@ -2954,6 +2996,7 @@
                         const oscGain = c.createGain();
                         osc.type = idx === 4 ? 'triangle' : 'sawtooth';
 
+                        // Ligero efecto de presión de aire al arrancar la bocina + vibrato natural
                         osc.frequency.setValueAtTime(freq * 0.96, now);
                         osc.frequency.exponentialRampToValueAtTime(freq, now + 0.06);
                         osc.frequency.setValueAtTime(freq + (idx % 2 === 0 ? 1.5 : -1.5), now + 0.4);
@@ -3049,27 +3092,57 @@
             if (!('speechSynthesis' in window)) return;
 
             try {
-                if (priority === 'HIGH') window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                activeUtterance = utter;
-                const select = document.getElementById('headerVoiceSelect');
-                const gender = (select && select.value === 'AUTO_FEMALE') ? 'FEMALE' : 'MALE';
-                const chosenVoice = findStrictLocalVoice(state.lang, gender);
-                const profile = NATIVE_SPEAKER_PROFILES[state.lang] || NATIVE_SPEAKER_PROFILES.es;
-
-                if (chosenVoice) {
-                    utter.voice = chosenVoice;
-                    utter.lang = chosenVoice.lang;
-                } else {
-                    utter.lang = profile.locale;
+                if (!cachedVoices || cachedVoices.length === 0) {
+                    cachedVoices = window.speechSynthesis.getVoices() || [];
                 }
-                utter.volume = 1.0;
-                utter.rate = 1.06;
-                utter.pitch = gender === 'FEMALE' ? 1.06 : 0.98;
 
-                utter.onend = () => { clearTimeout(fallbackTimer); safeCallback(); };
-                utter.onerror = () => { clearTimeout(fallbackTimer); safeCallback(); };
-                window.speechSynthesis.speak(utter);
+                if (speakDebounceTimer) {
+                    clearTimeout(speakDebounceTimer);
+                    speakDebounceTimer = null;
+                }
+
+                if (priority === 'HIGH' && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+                    window.speechSynthesis.cancel();
+                }
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                }
+
+                // Pequeña pausa de 45ms tras cancel() para evitar que Android Chrome e iOS Safari silencien la nueva frase
+                speakDebounceTimer = setTimeout(() => {
+                    try {
+                        const utter = new SpeechSynthesisUtterance(text);
+                        // Guardar referencia global evita que el Garbage Collector del móvil corte la frase a mitad
+                        window.__kronoActiveUtterance = utter;
+                        activeUtterance = utter;
+
+                        const select = document.getElementById('headerVoiceSelect');
+                        const gender = (select && select.value === 'AUTO_FEMALE') ? 'FEMALE' : 'MALE';
+                        const chosenVoice = findStrictLocalVoice(state.lang, gender);
+                        const profile = NATIVE_SPEAKER_PROFILES[state.lang] || NATIVE_SPEAKER_PROFILES.es;
+
+                        // En móviles iOS/Android, asignar siempre el código de idioma y solo forzar voice si pertenece al idioma
+                        utter.lang = chosenVoice ? chosenVoice.lang : profile.locale;
+                        if (chosenVoice && chosenVoice.localService) {
+                            utter.voice = chosenVoice;
+                        } else if (chosenVoice) {
+                            try { utter.voice = chosenVoice; } catch (e) {}
+                        }
+
+                        utter.volume = 1.0;
+                        utter.rate = 1.05;
+                        utter.pitch = gender === 'FEMALE' ? 1.05 : 0.98;
+
+                        utter.onend = () => { clearTimeout(fallbackTimer); safeCallback(); };
+                        utter.onerror = () => { clearTimeout(fallbackTimer); safeCallback(); };
+
+                        window.speechSynthesis.resume();
+                        window.speechSynthesis.speak(utter);
+                    } catch (err) {
+                        clearTimeout(fallbackTimer);
+                        safeCallback();
+                    }
+                }, 45);
             } catch (e) {
                 clearTimeout(fallbackTimer);
                 safeCallback();
@@ -3077,7 +3150,11 @@
         }
 
         function testVoice() {
-            speakText(t('tts_test'), null, 'HIGH');
+            mobileAudioUnlocked = true;
+            primeMobileSpeechEngine();
+            setTimeout(() => {
+                speakText(t('tts_test'), null, 'HIGH');
+            }, 80);
         }
 
         // ==================== SELECTOR DE IDIOMA CON BANDERAS SVG ====================
@@ -3125,6 +3202,7 @@
                 if (translated) el.textContent = translated;
             });
 
+            // Traducción instantánea de botones dinámicos, controles manuales, modal SÍ/NO y pestañas
             const simTxt = document.getElementById('btnAutoSimText');
             if (simTxt) simTxt.textContent = state.autoSimActive ? t('sim_on') : t('sim_off');
 
@@ -3211,8 +3289,8 @@
                 const btn = document.getElementById(`tab-btn-${tName}`);
                 if (btn) {
                     btn.className = (tName === tab)
-                        ? "px-2.5 py-1 rounded-[8px] text-[11px] font-bold btn-neon-blue transition cursor-pointer shrink-0 flex items-center gap-1 uppercase"
-                        : "px-2.5 py-1 rounded-[8px] text-[11px] font-semibold text-[#94a3b8] hover:text-white transition cursor-pointer shrink-0 flex items-center gap-1 uppercase";
+                        ? "px-4 py-2.5 rounded-xl text-xs md:text-sm font-black btn-neon-blue transition cursor-pointer flex items-center justify-center gap-2 uppercase"
+                        : "px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold mac-silver-btn text-[#94a3b8] hover:text-white transition cursor-pointer flex items-center justify-center gap-2 uppercase";
                 }
             });
 
@@ -3246,6 +3324,7 @@
         let isCameraScannerRunning = false;
 
         function getDriverBarcodeId(idx) {
+            // Código corto CODE-128 ultra limpio (6 caracteres alfanuméricos) para lectura instantánea en cualquier lector o cámara
             return `KPR${String(idx + 1).padStart(2, '0')}`;
         }
 
@@ -3298,6 +3377,7 @@
                 }
             }
 
+            // Acumulado de toda la carrera para guardar en el móvil
             let totalCareerLaps = 0;
             let careerBestLap = Infinity;
             let allHeatsHistory = [];
@@ -3364,6 +3444,7 @@
             const barcodeCode = getDriverBarcodeId(drvIdx >= 0 ? drvIdx : 0);
             const ctx = getDriverLiveTelemetryContext(driverId);
 
+            // Modo Ficha Móvil Offline: Texto ultra corto que cualquier cámara iPhone/Android muestra directamente en pantalla sin necesitar servidor web
             if (qrPayloadMode === 'text' && ctx) {
                 const ass = ctx.assignment;
                 const posStr = ctx.position ? `P${ctx.position}` : 'BOX';
@@ -3589,7 +3670,7 @@
                 wrapper.classList.remove('hidden');
                 wrapper.classList.add('flex');
             }
-            if (btnText) btnText.textContent = t('qr_stop_cam');
+            if (btnText) btnText.textContent = 'DETENER CÁMARA';
 
             if (typeof Html5Qrcode === 'undefined') {
                 speakText('El lector de cámara no está disponible en este navegador. Usa el cuadro de lectura directa.', null, 'HIGH');
@@ -3612,7 +3693,7 @@
                 );
             } catch (err) {
                 isCameraScannerRunning = false;
-                if (btnText) btnText.textContent = t('qr_scan_cam');
+                if (btnText) btnText.textContent = 'ESCANEAR CON CÁMARA';
                 speakText('Permite el acceso a la cámara o pulsa directamente sobre el código de barras del piloto.', null, 'HIGH');
             }
         }
@@ -3624,7 +3705,7 @@
                 wrapper.classList.add('hidden');
                 wrapper.classList.remove('flex');
             }
-            if (btnText) btnText.textContent = t('qr_scan_cam');
+            if (btnText) btnText.textContent = 'ESCANEAR CON CÁMARA';
             if (html5QrScanner && isCameraScannerRunning) {
                 try {
                     await html5QrScanner.stop();
@@ -3632,6 +3713,12 @@
                 } catch (e) {}
             }
             isCameraScannerRunning = false;
+        }
+
+        function openBarcodePrintCard(driverId) {
+            const drv = state.drivers.find(d => d.id === driverId);
+            if (!drv) return;
+            openMobileCompanion(driverId);
         }
 
         function renderDriversQRView() {
@@ -3658,6 +3745,7 @@
 
                 return `
                 <div class="mac-window p-4 flex flex-col justify-between gap-3 border-t-4" style="border-top-color: ${laneHex};">
+                    <!-- Cabecera de Piloto -->
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <div class="flex items-center gap-1.5">
@@ -3680,6 +3768,7 @@
                         </div>
                     </div>
 
+                    <!-- Resumen de quién va delante y detrás -->
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div class="mac-group-box px-2.5 py-1.5 border-l-2 border-[#ff9f0a]">
                             <div class="text-[9px] font-extrabold text-[#ff9f0a]">DELANTE SUYO</div>
@@ -3693,6 +3782,7 @@
                         </div>
                     </div>
 
+                    <!-- Tarjeta Blanca de Alto Contraste con Zona Silenciosa (Quiet Zone) Amplia para Cámaras Móviles -->
                     <div onclick="openQrZoomModal('${drv.id}')" title="Toca para ampliar este QR a pantalla gigante o escanéalo con el móvil" class="bg-white rounded-2xl p-4 flex flex-col items-center justify-center gap-3 shadow-inner cursor-pointer hover:ring-4 hover:ring-[#30d158] transition">
                         <div class="flex flex-col items-center justify-center bg-white p-3 rounded-xl border-2 border-slate-200">
                             <div id="qr-box-${drv.id}" class="flex items-center justify-center bg-white"></div>
@@ -3706,14 +3796,15 @@
                         </div>
                     </div>
 
+                    <!-- Acciones directas para el piloto -->
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button onclick="openMobileCompanion('${drv.id}')" class="py-2 px-3 rounded-xl btn-neon-blue font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-volume-high"></i>
                             <span>SPOTTER VOZ EN VIVO</span>
                         </button>
-                        <button onclick="downloadDriverTelemetryCSV('${drv.id}')" class="py-2 px-3 rounded-xl btn-neon-green font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-download"></i>
-                            <span>GUARDAR EN MÓVIL</span>
+                        <button onclick="downloadDriverTelemetryHTML('${drv.id}')" class="py-2 px-3 rounded-xl btn-neon-green font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-file-code"></i>
+                            <span>BAJAR DATOS EN HTML</span>
                         </button>
                     </div>
                 </div>`;
@@ -3765,8 +3856,13 @@
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
+            updateMobileUnlockBannerUI();
             updateMobileCompanionModalUI();
-            speakMobileDriverStatusNow();
+            requestMobileWakeLock();
+            startMobileSpeechKeepAlive();
+            if (mobileAudioUnlocked && mobileSpotterVoiceEnabled) {
+                speakMobileDriverStatusNow();
+            }
         }
 
         function closeMobileCompanion() {
@@ -3855,26 +3951,176 @@
             if (!ctx) return;
             const ass = ctx.assignment;
 
-            let msg = `Piloto ${ctx.driver.name}. `;
-            if (!ass) {
-                msg += `En la manga ${ctx.heatNumber} estás de comisario de pista. Llevas ${ctx.totalCareerLaps} vueltas acumuladas.`;
+            let msg = '';
+            if (state.lang === 'ca') {
+                msg = `Pilot ${ctx.driver.name}. `;
+                if (!ass) {
+                    msg += `A la màniga ${ctx.heatNumber} estàs de comissari. Portes ${ctx.totalCareerLaps} voltes acumulades.`;
+                } else {
+                    msg += `Portes ${ass.laps} voltes, posició ${ctx.position} pel carril ${ass.lane}. `;
+                    if (ass.lastLap > 0) {
+                        msg += `Última volta ${fmtSec(ass.lastLap)} segons. `;
+                    }
+                    if (ctx.ahead) {
+                        const diffLapsAhead = ctx.ahead.laps - ass.laps;
+                        const gapAheadSpeak = diffLapsAhead > 0
+                            ? `a ${diffLapsAhead} ${diffLapsAhead === 1 ? 'volta' : 'voltes'}`
+                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `amb un ritme de ${fmtSec(ctx.ahead.lastLap)} segons` : '');
+                        msg += `Davant teu va ${ctx.ahead.driverName} pel carril ${ctx.ahead.lane} ${gapAheadSpeak}. `;
+                    } else {
+                        msg += `Vas primer, liderant la màniga. `;
+                    }
+                    if (ctx.behind) {
+                        const diffLapsBehind = ass.laps - ctx.behind.laps;
+                        const gapBehindSpeak = diffLapsBehind > 0
+                            ? `a ${diffLapsBehind} ${diffLapsBehind === 1 ? 'volta' : 'voltes'}`
+                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `fent ${fmtSec(ctx.behind.lastLap)} segons` : '');
+                        msg += `Darrere teu ve ${ctx.behind.driverName} pel carril ${ctx.behind.lane} ${gapBehindSpeak}.`;
+                    } else {
+                        msg += `No tens ningú darrere.`;
+                    }
+                }
             } else {
-                msg += `Vas en posición ${ctx.position} por el carril ${ass.lane}. `;
-                if (ass.lastLap > 0) {
-                    msg += `Última vuelta ${fmtSec(ass.lastLap)} segundos. `;
-                }
-                if (ctx.ahead) {
-                    msg += `Delante tuyo va ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, a ${ctx.ahead.laps - ass.laps > 0 ? (ctx.ahead.laps - ass.laps) + ' vueltas' : fmtSec(Math.abs(ass.lastLap - ctx.ahead.lastLap)) + ' segundos'}. `;
+                msg = `Piloto ${ctx.driver.name}. `;
+                if (!ass) {
+                    msg += `En la manga ${ctx.heatNumber} estás de comisario de pista. Llevas ${ctx.totalCareerLaps} vueltas acumuladas.`;
                 } else {
-                    msg += `Lideras la manga en primera posición. `;
-                }
-                if (ctx.behind) {
-                    msg += `Detrás tuyo viene ${ctx.behind.driverName} por el carril ${ctx.behind.lane}.`;
-                } else {
-                    msg += `No tienes a nadie detrás.`;
+                    msg += `Llevas ${ass.laps} vueltas, posición ${ctx.position} por el carril ${ass.lane}. `;
+                    if (ass.lastLap > 0) {
+                        msg += `Última vuelta ${fmtSec(ass.lastLap)} segundos. `;
+                    }
+                    if (ctx.ahead) {
+                        const diffLapsAhead = ctx.ahead.laps - ass.laps;
+                        const gapAheadSpeak = diffLapsAhead > 0
+                            ? `a ${diffLapsAhead} ${diffLapsAhead === 1 ? 'vuelta' : 'vueltas'}`
+                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `marcando ${fmtSec(ctx.ahead.lastLap)} segundos` : '');
+                        msg += `Delante tuyo va ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, ${gapAheadSpeak}. `;
+                    } else {
+                        msg += `Vas primero, liderando la manga. `;
+                    }
+                    if (ctx.behind) {
+                        const diffLapsBehind = ass.laps - ctx.behind.laps;
+                        const gapBehindSpeak = diffLapsBehind > 0
+                            ? `a ${diffLapsBehind} ${diffLapsBehind === 1 ? 'vuelta' : 'vueltas'}`
+                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `rodando en ${fmtSec(ctx.behind.lastLap)} segundos` : '');
+                        msg += `Detrás tuyo viene ${ctx.behind.driverName} por el carril ${ctx.behind.lane}, ${gapBehindSpeak}.`;
+                    } else {
+                        msg += `No tienes a nadie detrás.`;
+                    }
                 }
             }
             speakText(msg, null, 'HIGH');
+        }
+
+        function downloadDriverTelemetryHTML(optionalDriverId = null) {
+            const targetId = optionalDriverId || activeMobileDriverId || (state.drivers[0] && state.drivers[0].id);
+            const ctx = getDriverLiveTelemetryContext(targetId);
+            if (!ctx) return;
+
+            const ass = ctx.assignment;
+            const aheadStr = ctx.ahead ? `${ctx.ahead.driverName} (Carril ${ctx.ahead.lane}) · ${ctx.gapAheadText} · ${ctx.ahead.laps} Vueltas` : 'LÍDER DE LA MANGA (P1)';
+            const behindStr = ctx.behind ? `${ctx.behind.driverName} (Carril ${ctx.behind.lane}) · ${ctx.gapBehindText} · ${ctx.behind.laps} Vueltas` : 'SIN RIVAL DETRÁS';
+
+            const heatsSectionsHtml = ctx.allHeatsHistory.map(h => {
+                const lapsRows = h.lapTimes.length > 0
+                    ? h.lapTimes.map((tLap, idx) => {
+                        const prev = idx > 0 ? h.lapTimes[idx - 1] : null;
+                        const diff = prev !== null ? (tLap - prev) : 0;
+                        const isBest = h.bestLap && Math.abs(tLap - h.bestLap) < 0.0005;
+                        const diffBadge = prev === null
+                            ? '<span style="color:#94a3b8;">● Inicio</span>'
+                            : (diff <= 0
+                                ? `<span style="color:#30d158;font-weight:800;">▼ ${diff.toFixed(3)}s</span>`
+                                : `<span style="color:#ff453a;font-weight:800;">▲ +${diff.toFixed(3)}s</span>`);
+                        return `<tr style="border-bottom:1px solid rgba(255,255,255,0.08); ${isBest ? 'background:rgba(48,209,88,0.12);' : ''}">
+                            <td style="padding:8px 10px;font-weight:800;">Vuelta ${idx + 1} ${isBest ? '★ RÉCORD' : ''}</td>
+                            <td style="padding:8px 10px;font-family:monospace;font-size:15px;font-weight:900;color:${isBest ? '#30d158' : '#ffffff'};">${tLap.toFixed(3)}s</td>
+                            <td style="padding:8px 10px;font-family:monospace;text-align:right;">${diffBadge}</td>
+                        </tr>`;
+                    }).join('')
+                    : `<tr><td colspan="3" style="padding:12px;text-align:center;color:#94a3b8;">Sin vueltas registradas en esta manga</td></tr>`;
+
+                return `
+                <div style="background:#151922;border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:16px;margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+                        <div>
+                            <span style="background:#0a84ff;color:#fff;font-weight:900;padding:4px 10px;border-radius:8px;font-size:12px;">MANGA ${h.heatNumber} · CARRIL ${h.lane}</span>
+                        </div>
+                        <div style="font-family:monospace;font-size:13px;color:#cbd5e1;">
+                            <b>Vueltas:</b> <span style="color:#30d158;font-weight:900;">${h.laps} V</span> &nbsp;|&nbsp;
+                            <b>Mejor:</b> <span style="color:#d982ff;font-weight:900;">${h.bestLap ? h.bestLap.toFixed(3) + 's' : '--.---'}</span> &nbsp;|&nbsp;
+                            <b>Media:</b> <span style="color:#5ac8fa;font-weight:900;">${h.meanLap ? h.meanLap.toFixed(3) + 's' : '--.---'}</span>
+                        </div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="color:#94a3b8;text-transform:uppercase;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.12);">
+                                <th style="text-align:left;padding:6px 10px;">Nº Vuelta</th>
+                                <th style="text-align:left;padding:6px 10px;">Tiempo</th>
+                                <th style="text-align:right;padding:6px 10px;">Evolución</th>
+                            </tr>
+                        </thead>
+                        <tbody>${lapsRows}</tbody>
+                    </table>
+                </div>`;
+            }).join('');
+
+            const htmlDoc = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemetría ${ctx.driver.name} · KRONO PRO RACE</title>
+</head>
+<body style="margin:0;padding:16px;background:#0b0d12;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+    <div style="max-width:720px;margin:0 auto;">
+        <div style="background:linear-gradient(155deg,#1e2532,#11151d);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 15px 35px rgba(0,0,0,0.5);">
+            <div style="font-size:11px;font-weight:800;color:#5ac8fa;letter-spacing:0.08em;text-transform:uppercase;">KRONO PRO RACE · by Albert Closa · ${state.eventName || 'CLUB'} (${state.eventDate || ''})</div>
+            <h1 style="margin:6px 0 4px 0;font-size:28px;font-weight:900;color:#ffffff;">${ctx.driver.name}</h1>
+            <div style="font-size:13px;color:#94a3b8;margin-bottom:16px;">${ctx.driver.car} · Categoría: <b style="color:#ffd60a;">${ctx.driver.category || state.activeClubCategory || 'GT'}</b></div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;">
+                <div style="background:#0b0d12;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:10px;color:#94a3b8;font-weight:800;">POSICIÓN MANGA ${ctx.heatNumber}</div>
+                    <div style="font-size:24px;font-weight:900;color:#ffd60a;">${ctx.position ? 'P' + ctx.position : 'COMISARIO'} ${ass ? '(C' + ass.lane + ')' : ''}</div>
+                </div>
+                <div style="background:#0b0d12;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:10px;color:#94a3b8;font-weight:800;">TOTAL VUELTAS CARRERA</div>
+                    <div style="font-size:24px;font-weight:900;color:#30d158;">${ctx.totalCareerLaps} V</div>
+                </div>
+                <div style="background:#0b0d12;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:10px;color:#94a3b8;font-weight:800;">MEJOR RÉCORD PERSONAL</div>
+                    <div style="font-size:24px;font-weight:900;color:#d982ff;">${ctx.careerBestLap < Infinity ? ctx.careerBestLap.toFixed(3) + 's' : '--.---'}</div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="background:rgba(255,159,10,0.12);border-left:4px solid #ff9f0a;padding:10px 12px;border-radius:10px;">
+                    <div style="font-size:10px;font-weight:900;color:#ff9f0a;">▲ DELANTE TUYO EN MANGA</div>
+                    <div style="font-size:13px;font-weight:800;color:#fff;margin-top:2px;">${aheadStr}</div>
+                </div>
+                <div style="background:rgba(90,200,250,0.12);border-left:4px solid #5ac8fa;padding:10px 12px;border-radius:10px;">
+                    <div style="font-size:10px;font-weight:900;color:#5ac8fa;">▼ DETRÁS TUYO EN MANGA</div>
+                    <div style="font-size:13px;font-weight:800;color:#fff;margin-top:2px;">${behindStr}</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="font-size:15px;font-weight:900;text-transform:uppercase;color:#cbd5e1;margin:16px 0 10px 4px;">Desglose Completo de Mangas y Vueltas</h2>
+        ${heatsSectionsHtml}
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([htmlDoc], { type: 'text/html;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Informe_${ctx.driver.name.replace(/\s+/g, '_')}_KronoProRace.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function downloadDriverTelemetryCSV(optionalDriverId = null) {
@@ -3954,7 +4200,7 @@
             URL.revokeObjectURL(url);
         }
 
-        // ==================== GESTIÓN DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB ====================
+        // ==================== GESTIÓN DEL EVENTO, FECHA Y CATEGORÍAS DEL CLUB (GT, DTM, CLÁSICOS, F1, CAMIONES...) ====================
         function updateEventMetadata() {
             const nameInp = document.getElementById('event-name-input');
             const dateInp = document.getElementById('event-date-input');
@@ -4764,7 +5010,7 @@
             announceDrivers(state.autoAdvance);
         }
 
-        // ==================== CONTROLES MANUALES DE CREAR CARRERA ====================
+        // ==================== CONTROLES MANUALES DE CREAR CARRERA (TIEMPO, VUELTAS, MANGAS Y ROTACIÓN) ====================
         function applyManualTrackLength(val) {
             const parsed = Math.max(5, Math.min(500, parseFloat(val) || 28));
             state.trackLengthMeters = +parsed.toFixed(1);
@@ -5016,7 +5262,7 @@
             if (sum) sum.textContent = `${state.eventName || 'CLUB'} (${state.eventDate || ''}) · ${state.lanesCount} ${t('lane')}S · ${lapsTxt}`;
         }
 
-        // ==================== GESTIÓN DE PILOTOS Y ALGORITMO DE ROTACIÓN DE MANGAS ====================
+        // ==================== GESTIÓN DE PILOTOS Y ALGORITMO EXACTO DE ROTACIÓN DE MANGAS ====================
         function sortDriversByPole() { state.drivers.sort((a, b) => a.poleLap - b.poleLap); }
 
         function loadPdfExampleDrivers() {
@@ -5543,10 +5789,10 @@
                     document.getElementById(`f1L${i}`).className = 'f1-light green-on';
                 }
                 centerText.textContent = '';
-                const relayBadge = document.getElementById('relay-power-badge');
-                if (relayBadge) {
-                    relayBadge.textContent = 'RELÉ PISTA: ON (12.8V)';
-                    relayBadge.className = 'text-[10px] font-black px-2.5 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40';
+                const relayEl = document.getElementById('relay-power-badge');
+                if (relayEl) {
+                    relayEl.textContent = 'RELÉ PISTA: ON (12.8V)';
+                    relayEl.className = 'hidden 2xl:inline text-[9px] font-black px-1.5 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40 shrink-0';
                 }
 
                 playF1SemaphoreSound('GREEN');
@@ -6207,7 +6453,7 @@
                 if (state.raceStatus === 'STANDBY') startF1Sequence();
                 else if (state.raceStatus === 'RACING') startAutoSimLoop();
             } else {
-                btn.className = "px-3.5 py-2.5 btn-silver font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5";
+                btn.className = "px-3.5 py-2.5 mac-silver-btn font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5";
                 txt.textContent = t('sim_off');
                 if (autoSimInterval) clearInterval(autoSimInterval);
             }
@@ -6222,7 +6468,7 @@
                 btn.innerHTML = `<i class="fa-solid fa-robot"></i><span>${t('btn_auto_on')}</span>`;
                 if (banner) banner.classList.remove('hidden');
             } else {
-                btn.className = "px-3.5 py-2.5 btn-silver font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5";
+                btn.className = "px-3.5 py-2.5 mac-silver-btn font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5";
                 btn.innerHTML = `<i class="fa-solid fa-robot text-[#d982ff]"></i><span>${t('btn_auto_off')}</span>`;
                 if (banner) banner.classList.add('hidden');
             }
@@ -6249,7 +6495,7 @@
                 lights.forEach(l => { if (l) l.className = 'f1-light amber-on'; });
                 if (badge) {
                     badge.textContent = 'TRACK CALL · CORTE 0V';
-                    badge.className = 'text-[10px] font-black px-2.5 py-0.5 rounded bg-[#ff9f0a]/20 text-[#ff9f0a] border border-[#ff9f0a]/40';
+                    badge.className = 'hidden 2xl:inline text-[9px] font-black px-1.5 py-0.5 rounded bg-[#ff9f0a]/20 text-[#ff9f0a] border border-[#ff9f0a]/40 shrink-0';
                 }
                 if (btnTxt) btnTxt.textContent = t('resume_track');
                 if (btnBottomTxt) btnBottomTxt.textContent = t('resume_track');
@@ -6260,7 +6506,7 @@
                 lights.forEach(l => { if (l) l.className = 'f1-light green-on'; });
                 if (badge) {
                     badge.textContent = 'RELÉ PISTA: ON (12.8V)';
-                    badge.className = 'text-[10px] font-black px-2.5 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40';
+                    badge.className = 'hidden 2xl:inline text-[9px] font-black px-1.5 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40 shrink-0';
                 }
                 if (btnTxt) btnTxt.textContent = 'TRACK CALL';
                 if (btnBottomTxt) btnBottomTxt.textContent = 'TRACK CALL';
@@ -6296,8 +6542,8 @@
                 const fl = document.getElementById(`f1L${i}`);
                 if (fl) fl.className = 'f1-light red-on';
             }
-            const relayBadge = document.getElementById('relay-power-badge');
-            if (relayBadge) relayBadge.textContent = 'RELÉ PISTA: OFF';
+            const relayEl = document.getElementById('relay-power-badge');
+            if (relayEl) relayEl.textContent = 'RELÉ PISTA: OFF';
 
             updateRaceFullscreenLayout();
             renderLiveRaceView();
@@ -6452,6 +6698,7 @@
 
         window.onload = async function () {
             initLangDropdown();
+            setupGlobalMobileTouchUnlock();
             const restored = await loadLocalDatabase();
             if (!restored) {
                 loadPdfExampleDrivers();
