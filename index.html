@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
@@ -1053,11 +1054,22 @@
         <div class="mac-window p-4 flex flex-wrap items-center justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#ffd60a]"><i class="fa-solid fa-barcode mr-1"></i>TELEMETRÍA MÓVIL & LECTOR DE CÓDIGOS DE BARRAS / QR</span>
-                    <span id="qr-sync-badge" class="text-[10px] font-black px-2 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">LECTURA ALTA DENSIDAD ACTIVA</span>
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#ffd60a]"><i class="fa-solid fa-tower-broadcast mr-1"></i>TELEMETRÍA MÓVIL EN TIEMPO REAL (WEBRTC + QR SNAPSHOT)</span>
+                    <span id="qr-sync-badge" class="text-[10px] font-black px-2 py-0.5 rounded bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">SALA EN VIVO CONECTADA</span>
                 </div>
-                <h2 data-i18n="qr_title" class="text-xl md:text-2xl font-black text-white mt-0.5">QR y Códigos de Barras para Pilotos en Curso</h2>
-                <p data-i18n="qr_desc" class="text-xs text-[#94a3b8]">Escanea con la cámara o pistola lectora tu Código de Barras CODE-128 o QR para que el móvil te cante tus tiempos, quién va delante y detrás tuyo, y guardar tus datos.</p>
+                <h2 data-i18n="qr_title" class="text-xl md:text-2xl font-black text-white mt-0.5">QR y Códigos de Barras Sincronizados con Pista en Vivo</h2>
+                <p data-i18n="qr_desc" class="text-xs text-[#94a3b8]">Cada QR contiene los datos reales actuales de la pista y enlaza tu móvil en vivo (WebRTC) con el ordenador de carrera para cantarte cada vuelta real.</p>
+                <div class="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+                    <span class="px-2.5 py-1 rounded-lg bg-black/60 border border-white/15 font-mono-num text-[#5ac8fa]">
+                        <i class="fa-solid fa-wifi mr-1 text-[#30d158]"></i>ID SALA PISTA: <b id="host-room-id-badge" class="text-white">CONECTANDO...</b>
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg bg-black/60 border border-white/15 font-mono-num text-[#ffd60a]">
+                        📱 MÓVILES CONECTADOS EN VIVO: <b id="connected-mobiles-count" class="text-white">0</b>
+                    </span>
+                    <button onclick="renderDriversQRView()" class="px-2.5 py-1 rounded-lg mac-silver-btn text-[10px] font-black cursor-pointer">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i>ACTUALIZAR QR CON DATOS DE PISTA AHORA
+                    </button>
+                </div>
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button onclick="toggleCameraBarcodeScanner()" id="btn-camera-scanner" class="px-4 py-2 btn-neon-green rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer">
@@ -1120,6 +1132,7 @@
                         <div class="flex items-center gap-1.5">
                             <h3 id="mob-driver-name" class="text-base font-black text-white leading-none">PILOTO</h3>
                             <span id="mob-pos-badge" class="px-2 py-0.5 rounded text-[10px] font-black bg-[#ffd60a] text-black">P1</span>
+                            <span id="mob-live-net-badge" class="px-1.5 py-0.5 rounded text-[9px] font-mono-num font-black bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/40">● EN VIVO PISTA</span>
                         </div>
                         <p id="mob-driver-car" class="text-[11px] text-[#94a3b8] mt-0.5">Scaleauto GT3</p>
                     </div>
@@ -1714,6 +1727,270 @@
         let activeMobileDriverId = null;
         let mobileSpotterVoiceEnabled = true;
         let raceBroadcastChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('krono_pro_live_telemetry') : null;
+
+        // ==================== MOTOR TELEMETRÍA EN TIEMPO REAL ENTRE DISPOSITIVOS (PeerJS WebRTC + QR Snapshot) ====================
+        let peerInstance = null;
+        let hostRoomId = localStorage.getItem('krono_host_room_id') || ('KPR-' + Math.random().toString(36).substring(2, 7).toUpperCase());
+        localStorage.setItem('krono_host_room_id', hostRoomId);
+        let connectedMobilePeers = [];
+        let mobileClientConn = null;
+        let isRemoteMobileClient = false;
+        let lastSpokenLapOnMobile = -1;
+
+        function initLiveTelemetryNetwork() {
+            const params = new URLSearchParams(window.location.search);
+            const remoteHostId = params.get('room');
+            const scannedPilotId = params.get('pilot');
+            const snapParam = params.get('snap');
+
+            // 1. Si el móvil viene de escanear un QR con instantánea ('snap'), reconstruir los datos reales de la pista al instante
+            if (snapParam) {
+                applyScannedSnapshotToState(snapParam, scannedPilotId);
+            }
+
+            if (typeof Peer === 'undefined') return;
+
+            if (remoteHostId && scannedPilotId) {
+                // MODO CLIENTE MÓVIL DEL PILOTO: Conectarse en tiempo real a la Pista (Host)
+                isRemoteMobileClient = true;
+                updateMobileNetBadge('CONECTANDO A PISTA...', '#ffd60a');
+                try {
+                    peerInstance = new Peer();
+                    peerInstance.on('open', () => {
+                        mobileClientConn = peerInstance.connect(remoteHostId, { reliable: true });
+                        mobileClientConn.on('open', () => {
+                            updateMobileNetBadge('● PISTA EN VIVO OK', '#30d158');
+                            mobileClientConn.send({ type: 'HELLO_PILOT', driverId: scannedPilotId });
+                        });
+                        mobileClientConn.on('data', (payload) => {
+                            if (payload && payload.type === 'LIVE_STATE_SYNC') {
+                                applyHostLiveSyncPayload(payload);
+                            }
+                        });
+                        mobileClientConn.on('close', () => {
+                            updateMobileNetBadge('MODO QR INSTANTÁNEA', '#ff9f0a');
+                        });
+                    });
+                } catch (e) {}
+            } else {
+                // MODO DIRECTOR DE CARRERA (HOST PISTA): Emitir telemetría en vivo a todos los móviles que escaneen el QR
+                try {
+                    peerInstance = new Peer(hostRoomId);
+                    peerInstance.on('open', (id) => {
+                        hostRoomId = id;
+                        const badge = document.getElementById('host-room-id-badge');
+                        if (badge) badge.textContent = id;
+                    });
+                    peerInstance.on('error', () => {
+                        // Si el ID estaba ocupado en otra pestaña, crear uno nuevo
+                        hostRoomId = 'KPR-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                        localStorage.setItem('krono_host_room_id', hostRoomId);
+                    });
+                    peerInstance.on('connection', (conn) => {
+                        connectedMobilePeers.push(conn);
+                        updateConnectedMobilesBadge();
+                        conn.on('open', () => {
+                            updateConnectedMobilesBadge();
+                            sendLiveStateToMobileConn(conn, null);
+                        });
+                        conn.on('data', (msg) => {
+                            if (msg && msg.type === 'HELLO_PILOT') {
+                                sendLiveStateToMobileConn(conn, null);
+                            } else if (msg && msg.type === 'REMOTE_TEST_LAP' && msg.driverId) {
+                                const heat = state.heats[state.currentHeatIndex];
+                                const ass = heat ? heat.assignments.find(a => a.driverId === msg.driverId) : null;
+                                if (ass) triggerNextCheckpoint(ass.lane, null, true);
+                            }
+                        });
+                        conn.on('close', () => {
+                            connectedMobilePeers = connectedMobilePeers.filter(c => c !== conn);
+                            updateConnectedMobilesBadge();
+                        });
+                    });
+                } catch (e) {}
+            }
+        }
+
+        function updateConnectedMobilesBadge() {
+            const el = document.getElementById('connected-mobiles-count');
+            if (el) el.textContent = String(connectedMobilePeers.filter(c => c.open).length);
+        }
+
+        function updateMobileNetBadge(text, hexColor) {
+            const b = document.getElementById('mob-live-net-badge');
+            if (!b) return;
+            b.textContent = text;
+            b.style.color = hexColor;
+            b.style.borderColor = hexColor + '66';
+            b.style.backgroundColor = hexColor + '22';
+        }
+
+        function buildCompactSnapshotForDriver(driverId) {
+            const heat = state.heats[state.currentHeatIndex] || state.heats[0];
+            if (!heat || !state.drivers.length) return '';
+            // Empaquetar toda la parrilla de la manga actual de forma ultracompacta para que quepa en el QR y el móvil tenga exactamente lo que hay en Pista en Vivo
+            const snapObj = {
+                ev: state.eventName || 'KRONO PRO',
+                cat: state.selectedCategory || 'GT',
+                h: heat.heatNumber,
+                th: state.heats.length,
+                rem: Math.round(state.timeRemaining || 0),
+                drv: state.drivers.map(d => [d.id, d.name, d.car, d.poleLap || 0]),
+                ass: heat.assignments.map(a => [
+                    a.lane,
+                    a.driverId,
+                    a.driverName,
+                    a.laps,
+                    +(a.lastLap || 0).toFixed(3),
+                    a.bestLap < Infinity ? +a.bestLap.toFixed(3) : 0,
+                    a.nextAction || '',
+                    (a.history || []).slice(-8).map(x => +x.toFixed(3))
+                ]),
+                m: heat.marshals || []
+            };
+            try {
+                return btoa(unescape(encodeURIComponent(JSON.stringify(snapObj))));
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function applyScannedSnapshotToState(base64Snap, focusDriverId) {
+            try {
+                const jsonStr = decodeURIComponent(escape(atob(base64Snap)));
+                const snap = JSON.parse(jsonStr);
+                if (!snap || !Array.isArray(snap.drv)) return;
+
+                state.eventName = snap.ev || '';
+                state.selectedCategory = snap.cat || 'GT';
+                state.timeRemaining = snap.rem || 0;
+                state.drivers = snap.drv.map(arr => ({
+                    id: arr[0],
+                    name: arr[1],
+                    car: arr[2],
+                    poleLap: arr[3] || 0
+                }));
+
+                const assignments = (snap.ass || []).map(arr => ({
+                    lane: arr[0],
+                    laneInfo: LANE_PALETTE[arr[0]] || LANE_PALETTE[1],
+                    driverId: arr[1],
+                    driverName: arr[2],
+                    driverCar: (state.drivers.find(d => d.id === arr[1])?.car) || snap.cat || 'GT',
+                    laps: arr[3] || 0,
+                    lastLap: arr[4] || 0,
+                    bestLap: arr[5] > 0 ? arr[5] : Infinity,
+                    nextAction: arr[6] || '',
+                    history: Array.isArray(arr[7]) ? arr[7] : [],
+                    currentSector: 1,
+                    sectorAccum: 0,
+                    lastCheckpointTime: 0,
+                    lastSectors: { 1: null, 2: null, 3: null },
+                    prevSectors: { 1: null, 2: null, 3: null },
+                    bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
+                    sectorColors: { 1: '', 2: '', 3: '' },
+                    lastLapPassTime: 0
+                }));
+
+                state.heats = [{
+                    heatNumber: snap.h || 1,
+                    status: 'RACING',
+                    assignments,
+                    marshals: snap.m || []
+                }];
+                state.currentHeatIndex = 0;
+                updateHeaderSummary();
+                renderLiveRaceView();
+                if (focusDriverId) {
+                    activeMobileDriverId = focusDriverId;
+                    updateMobileCompanionModalUI();
+                }
+            } catch (e) {}
+        }
+
+        function sendLiveStateToMobileConn(conn, triggeredDriverId = null) {
+            if (!conn || !conn.open) return;
+            const heat = state.heats[state.currentHeatIndex];
+            if (!heat) return;
+            try {
+                conn.send({
+                    type: 'LIVE_STATE_SYNC',
+                    triggeredDriverId,
+                    eventName: state.eventName,
+                    selectedCategory: state.selectedCategory,
+                    currentHeatIndex: state.currentHeatIndex,
+                    timeRemaining: state.timeRemaining,
+                    raceStatus: state.raceStatus,
+                    drivers: state.drivers,
+                    heats: state.heats.map(h => ({
+                        heatNumber: h.heatNumber,
+                        status: h.status,
+                        marshals: h.marshals,
+                        assignments: h.assignments.map(a => ({
+                            lane: a.lane,
+                            laneInfo: a.laneInfo,
+                            driverId: a.driverId,
+                            driverName: a.driverName,
+                            driverCar: a.driverCar,
+                            nextAction: a.nextAction,
+                            laps: a.laps,
+                            lastLap: a.lastLap,
+                            bestLap: a.bestLap < Infinity ? a.bestLap : null,
+                            history: a.history
+                        }))
+                    }))
+                });
+            } catch (e) {}
+        }
+
+        function broadcastLiveStateToAllMobiles(triggeredDriverId = null) {
+            connectedMobilePeers.forEach(conn => {
+                sendLiveStateToMobileConn(conn, triggeredDriverId);
+            });
+            if (raceBroadcastChannel) {
+                raceBroadcastChannel.postMessage({
+                    type: 'LAP_UPDATE',
+                    driverId: triggeredDriverId
+                });
+            }
+        }
+
+        function applyHostLiveSyncPayload(payload) {
+            if (!payload) return;
+            state.eventName = payload.eventName || state.eventName;
+            state.selectedCategory = payload.selectedCategory || state.selectedCategory;
+            state.currentHeatIndex = payload.currentHeatIndex || 0;
+            state.timeRemaining = payload.timeRemaining ?? state.timeRemaining;
+            state.raceStatus = payload.raceStatus || state.raceStatus;
+            if (Array.isArray(payload.drivers)) state.drivers = payload.drivers;
+            if (Array.isArray(payload.heats)) {
+                state.heats = payload.heats.map(h => ({
+                    ...h,
+                    assignments: (h.assignments || []).map(a => ({
+                        ...a,
+                        laneInfo: a.laneInfo || LANE_PALETTE[a.lane] || LANE_PALETTE[1],
+                        bestLap: (a.bestLap !== null && a.bestLap !== undefined) ? a.bestLap : Infinity,
+                        lastSectors: { 1: null, 2: null, 3: null },
+                        prevSectors: { 1: null, 2: null, 3: null },
+                        bestSectors: { 1: Infinity, 2: Infinity, 3: Infinity },
+                        sectorColors: { 1: '', 2: '', 3: '' }
+                    }))
+                }));
+            }
+
+            updateHeaderSummary();
+            if (state.mainTab === 'race') renderLiveRaceView();
+            if (activeMobileDriverId) {
+                updateMobileCompanionModalUI();
+                const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
+                const curLaps = ctx && ctx.assignment ? ctx.assignment.laps : -1;
+                // Si el coche del piloto acaba de completar vuelta en la pista (o si hubo cambio importante), cantarlo en el móvil
+                if (mobileSpotterVoiceEnabled && (payload.triggeredDriverId === activeMobileDriverId || (curLaps > 0 && curLaps !== lastSpokenLapOnMobile))) {
+                    lastSpokenLapOnMobile = curLaps;
+                    speakMobileDriverStatusNow();
+                }
+            }
+        }
 
         if (raceBroadcastChannel) {
             raceBroadcastChannel.onmessage = (ev) => {
@@ -2310,6 +2587,11 @@
 
         function simulateLapForActiveMobileDriver() {
             if (!activeMobileDriverId) return;
+            // Si estamos conectados remotamente desde otro móvil, pedirle a la Pista (Host) que registre la vuelta o simularla localmente
+            if (isRemoteMobileClient && mobileClientConn && mobileClientConn.open) {
+                mobileClientConn.send({ type: 'REMOTE_TEST_LAP', driverId: activeMobileDriverId });
+                return;
+            }
             const heat = state.heats[state.currentHeatIndex];
             if (!heat) return;
             const ass = heat.assignments.find(a => a.driverId === activeMobileDriverId);
@@ -2536,8 +2818,19 @@
             const ctx = getDriverLiveTelemetryContext(driverId);
             const baseUrl = window.location.href.split('?')[0].split('#')[0];
             if (!ctx) return baseUrl;
-            // URL ultra corta para que el QR tenga módulos grandes y se lea al instante desde cualquier móvil
-            return `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}`;
+            const snap = buildCompactSnapshotForDriver(driverId);
+            // Incluye ID del piloto + ID de la Sala WebRTC en Vivo + Instantánea real de los datos actuales de pista
+            return `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}&room=${encodeURIComponent(hostRoomId)}&snap=${encodeURIComponent(snap)}`;
+        }
+
+        function buildDriverShortQrUrl(driverId) {
+            const ctx = getDriverLiveTelemetryContext(driverId);
+            const baseUrl = window.location.href.split('?')[0].split('#')[0];
+            if (!ctx) return baseUrl;
+            const snap = buildCompactSnapshotForDriver(driverId);
+            const fullUrl = `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}&room=${encodeURIComponent(hostRoomId)}&snap=${encodeURIComponent(snap)}`;
+            // Si la URL con snapshot supera el límite cómodo de lectura rápida de cámara, priorizar room+snap compacto
+            return fullUrl.length <= 950 ? fullUrl : `${baseUrl}?pilot=${encodeURIComponent(ctx.driver.id)}&room=${encodeURIComponent(hostRoomId)}`;
         }
 
         function processScannedCode(rawCode) {
@@ -2545,11 +2838,15 @@
             const clean = String(rawCode).trim();
             if (!clean) return;
 
-            // 1. Si es una URL con ?pilot=
+            // 1. Si es una URL con ?pilot= (con o sin &snap= y &room=)
             if (clean.includes('pilot=')) {
                 try {
                     const urlObj = new URL(clean, window.location.origin);
                     const pId = urlObj.searchParams.get('pilot');
+                    const snap = urlObj.searchParams.get('snap');
+                    if (snap) {
+                        applyScannedSnapshotToState(snap, pId);
+                    }
                     if (pId) {
                         const found = state.drivers.find(d => d.id === pId);
                         if (found) {
@@ -2743,15 +3040,19 @@
 
             // Renderizar QR y Código de Barras CODE-128 con dimensiones exactas sin escalado CSS que distorsione las barras
             requestAnimationFrame(() => {
+                const roomBadge = document.getElementById('host-room-id-badge');
+                if (roomBadge) roomBadge.textContent = hostRoomId;
+                updateConnectedMobilesBadge();
+
                 state.drivers.forEach((drv, idx) => {
                     const qrContainer = document.getElementById(`qr-box-${drv.id}`);
-                    const shareUrl = buildDriverShareableUrl(drv.id);
+                    const shareUrl = buildDriverShortQrUrl(drv.id);
                     if (qrContainer && typeof QRCode !== 'undefined') {
                         qrContainer.innerHTML = '';
                         new QRCode(qrContainer, {
                             text: shareUrl,
-                            width: 96,
-                            height: 96,
+                            width: 112,
+                            height: 112,
                             colorDark: "#000000",
                             colorLight: "#ffffff",
                             correctLevel: QRCode.CorrectLevel.L
@@ -2875,24 +3176,38 @@
             const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
             if (!ctx) return;
             const ass = ctx.assignment;
+            const evText = state.eventName ? `${state.eventName}, categoría ${state.selectedCategory || 'GT'}. ` : '';
 
-            let msg = `Piloto ${ctx.driver.name}. `;
+            let msg = `${evText}Piloto ${ctx.driver.name}. `;
             if (!ass) {
-                msg += `En la manga ${ctx.heatNumber} estás de comisario de pista. Llevas ${ctx.totalCareerLaps} vueltas acumuladas.`;
+                msg += `En la manga ${ctx.heatNumber} estás en descanso o de comisario de pista. Llevas ${ctx.totalCareerLaps} vueltas acumuladas en la carrera.`;
             } else {
-                msg += `Vas en posición ${ctx.position} por el carril ${ass.lane}. `;
+                msg += `Manga ${ctx.heatNumber} en vivo: vas en posición ${ctx.position} por el carril ${ass.lane}, con ${ass.laps} vueltas. `;
                 if (ass.lastLap > 0) {
-                    msg += `Última vuelta ${fmtSec(ass.lastLap)} segundos. `;
+                    msg += `Última vuelta: ${fmtSec(ass.lastLap)} segundos. `;
+                } else {
+                    msg += `Esperando tu primer paso por meta. `;
+                }
+                if (ass.bestLap < Infinity) {
+                    msg += `Tu mejor vuelta es ${fmtSec(ass.bestLap)}. `;
                 }
                 if (ctx.ahead) {
-                    msg += `Delante tuyo va ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, a ${ctx.ahead.laps - ass.laps > 0 ? (ctx.ahead.laps - ass.laps) + ' vueltas' : fmtSec(Math.abs(ass.lastLap - ctx.ahead.lastLap)) + ' segundos'}. `;
+                    const lapDiffAhead = ctx.ahead.laps - ass.laps;
+                    const gapVoiceAhead = lapDiffAhead > 0
+                        ? `a ${lapDiffAhead} ${lapDiffAhead === 1 ? 'vuelta' : 'vueltas'}`
+                        : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `con diferencia de ${fmtSec(Math.abs(ass.lastLap - ctx.ahead.lastLap))} segundos` : 'muy cerca delante');
+                    msg += `Delante tuyo tienes a ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, ${gapVoiceAhead}. `;
                 } else {
-                    msg += `Lideras la manga en primera posición. `;
+                    msg += `Eres el líder de la manga, no tienes a nadie delante. `;
                 }
                 if (ctx.behind) {
-                    msg += `Detrás tuyo viene ${ctx.behind.driverName} por el carril ${ctx.behind.lane}.`;
+                    const lapDiffBehind = ass.laps - ctx.behind.laps;
+                    const gapVoiceBehind = lapDiffBehind > 0
+                        ? `a ${lapDiffBehind} ${lapDiffBehind === 1 ? 'vuelta' : 'vueltas'}`
+                        : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `a ${fmtSec(Math.abs(ass.lastLap - ctx.behind.lastLap))} segundos` : 'pegado detrás');
+                    msg += `Detrás tuyo viene ${ctx.behind.driverName} por el carril ${ctx.behind.lane}, ${gapVoiceBehind}.`;
                 } else {
-                    msg += `No tienes a nadie detrás.`;
+                    msg += `No tienes a ningún rival detrás.`;
                 }
             }
             speakText(msg, null, 'HIGH');
@@ -4313,6 +4628,9 @@
             renderMasterClock();
             saveLocalDatabase();
 
+            // Emitir telemetría en vivo por WebRTC y BroadcastChannel a todos los móviles conectados
+            broadcastLiveStateToAllMobiles(a.driverId);
+
             // Actualizar en vivo el Spotter Móvil y la vista QR si están abiertos
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) {
@@ -4320,9 +4638,6 @@
                 if (a.driverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
                     speakMobileDriverStatusNow();
                 }
-            }
-            if (raceBroadcastChannel) {
-                raceBroadcastChannel.postMessage({ type: 'LAP_UPDATE', driverId: a.driverId, lane: a.lane, lapSec });
             }
 
             if (state.targetLaps !== 'infinity' && a.laps >= state.targetLaps) {
@@ -4471,6 +4786,7 @@
                 state.lastCommentaryTime = now;
                 updateRaceFullscreenLayout();
                 startMasterClock();
+                broadcastLiveStateToAllMobiles(null);
 
                 if (state.autoAdvance || state.autoSimActive) {
                     startAutoSimLoop();
@@ -5421,7 +5737,10 @@
             }
             changeLanguage(state.lang || 'es');
 
-            // Si un piloto abre el enlace escaneado desde su código QR en el móvil, abrir directamente su Ingeniero de Pista Móvil
+            // Inicializar red de telemetría en tiempo real (Host Pista o Cliente Móvil por QR)
+            initLiveTelemetryNetwork();
+
+            // Si un piloto abre el enlace escaneado desde su código QR en el móvil, abrir directamente su Ingeniero de Pista Móvil con los datos reales de la pista
             const params = new URLSearchParams(window.location.search);
             const scannedPilotId = params.get('pilot');
             if (scannedPilotId) {
