@@ -952,9 +952,10 @@
             <!-- Selector de Mangas con indicador "(ACABADA) ✓" -->
             <div class="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5 uppercase" id="live-heat-tabs"></div>
 
-            <!-- Selector Global de los 3 Tipos de Cuadro (BÁSICO, MEDIO, EXPERTO) + Paleta de Colores -->
+            <!-- Selector Global de los 4 Tipos de Cuadro (CLÁSICO, BÁSICO, MEDIO, EXPERTO) + Paleta de Colores -->
             <div class="flex items-center gap-1.5">
-                <div class="apple-segmented bg-black/60 p-1" title="3 niveles de cuadro con letra gigante para lectura fácil y telemetría de tiempo/velocidad">
+                <div class="apple-segmented bg-black/60 p-1" title="4 niveles de cuadro incluyendo el modo monitor clásico vertical TicTac Slot">
+                    <button onclick="setGlobalCardLayout(0)" id="global-layout-0" data-i18n="layout_0_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">0. CLÁSICO</button>
                     <button onclick="setGlobalCardLayout(1)" id="global-layout-1" data-i18n="layout_1_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">1. BÁSICO</button>
                     <button onclick="setGlobalCardLayout(2)" id="global-layout-2" data-i18n="layout_2_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">2. MEDIO</button>
                     <button onclick="setGlobalCardLayout(3)" id="global-layout-3" data-i18n="layout_3_btn" class="px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer">3. EXPERTO</button>
@@ -1258,18 +1259,13 @@
 
             <!-- Cuerpo de Telemetría en Tiempo Real del Piloto -->
             <div class="p-4 space-y-3 overflow-y-auto flex-1">
-                <!-- BANNER DE DESBLOQUEO DE VOZ OBLIGATORIO EN IPHONE (iOS) Y ANDROID -->
-                <div id="mob-audio-unlock-banner" onclick="unlockMobileVoiceAndAudio()" class="p-3 rounded-2xl bg-gradient-to-r from-[#30d158] to-[#0a84ff] text-slate-950 flex items-center justify-between gap-3 cursor-pointer shadow-[0_0_25px_rgba(48,209,88,0.5)] animate-pulse">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-9 h-9 rounded-xl bg-black/20 flex items-center justify-center text-lg font-black text-white shrink-0">
-                            <i class="fa-solid fa-volume-high"></i>
-                        </span>
-                        <div>
-                            <div class="text-xs font-black uppercase tracking-tight text-slate-950">🔊 TOCA AQUÍ PARA ACTIVAR EL SPOTTER DE VOZ EN TU MÓVIL</div>
-                            <div class="text-[10px] font-bold text-slate-900">iPhone y Android requieren 1 toque en pantalla para permitir que el móvil hable en cada vuelta</div>
-                        </div>
+                <!-- BANNER DE ESTADO AUTOMÁTICO DEL SPOTTER DE VOZ EN EL MÓVIL -->
+                <div id="mob-audio-unlock-banner" onclick="unlockMobileVoiceAndAudio()" class="p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-ping shrink-0"></span>
+                        <span class="text-xs font-black uppercase">🔊 SPOTTER AUTOMÁTICO ACTIVO · CANTA CADA VUELTA Y RIVALES SOLO</span>
                     </div>
-                    <span class="px-2.5 py-1 rounded-lg bg-black text-[#30d158] text-[10px] font-black shrink-0">ACTIVAR</span>
+                    <span id="mob-auto-freq-badge" class="px-2 py-0.5 rounded bg-black/50 text-[#ffd60a] text-[10px] font-mono-num font-black shrink-0">MANOS LIBRES</span>
                 </div>
 
                 <!-- Barra de Estado de Conexión en Vivo con Pista -->
@@ -1326,11 +1322,16 @@
                     </div>
                 </div>
 
-                <!-- Botón de Test de Canto de Tiempos y Rivales -->
-                <button onclick="speakMobileDriverStatusNow()" class="w-full py-2.5 rounded-xl btn-neon-blue font-black text-xs flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-headphones"></i>
-                    <span>CANTAR MI TIEMPO Y RIVALES AHORA</span>
-                </button>
+                <!-- Indicador de Locución Automática en Tiempo Real (Sin necesidad de pulsar botón) -->
+                <div class="mac-group-box px-3 py-2 flex items-center justify-between gap-2 border border-[#30d158]/40 bg-[#30d158]/10">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="fa-solid fa-headset text-[#30d158] text-sm animate-pulse shrink-0"></i>
+                        <span id="mob-live-speech-caption" class="text-[11px] font-bold text-white truncate italic">Spotter automático conectado: cantando cada paso por meta y rivales...</span>
+                    </div>
+                    <button onclick="speakMobileDriverStatusNow(true)" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-black text-[#5ac8fa] shrink-0 cursor-pointer" title="Repetir locución ahora">
+                        🔊 REPETIR
+                    </button>
+                </div>
 
                 <!-- Historial de Vueltas en el Móvil -->
                 <div class="mac-group-box p-2.5">
@@ -1452,6 +1453,7 @@
         // Traducciones extra de Interfaz y Cuadros de Piloto (7 idiomas)
         const UI_EXTRA_TRANSLATIONS = {
             es: {
+                layout_0_btn: "0. CLÁSICO", layout_0_short: "CLÁSICO",
                 layout_1_btn: "1. BÁSICO", layout_2_btn: "2. MEDIO", layout_3_btn: "3. EXPERTO",
                 layout_1_short: "BÁSICO", layout_2_short: "MEDIO", layout_3_short: "EXPERTO",
                 theme_silver: "PLATA MAC", heat_clock_lbl: "CRONO MANGA",
@@ -1507,6 +1509,7 @@
                 home_img_hint: "COLOCA TU ARCHIVO \"fondo.jpg\" EN LA MISMA CARPETA O PULSA ABAJO PARA CARGARLO"
             },
             ca: {
+                layout_0_btn: "0. CLÀSSIC", layout_0_short: "CLÀSSIC",
                 layout_1_btn: "1. BÀSIC", layout_2_btn: "2. MITJÀ", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BÀSIC", layout_2_short: "MITJÀ", layout_3_short: "EXPERT",
                 theme_silver: "PLATA MAC", heat_clock_lbl: "CRONO MÀNIGA",
@@ -1562,226 +1565,35 @@
                 home_img_hint: "COL·LOCA EL TEU FITXER \"fondo.jpg\" A LA MATEIXA CARPETA O PREM A SOTA PER CARREGAR-LO"
             },
             eu: {
+                layout_0_btn: "0. KLASIKOA", layout_0_short: "KLASIK.",
                 layout_1_btn: "1. OINARRIZKOA", layout_2_btn: "2. ERTAINA", layout_3_btn: "3. ADITUA",
                 layout_1_short: "OINARR.", layout_2_short: "ERTAINA", layout_3_short: "ADITUA",
                 theme_silver: "ZILARRA MAC", heat_clock_lbl: "TXANDA KRONOA",
-                sim_off: "SIMULAGAILUA: OFF", sim_on: "SIMULAGAILUA: ON",
-                btn_changes_yesno: "TXANDA ALDAKETAK (BAI/EZ)",
-                resume_track: "PISTA BERRABIARAZI",
-                card_last_lap: "AZKEN ITZULIA", card_last_short: "AZKENA",
-                card_slowest: "MOTELENA", card_slow_short: "MOTELA",
-                card_speed: "ABIAD. KM/H", card_speed_full: "ABIADURA",
-                card_est_goal: "HELMUGA EST:", card_est_short: "EST",
-                card_dist: "DIST:", card_vs_mean: "VS BATEZ:",
-                card_std_dev: "DESB:", card_top_speed: "PUNTURIK:",
-                card_range: "TARTEA:", card_consistency: "EGONKORTASUNA",
-                card_lap_history: "ITZULIEN HISTORIA", card_time_list: "DENBORA ZERRENDA",
-                card_pace_chart: "ERRITMO ETA BILAKAERA GRAFIKOA",
-                card_waiting_laps: "ZUZENEKO GRAFIKORAKO ITZULIEN ZAIN...",
-                card_touch_to_log: "UKITU KOADROA ITZULIAK ERREGISTRATZEKO",
-                card_improve: "▼HOBETU", card_worse: "▲OKERRAGO",
-                card_best_tag: "ONENA", card_worst_tag: "TXARRENA",
-                card_sector: "SEKTOREA",
-                event_block_title: "EKITALDIAREN DATUAK, DATA ETA KLUBAREN KATEGORIAK",
-                event_block_sub: "Zure Tablet, PC edo Mac barne-memorian automatikoki gordetzen da",
-                event_name_lbl: "EKITALDI / TXAPELKETAREN IZENA:",
-                event_date_lbl: "LASTERKETA DATA:",
-                event_cats_lbl: "KLUB KATEGORIAK (SAKATU AUKERATZEKO EDO ✕ EZABATZEKO):",
-                btn_restore_cats: "LEHENERATU",
-                btn_add_cat: "KATEGORIA GEHITU",
-                track_len_lbl: "PISTA LUZERA (M):",
-                meters_unit: "METRO",
-                manual_time_lbl: "ESKUZ:",
-                manual_laps_lbl: "ESKUZKO ITZULIAK:",
-                btn_fix: "FINKATU",
-                manual_heats_lbl: "ESKUZKO TXANDAK:",
-                manual_rot_lbl: "ESKUZKO ORDENA (ADIB: 1,3,4,2):",
-                btn_invert_wheel: "ERRUBERA ALDERANTZIKATU",
-                btn_apply: "APLIKATU",
-                sess_practice: "ENTRENAMENDUAK (1M)", sess_official: "LASTERKETA OFIZIALA",
-                hm_auto: "ZIKLO AUTO", hm_lanes: "= ERREIAK", hm_6: "6 TXANDA", hm_10: "10 TXANDA",
-                by_time_inf: "⏱️ DENBORAZ (∞)",
-                yes_make_changes: "BAI (ALDAKETAK EGIN)", no_start_heat: "EZ (TXANDA HASI ▶)",
-                yesno_question_1: "Lasterketa prest dago hasteko: Aldaketarik egin nahi duzu?",
-                btn_go_live_now: "ZUZENEKO PISTARA JOAN",
-                hw_title: "Sentsore Optikoen Interfazea, DS Krono & Tekla Azkarrak",
-                qr_scan_cam: "KAMERAREKIN ESKANEATU", qr_stop_cam: "KAMERA GELDITU",
-                qr_download_all: "DATU OROKORRAK DESKARGATU",
-                qr_direct_reader: "Barra-kode eta QR Irakurle Zuzena",
-                qr_read_btn: "KODEA IRAKURRI",
-                btn_zero_all: "DENA ZERORA JARRI",
-                btn_zero_short: "ZERORA",
-                home_btn_new_race: "LASTERKETA BERRIA HASI",
-                home_btn_sim_race: "LASTERKETA SIMULATU",
-                home_btn_change_img: "ERDIKO IRUDIA ALDATU",
-                home_img_hint: "JARRI \"fondo.jpg\" KARPETA BEREAN EDO SAKATU BEHEAN KARGATZEKO"
+<!-- ... existing code --> -->
             },
             en: {
+                layout_0_btn: "0. CLASSIC", layout_0_short: "CLASSIC",
                 layout_1_btn: "1. BASIC", layout_2_btn: "2. MEDIUM", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIC", layout_2_short: "MEDIUM", layout_3_short: "EXPERT",
                 theme_silver: "MAC SILVER", heat_clock_lbl: "HEAT TIMER",
-                sim_off: "SIMULATOR: OFF", sim_on: "SIMULATOR: ON",
-                btn_changes_yesno: "HEAT CHANGES (YES/NO)",
-                resume_track: "RESUME TRACK",
-                card_last_lap: "LAST LAP", card_last_short: "LAST",
-                card_slowest: "SLOWEST LAP", card_slow_short: "SLOWEST",
-                card_speed: "SPEED KM/H", card_speed_full: "SPEED",
-                card_est_goal: "EST GOAL:", card_est_short: "EST",
-                card_dist: "DIST:", card_vs_mean: "VS MEAN:",
-                card_std_dev: "DEV:", card_top_speed: "PEAK:",
-                card_range: "RANGE:", card_consistency: "CONSISTENCY",
-                card_lap_history: "LAP HISTORY", card_time_list: "LAP TIMES LIST",
-                card_pace_chart: "LIVE PACE & EVOLUTION CHART",
-                card_waiting_laps: "WAITING FOR LAPS FOR LIVE TELEMETRY...",
-                card_touch_to_log: "TAP CARD TO LOG LAPS",
-                card_improve: "▼FASTER", card_worse: "▲SLOWER",
-                card_best_tag: "BEST", card_worst_tag: "WORST",
-                card_sector: "SECTOR",
-                event_block_title: "EVENT DETAILS, DATE & CLUB CATEGORIES",
-                event_block_sub: "Automatically saved to your Tablet, PC, or Mac internal storage",
-                event_name_lbl: "EVENT / CHAMPIONSHIP NAME:",
-                event_date_lbl: "RACE DATE:",
-                event_cats_lbl: "CLUB CATEGORIES (CLICK TO SELECT OR ✕ TO DELETE):",
-                btn_restore_cats: "RESTORE DEFAULTS",
-                btn_add_cat: "ADD CATEGORY",
-                track_len_lbl: "TRACK LENGTH (M):",
-                meters_unit: "METERS",
-                manual_time_lbl: "MANUAL:",
-                manual_laps_lbl: "MANUAL LAPS:",
-                btn_fix: "SET",
-                manual_heats_lbl: "MANUAL HEATS:",
-                manual_rot_lbl: "MANUAL ORDER (E.G. 1,3,4,2):",
-                btn_invert_wheel: "INVERT WHEEL",
-                btn_apply: "APPLY",
-                sess_practice: "PRACTICE (1H)", sess_official: "OFFICIAL RACE",
-                hm_auto: "AUTO CYCLE", hm_lanes: "= LANES", hm_6: "6 HEATS", hm_10: "10 HEATS",
-                by_time_inf: "⏱️ BY TIME (∞)",
-                yes_make_changes: "YES (MAKE CHANGES)", no_start_heat: "NO (START HEAT ▶)",
-                yesno_question_1: "The race is ready to start: Do you want to make any changes?",
-                btn_go_live_now: "GO TO LIVE TRACK",
-                hw_title: "Optical Sensors Interface, DS Chrono & Hotkeys",
-                qr_scan_cam: "SCAN WITH CAMERA", qr_stop_cam: "STOP CAMERA",
-                qr_download_all: "DOWNLOAD ALL RACE DATA",
-                qr_direct_reader: "Direct Barcode & QR Scanner",
-                qr_read_btn: "READ CODE",
-                btn_zero_all: "RESET ALL TO ZERO",
-                btn_zero_short: "ZERO OUT",
-                home_btn_new_race: "START NEW RACE",
-                home_btn_sim_race: "SIMULATE A RACE",
-                home_btn_change_img: "CHANGE CENTER IMAGE",
-                home_img_hint: "PLACE YOUR \"fondo.jpg\" IN THE SAME FOLDER OR CLICK BELOW TO UPLOAD"
+<!-- ... existing code --> -->
             },
             fr: {
+                layout_0_btn: "0. CLASSIQUE", layout_0_short: "CLASSIQ.",
                 layout_1_btn: "1. BASIQUE", layout_2_btn: "2. MOYEN", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIQUE", layout_2_short: "MOYEN", layout_3_short: "EXPERT",
                 theme_silver: "ARGENT MAC", heat_clock_lbl: "CHRONO MANCHE",
-                sim_off: "SIMULATEUR: OFF", sim_on: "SIMULATEUR: ON",
-                btn_changes_yesno: "MODIF. MANCHES (OUI/NON)",
-                resume_track: "REPRENDRE PISTE",
-                card_last_lap: "DERNIER TOUR", card_last_short: "DERNIER",
-                card_slowest: "PLUS LENT", card_slow_short: "LENT",
-                card_speed: "VIT. KM/H", card_speed_full: "VITESSE",
-                card_est_goal: "OBJ. EST:", card_est_short: "EST",
-                card_dist: "DIST:", card_vs_mean: "VS MOY:",
-                card_std_dev: "ÉCART:", card_top_speed: "POINTE:",
-                card_range: "PLAGE:", card_consistency: "RÉGULARITÉ",
-                card_lap_history: "HISTORIQUE TOURS", card_time_list: "LISTE DES TEMPS",
-                card_pace_chart: "GRAPHIQUE DE RYTHME EN DIRECT",
-                card_waiting_laps: "EN ATTENTE DE TOURS POUR LE GRAPHIQUE...",
-                card_touch_to_log: "TOUCHEZ LA CARTE POUR COMPTER UN TOUR",
-                card_improve: "▼MIEUX", card_worse: "▲MOINS",
-                card_best_tag: "MEILLEUR", card_worst_tag: "PIRE",
-                card_sector: "SECTEUR",
-                event_block_title: "DÉTAILS DE L'ÉVÉNEMENT, DATE & CATÉGORIES DU CLUB",
-                event_block_sub: "Sauvegardé automatiquement dans la mémoire de votre appareil",
-                event_name_lbl: "NOM DE L'ÉVÉNEMENT / CHAMPIONNAT:",
-                event_date_lbl: "DATE DE LA COURSE:",
-                event_cats_lbl: "CATÉGORIES DU CLUB (CLIQUEZ POUR CHOISIR OU ✕ POUR SUPPRIMER):",
-                btn_restore_cats: "RESTAURER BASE",
-                btn_add_cat: "AJOUTER CATÉGORIE",
-                track_len_lbl: "LONGUEUR PISTE (M):",
-                meters_unit: "MÈTRES",
-                manual_time_lbl: "MANUEL:",
-                manual_laps_lbl: "TOURS MANUELS:",
-                btn_fix: "FIXER",
-                manual_heats_lbl: "NB MANCHES MANUEL:",
-                manual_rot_lbl: "ORDRE MANUEL (EX: 1,3,4,2):",
-                btn_invert_wheel: "INVERSER ROUE",
-                btn_apply: "APPLIQUER",
-                sess_practice: "ESSAIS (1M)", sess_official: "COURSE OFFICIELLE",
-                hm_auto: "CYCLE AUTO", hm_lanes: "= VOIES", hm_6: "6 MANCHES", hm_10: "10 MANCHES",
-                by_time_inf: "⏱️ AU TEMPS (∞)",
-                yes_make_changes: "OUI (MODIFIER)", no_start_heat: "NON (DÉMARRER ▶)",
-                yesno_question_1: "La course est prête à commencer : souhaitez-vous faire un changement ?",
-                btn_go_live_now: "ALLER EN PISTE EN DIRECT",
-                hw_title: "Interface Capteurs Optiques, DS Chrono & Raccourcis",
-                qr_scan_cam: "SCANNER AVEC CAMÉRA", qr_stop_cam: "ARRÊTER CAMÉRA",
-                qr_download_all: "TÉLÉCHARGER DONNÉES GÉNÉRALES",
-                qr_direct_reader: "Lecteur Direct de Code-Barres et QR",
-                qr_read_btn: "LIRE CODE",
-                btn_zero_all: "TOUT REMETTRE À ZÉRO",
-                btn_zero_short: "À ZÉRO",
-                home_btn_new_race: "DÉMARRER NOUVELLE COURSE",
-                home_btn_sim_race: "SIMULER UNE COURSE",
-                home_btn_change_img: "CHANGER L'IMAGE CENTRALE",
-                home_img_hint: "PLACEZ VOTRE FICHIER \"fondo.jpg\" DANS LE MÊME DOSSIER OU CLIQUEZ CI-DESSOUS"
+<!-- ... existing code --> -->
             },
             it: {
+                layout_0_btn: "0. CLASSICO", layout_0_short: "CLASSICO",
                 layout_1_btn: "1. BASE", layout_2_btn: "2. MEDIO", layout_3_btn: "3. ESPERTO",
                 layout_1_short: "BASE", layout_2_short: "MEDIO", layout_3_short: "ESPERTO",
                 theme_silver: "ARGENTO MAC", heat_clock_lbl: "CRONO MANCHE",
-                sim_off: "SIMULATORE: OFF", sim_on: "SIMULATORE: ON",
-                btn_changes_yesno: "MODIFICHE MANCHE (SÌ/NO)",
-                resume_track: "RIPRENDI PISTA",
-                card_last_lap: "ULTIMO GIRO", card_last_short: "ULTIMO",
-                card_slowest: "PIÙ LENTO", card_slow_short: "LENTO",
-                card_speed: "VEL. KM/H", card_speed_full: "VELOCITÀ",
-                card_est_goal: "STIMA:", card_est_short: "STIMA",
-                card_dist: "DIST:", card_vs_mean: "VS MEDIA:",
-                card_std_dev: "DEV:", card_top_speed: "PUNTA:",
-                card_range: "RANGE:", card_consistency: "COSTANZA",
-                card_lap_history: "STORICO GIRI", card_time_list: "LISTA DEI TEMPI",
-                card_pace_chart: "GRAFICO RITMO ED EVOLUZIONE",
-                card_waiting_laps: "IN ATTESA DI GIRI PER IL GRAFICO LIVE...",
-                card_touch_to_log: "TOCCA IL RIQUADRO PER REGISTRARE I GIRI",
-                card_improve: "▼MIGLIORA", card_worse: "▲PEGGIORA",
-                card_best_tag: "MIGLIORE", card_worst_tag: "PEGGIORE",
-                card_sector: "SETTORE",
-                event_block_title: "DATI EVENTO, DATA E CATEGORIE DEL CLUB",
-                event_block_sub: "Salvato automaticamente nella memoria interna del tuo dispositivo",
-                event_name_lbl: "NOME EVENTO / CAMPIONATO:",
-                event_date_lbl: "DATA DELLA GARA:",
-                event_cats_lbl: "CATEGORIE DEL CLUB (CLICCA PER SCEGLIERE O ✕ PER ELIMINARE):",
-                btn_restore_cats: "RIPRISTINA BASE",
-                btn_add_cat: "AGGIUNGI CATEGORIA",
-                track_len_lbl: "SVILUPPO PISTA (M):",
-                meters_unit: "METRI",
-                manual_time_lbl: "MANUALE:",
-                manual_laps_lbl: "GIRI MANUALI:",
-                btn_fix: "FISSA",
-                manual_heats_lbl: "N° MANCHE MANUALE:",
-                manual_rot_lbl: "ORDINE MANUALE (ES: 1,3,4,2):",
-                btn_invert_wheel: "INVERTI RUOTA",
-                btn_apply: "APPLICA",
-                sess_practice: "PROVE LIBERE (1M)", sess_official: "GARA UFFICIALE",
-                hm_auto: "CICLO AUTO", hm_lanes: "= CORSIE", hm_6: "6 MANCHE", hm_10: "10 MANCHE",
-                by_time_inf: "⏱️ A TEMPO (∞)",
-                yes_make_changes: "SÌ (FAI MODIFICHE)", no_start_heat: "NO (INIZIA MANCHE ▶)",
-                yesno_question_1: "La gara è pronta per iniziare: vuoi apportare qualche modifica?",
-                btn_go_live_now: "VAI ALLA PISTA LIVE",
-                hw_title: "Interfaccia Sensori Ottici, DS Crono & Tasti Rapidi",
-                qr_scan_cam: "SCANSIONA CON FOTOCAMERA", qr_stop_cam: "FERMA FOTOCAMERA",
-                qr_download_all: "SCARICA DATI GENERALI",
-                qr_direct_reader: "Lettore Diretto di Codici a Barre e QR",
-                qr_read_btn: "LEGGI CODICE",
-                btn_zero_all: "AZZERA TUTTO",
-                btn_zero_short: "AZZERA",
-                home_btn_new_race: "INIZIA NUOVA GARA",
-                home_btn_sim_race: "SIMULA UNA GARA",
-                home_btn_change_img: "CAMBIA IMMAGINE CENTRALE",
-                home_img_hint: "INSERISCI IL FILE \"fondo.jpg\" NELLA STESSA CARTELLA O CLICCA SOTTO PER CARICARLO"
+<!-- ... existing code --> -->
             },
             de: {
+                layout_0_btn: "0. KLASSISCH", layout_0_short: "KLASSIK",
                 layout_1_btn: "1. BASIS", layout_2_btn: "2. MITTEL", layout_3_btn: "3. EXPERTE",
                 layout_1_short: "BASIS", layout_2_short: "MITTEL", layout_3_short: "EXPERTE",
                 theme_silver: "MAC SILBER", heat_clock_lbl: "LAUF-TIMER",
@@ -2255,8 +2067,11 @@
         let activeUtterance = null;
         let activeMobileDriverId = null;
         let mobileSpotterVoiceEnabled = true;
-        let mobileAudioUnlocked = false;
+        let mobileAudioUnlocked = true;
         let mobileKeepAliveInterval = null;
+        let mobileAutoRadarInterval = null;
+        let lastSpokenMobileStateHash = '';
+        let lastMobileSpeechTimestamp = 0;
         let mobileWakeLock = null;
         let speakDebounceTimer = null;
         let customQrBaseUrl = '';
@@ -2280,7 +2095,33 @@
                 if ('speechSynthesis' in window && window.speechSynthesis.paused) {
                     try { window.speechSynthesis.resume(); } catch (e) {}
                 }
-            }, 4000);
+            }, 2500);
+        }
+
+        function startMobileAutoRadarLoop() {
+            if (mobileAutoRadarInterval) clearInterval(mobileAutoRadarInterval);
+            // Supervisa en segundo plano cambios de vuelta, posición o rivales y los canta automáticamente sin tocar nada
+            mobileAutoRadarInterval = setInterval(() => {
+                if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
+                const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
+                if (!ctx) return;
+                const ass = ctx.assignment;
+                const currentHash = ass
+                    ? `${ctx.heatNumber}_${ass.laps}_${ass.lastLap}_${ctx.position}_${ctx.ahead ? ctx.ahead.driverId : 'none'}_${ctx.behind ? ctx.behind.driverId : 'none'}`
+                    : `MARSHAL_${ctx.heatNumber}_${ctx.totalCareerLaps}`;
+
+                const now = Date.now();
+                // Si el piloto ha completado nueva vuelta o ha cambiado el rival de delante/detrás, canta inmediatamente
+                if (currentHash !== lastSpokenMobileStateHash && ass && ass.laps > 0) {
+                    lastSpokenMobileStateHash = currentHash;
+                    lastMobileSpeechTimestamp = now;
+                    speakMobileDriverStatusNow(true);
+                } else if (state.raceStatus === 'RACING' && (now - lastMobileSpeechTimestamp > 14000)) {
+                    // Recordatorio automático periódico durante la carrera aunque no haya cambiado el hash
+                    lastMobileSpeechTimestamp = now;
+                    speakMobileDriverStatusNow(false);
+                }
+            }, 900);
         }
 
         function primeMobileSpeechEngine() {
@@ -2300,45 +2141,42 @@
             if ('speechSynthesis' in window) {
                 try {
                     loadSystemVoices();
-                    window.speechSynthesis.cancel();
                     window.speechSynthesis.resume();
-                    // Locución silenciosa de cebado obligatoria en iOS Safari dentro del evento táctil
-                    const unlockUtter = new SpeechSynthesisUtterance(' ');
-                    unlockUtter.volume = 0.01;
-                    unlockUtter.rate = 2.0;
-                    window.speechSynthesis.speak(unlockUtter);
                 } catch (e) {}
             }
         }
 
-        // Listener global para desbloquear el audio del móvil en el primer toque en cualquier parte de la pantalla
+        // Desbloquea automáticamente en cualquier interacción o al cargar el navegador móvil
         function setupGlobalMobileTouchUnlock() {
-            const onFirstTouch = () => {
-                if (!mobileAudioUnlocked) {
-                    mobileAudioUnlocked = true;
-                    primeMobileSpeechEngine();
-                    startMobileSpeechKeepAlive();
-                    requestMobileWakeLock();
-                    updateMobileUnlockBannerUI();
+            primeMobileSpeechEngine();
+            startMobileSpeechKeepAlive();
+            requestMobileWakeLock();
+
+            const unlockEvents = ['touchstart', 'touchend', 'click', 'keydown', 'pointerdown'];
+            const onAnyGesture = () => {
+                mobileAudioUnlocked = true;
+                primeMobileSpeechEngine();
+                requestMobileWakeLock();
+                updateMobileUnlockBannerUI();
+                if (activeMobileDriverId && mobileSpotterVoiceEnabled && Date.now() - lastMobileSpeechTimestamp > 2000) {
+                    speakMobileDriverStatusNow(true);
                 }
+                unlockEvents.forEach(ev => window.removeEventListener(ev, onAnyGesture));
             };
-            window.addEventListener('touchstart', onFirstTouch, { passive: true, once: true });
-            window.addEventListener('click', onFirstTouch, { passive: true, once: true });
+            unlockEvents.forEach(ev => window.addEventListener(ev, onAnyGesture, { passive: true }));
         }
 
         function updateMobileUnlockBannerUI() {
             const banner = document.getElementById('mob-audio-unlock-banner');
             if (!banner) return;
-            if (mobileAudioUnlocked) {
-                banner.className = "p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer";
-                banner.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check text-sm"></i>
-                        <span class="text-xs font-black uppercase">SPOTTER DE VOZ ACTIVO EN ESTE MÓVIL (CANTANDO CADA VUELTA)</span>
-                    </div>
-                    <span class="text-[10px] font-mono-num font-bold underline">PROBAR VOZ</span>
-                `;
-            }
+            banner.className = "p-2.5 rounded-2xl bg-[#30d158]/20 border border-[#30d158]/50 text-[#30d158] flex items-center justify-between gap-2 cursor-pointer";
+            banner.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#30d158] animate-ping shrink-0"></span>
+                    <span class="text-xs font-black uppercase">🔊 SPOTTER AUTOMÁTICO ACTIVO (CANTA CADA VUELTA Y RIVALES SOLO)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-black/50 text-[#ffd60a] text-[10px] font-mono-num font-black shrink-0">AUTO ON</span>
+            `;
         }
 
         // ==================== MOTOR P2P EN TIEMPO REAL (WEBRTC PEERJS + BROADCAST LOCAL) ENTRE PC/TABLET Y MÓVILES ====================
@@ -2415,10 +2253,17 @@
 
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                // Si el paquete corresponde a una vuelta nueva de este piloto, el móvil la canta inmediatamente sin pisarse
-                if (packet.triggerDriverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
-                    if (!('speechSynthesis' in window) || !window.speechSynthesis.speaking) {
-                        speakMobileDriverStatusNow();
+                // Canta automáticamente al instante cada vuelta del piloto o si un rival directo le adelanta / se acerca
+                if (mobileSpotterVoiceEnabled) {
+                    const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
+                    const isRelatedDriver = packet.triggerDriverId === activeMobileDriverId ||
+                        (ctx && ctx.ahead && packet.triggerDriverId === ctx.ahead.driverId) ||
+                        (ctx && ctx.behind && packet.triggerDriverId === ctx.behind.driverId);
+
+                    if (packet.triggerDriverId === activeMobileDriverId) {
+                        speakMobileDriverStatusNow(true);
+                    } else if (isRelatedDriver && (!('speechSynthesis' in window) || !window.speechSynthesis.speaking)) {
+                        speakMobileDriverStatusNow(false);
                     }
                 }
             }
@@ -2671,7 +2516,7 @@
             state.rotationMode = data.rotationMode || 'club_odd_even';
             state.customLaneSequence = Array.isArray(data.customLaneSequence) ? data.customLaneSequence : [1, 3, 4, 2];
             state.scoringMethod = data.scoringMethod || 'laps';
-            state.globalCardLayout = [1, 2, 3].includes(data.globalCardLayout) ? data.globalCardLayout : 1;
+            state.globalCardLayout = [0, 1, 2, 3].includes(data.globalCardLayout) ? data.globalCardLayout : 1;
             state.globalThemeIndex = data.globalThemeIndex || 0;
             state.laneLayoutModes = data.laneLayoutModes || {};
             state.laneThemeIndices = data.laneThemeIndices || {};
@@ -3829,22 +3674,36 @@
 
         function openMobileCompanion(driverId) {
             activeMobileDriverId = driverId;
+            mobileSpotterVoiceEnabled = true;
+            mobileAudioUnlocked = true;
+            lastSpokenMobileStateHash = '';
+
             const modal = document.getElementById('mobileDriverModal');
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
+            primeMobileSpeechEngine();
             updateMobileUnlockBannerUI();
             updateMobileCompanionModalUI();
             requestMobileWakeLock();
             startMobileSpeechKeepAlive();
-            if (mobileAudioUnlocked && mobileSpotterVoiceEnabled) {
-                speakMobileDriverStatusNow();
-            }
+            startMobileAutoRadarLoop();
+
+            // Canta automáticamente el estado inicial nada más abrirse el QR sin tocar ningún botón
+            setTimeout(() => {
+                if (activeMobileDriverId && mobileSpotterVoiceEnabled) {
+                    speakMobileDriverStatusNow(true);
+                }
+            }, 180);
         }
 
         function closeMobileCompanion() {
             activeMobileDriverId = null;
+            if (mobileAutoRadarInterval) {
+                clearInterval(mobileAutoRadarInterval);
+                mobileAutoRadarInterval = null;
+            }
             const modal = document.getElementById('mobileDriverModal');
             if (modal) {
                 modal.classList.remove('flex');
@@ -3859,10 +3718,11 @@
             if (mobileSpotterVoiceEnabled) {
                 btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-neon-green flex items-center gap-1 cursor-pointer";
                 txt.textContent = "VOZ ON";
-                speakMobileDriverStatusNow();
+                speakMobileDriverStatusNow(true);
             } else {
                 btn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-black btn-silver flex items-center gap-1 cursor-pointer";
                 txt.textContent = "VOZ OFF";
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             }
         }
 
@@ -3923,28 +3783,29 @@
             }
         }
 
-        function speakMobileDriverStatusNow() {
-            if (!activeMobileDriverId) return;
+        function speakMobileDriverStatusNow(forceInterrupt = true) {
+            if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
             const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
             if (!ctx) return;
             const ass = ctx.assignment;
 
             let msg = '';
             if (state.lang === 'ca') {
-                msg = `Pilot ${ctx.driver.name}. `;
+                msg = `${ctx.driver.name}. `;
                 if (!ass) {
                     msg += `A la màniga ${ctx.heatNumber} estàs de comissari. Portes ${ctx.totalCareerLaps} voltes acumulades.`;
                 } else {
-                    msg += `Portes ${ass.laps} voltes, posició ${ctx.position} pel carril ${ass.lane}. `;
                     if (ass.lastLap > 0) {
-                        msg += `Última volta ${fmtSec(ass.lastLap)} segons. `;
+                        msg += `Volta ${ass.laps}, temps ${fmtSec(ass.lastLap)} segons. Posició ${ctx.position} pel carril ${ass.lane}. `;
+                    } else {
+                        msg += `Preparat al carril ${ass.lane}, posició ${ctx.position}. `;
                     }
                     if (ctx.ahead) {
                         const diffLapsAhead = ctx.ahead.laps - ass.laps;
                         const gapAheadSpeak = diffLapsAhead > 0
                             ? `a ${diffLapsAhead} ${diffLapsAhead === 1 ? 'volta' : 'voltes'}`
-                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `amb un ritme de ${fmtSec(ctx.ahead.lastLap)} segons` : '');
-                        msg += `Davant teu va ${ctx.ahead.driverName} pel carril ${ctx.ahead.lane} ${gapAheadSpeak}. `;
+                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `fent ${fmtSec(ctx.ahead.lastLap)}` : '');
+                        msg += `Davant: ${ctx.ahead.driverName} pel carril ${ctx.ahead.lane} ${gapAheadSpeak}. `;
                     } else {
                         msg += `Vas primer, liderant la màniga. `;
                     }
@@ -3952,27 +3813,28 @@
                         const diffLapsBehind = ass.laps - ctx.behind.laps;
                         const gapBehindSpeak = diffLapsBehind > 0
                             ? `a ${diffLapsBehind} ${diffLapsBehind === 1 ? 'volta' : 'voltes'}`
-                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `fent ${fmtSec(ctx.behind.lastLap)} segons` : '');
-                        msg += `Darrere teu ve ${ctx.behind.driverName} pel carril ${ctx.behind.lane} ${gapBehindSpeak}.`;
+                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `fent ${fmtSec(ctx.behind.lastLap)}` : '');
+                        msg += `Darrere: ${ctx.behind.driverName} pel carril ${ctx.behind.lane} ${gapBehindSpeak}.`;
                     } else {
-                        msg += `No tens ningú darrere.`;
+                        msg += `Ningú darrere.`;
                     }
                 }
             } else {
-                msg = `Piloto ${ctx.driver.name}. `;
+                msg = `${ctx.driver.name}. `;
                 if (!ass) {
-                    msg += `En la manga ${ctx.heatNumber} estás de comisario de pista. Llevas ${ctx.totalCareerLaps} vueltas acumuladas.`;
+                    msg += `En la manga ${ctx.heatNumber} estás de comisario. Llevas ${ctx.totalCareerLaps} vueltas acumuladas.`;
                 } else {
-                    msg += `Llevas ${ass.laps} vueltas, posición ${ctx.position} por el carril ${ass.lane}. `;
                     if (ass.lastLap > 0) {
-                        msg += `Última vuelta ${fmtSec(ass.lastLap)} segundos. `;
+                        msg += `Vuelta ${ass.laps}, tiempo ${fmtSec(ass.lastLap)} segundos. Posición ${ctx.position} por el carril ${ass.lane}. `;
+                    } else {
+                        msg += `Preparado en el carril ${ass.lane}, posición ${ctx.position}. `;
                     }
                     if (ctx.ahead) {
                         const diffLapsAhead = ctx.ahead.laps - ass.laps;
                         const gapAheadSpeak = diffLapsAhead > 0
                             ? `a ${diffLapsAhead} ${diffLapsAhead === 1 ? 'vuelta' : 'vueltas'}`
-                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `marcando ${fmtSec(ctx.ahead.lastLap)} segundos` : '');
-                        msg += `Delante tuyo va ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, ${gapAheadSpeak}. `;
+                            : (ass.lastLap > 0 && ctx.ahead.lastLap > 0 ? `rodando en ${fmtSec(ctx.ahead.lastLap)}` : '');
+                        msg += `Delante: ${ctx.ahead.driverName} por el carril ${ctx.ahead.lane}, ${gapAheadSpeak}. `;
                     } else {
                         msg += `Vas primero, liderando la manga. `;
                     }
@@ -3980,14 +3842,19 @@
                         const diffLapsBehind = ass.laps - ctx.behind.laps;
                         const gapBehindSpeak = diffLapsBehind > 0
                             ? `a ${diffLapsBehind} ${diffLapsBehind === 1 ? 'vuelta' : 'vueltas'}`
-                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `rodando en ${fmtSec(ctx.behind.lastLap)} segundos` : '');
-                        msg += `Detrás tuyo viene ${ctx.behind.driverName} por el carril ${ctx.behind.lane}, ${gapBehindSpeak}.`;
+                            : (ass.lastLap > 0 && ctx.behind.lastLap > 0 ? `rodando en ${fmtSec(ctx.behind.lastLap)}` : '');
+                        msg += `Detrás: ${ctx.behind.driverName} por el carril ${ctx.behind.lane}, ${gapBehindSpeak}.`;
                     } else {
-                        msg += `No tienes a nadie detrás.`;
+                        msg += `Nadie detrás.`;
                     }
                 }
             }
-            speakText(msg, null, 'HIGH');
+
+            lastMobileSpeechTimestamp = Date.now();
+            const captionEl = document.getElementById('mob-live-speech-caption');
+            if (captionEl) captionEl.textContent = `"${msg}"`;
+
+            speakText(msg, null, forceInterrupt ? 'HIGH' : 'NORMAL');
         }
 
         function downloadDriverTelemetryHTML(optionalDriverId = null) {
@@ -5608,10 +5475,18 @@
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                if (a.driverId === activeMobileDriverId && mobileSpotterVoiceEnabled) {
-                    // En modo demo dejamos terminar la locución en curso para que el móvil no se corte a mitad de frase
-                    if (!isSimulated || !('speechSynthesis' in window) || !window.speechSynthesis.speaking) {
-                        speakMobileDriverStatusNow();
+                if (mobileSpotterVoiceEnabled) {
+                    if (a.driverId === activeMobileDriverId) {
+                        // Siempre que el piloto del móvil cruza meta, le canta inmediatamente su tiempo y quién va delante y detrás
+                        speakMobileDriverStatusNow(true);
+                    } else {
+                        // Si cruza meta el rival justo de delante o de detrás y el spotter está libre, le actualiza las posiciones automáticamente
+                        const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
+                        const isDirectRival = (ctx && ctx.ahead && ctx.ahead.driverId === a.driverId) ||
+                                              (ctx && ctx.behind && ctx.behind.driverId === a.driverId);
+                        if (isDirectRival && (!('speechSynthesis' in window) || !window.speechSynthesis.speaking)) {
+                            speakMobileDriverStatusNow(false);
+                        }
                     }
                 }
             }
@@ -5823,7 +5698,7 @@
                 </button>`;
             }).join('');
 
-            for (let l = 1; l <= 3; l++) {
+            for (let l = 0; l <= 3; l++) {
                 const lb = document.getElementById(`global-layout-${l}`);
                 if (lb) {
                     lb.className = (state.globalCardLayout === l)
@@ -5835,7 +5710,7 @@
             renderLanesGrid();
         }
 
-        // ==================== 3 TIPOS DE CUADROS DE PILOTO (BÁSICO, MEDIO, EXPERTO) ====================
+        // ==================== 4 TIPOS DE CUADROS DE PILOTO (0: CLÁSICO TICTAC, 1: BÁSICO, 2: MEDIO, 3: EXPERTO) ====================
         function setGlobalCardLayout(layoutNum) {
             state.globalCardLayout = layoutNum;
             state.laneLayoutModes = {};
@@ -5847,6 +5722,124 @@
             state.laneLayoutModes[laneNum] = layoutNum;
             renderLanesGrid();
             saveLocalDatabase();
+        }
+
+        function buildClassicTicTacColumnHtml(a, pos, curSpeedKmh, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
+            const pal = a.laneInfo || { hex: '#ff9f0a' };
+            const isLeader = pos === 1 && a.laps > 0;
+            const meanVal = getDriverMeanLap(a);
+            const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
+            const lastStr3 = a.lastLap > 0 ? a.lastLap.toFixed(3) : '--.---';
+            const speedOrSecStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
+
+            // Lista de mejores vueltas ordenadas de más rápida a más lenta (estructura clásica TicTac con estética Apple)
+            const indexedLaps = (a.history || []).map((val, idx) => ({
+                lapNum: idx + 1,
+                time: val,
+                isLatest: idx === a.history.length - 1,
+                isRecord: a.bestLap < Infinity && Math.abs(val - a.bestLap) < 0.0005
+            }));
+
+            const sortedBest = [...indexedLaps].sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
+            let topRows = sortedBest.slice(0, 11);
+            const latestEntry = indexedLaps.length > 0 ? indexedLaps[indexedLaps.length - 1] : null;
+            if (latestEntry && !topRows.some(r => r.lapNum === latestEntry.lapNum)) {
+                if (topRows.length >= 11) topRows[topRows.length - 1] = latestEntry;
+                else topRows.push(latestEntry);
+                topRows.sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
+            }
+
+            const rowsHtml = [];
+            for (let i = 0; i < 11; i++) {
+                const item = topRows[i];
+                if (!item) {
+                    rowsHtml.push(`
+                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg text-white/15 font-mono-num select-none" style="font-size: clamp(0.9rem, min(14cqw, 4.8cqh), 2.15rem); line-height: 1.02;">
+                            <span class="text-[0.52em] font-semibold w-7 text-left">--</span>
+                            <span class="font-bold tracking-tighter flex-1 text-right">--.--</span>
+                        </div>
+                    `);
+                } else if (item.isLatest) {
+                    // Cápsula Blanca/Rosada Perlada minimalista estilo Apple iOS/macOS para la última vuelta marcada
+                    rowsHtml.push(`
+                        <div class="px-2.5 py-0.5 rounded-xl font-mono-num flex items-baseline justify-between shadow-[0_6px_20px_rgba(255,255,255,0.22)] border border-white transition-all duration-200 my-0.5" style="background: linear-gradient(180deg, #ffffff 0%, #ffe4e6 100%); font-size: clamp(1rem, min(15.5cqw, 5.3cqh), 2.35rem); line-height: 1.02;">
+                            <span class="text-[0.48em] font-black text-rose-600 w-7 text-left">V${item.lapNum}</span>
+                            <span class="font-black tracking-tighter text-slate-950 flex-1 text-right">${item.time.toFixed(2)}</span>
+                        </div>
+                    `);
+                } else {
+                    const timeColor = item.isRecord ? 'text-[#30d158]' : 'text-white/95';
+                    rowsHtml.push(`
+                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg hover:bg-white/[0.04] transition font-mono-num" style="font-size: clamp(0.95rem, min(14.5cqw, 5cqh), 2.2rem); line-height: 1.02;">
+                            <span class="text-[0.52em] font-bold text-slate-400 w-7 text-left">${item.lapNum}</span>
+                            <span class="font-extrabold tracking-tighter ${timeColor} flex-1 text-right">${item.time.toFixed(2)}</span>
+                        </div>
+                    `);
+                }
+            }
+
+            return `
+            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 flex flex-col justify-between overflow-hidden cursor-pointer select-none p-2 sm:p-2.5 relative" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
+                
+                <!-- Cabecera Superior Clásica con Diseño Minimalista Apple -->
+                <div class="flex flex-col gap-1.5 pb-1.5 border-b border-white/10 shrink-0">
+                    <div class="flex items-stretch gap-2 h-14 sm:h-16">
+                        <!-- Número de Carril en Bloque Ámbar/Color Carril Anodizado -->
+                        <div class="w-12 sm:w-14 rounded-2xl flex flex-col items-center justify-center shadow-lg border border-white/30 shrink-0" style="background: linear-gradient(160deg, ${pal.hex} 0%, #d97706 100%); color: #090b10;">
+                            <span class="text-[9px] font-black uppercase tracking-widest opacity-75 leading-none">P${pos}</span>
+                            <span class="font-mono-num font-black text-2xl sm:text-3xl leading-none tracking-tighter">${a.lane}</span>
+                        </div>
+
+                        <!-- Dos Píldoras Superiores: Verde (Vuelta Media) y Blanco/Rosa (Última Vuelta) con Números Grandes -->
+                        <div class="flex-1 flex flex-col gap-1.5 justify-between min-w-0">
+                            <!-- Vuelta Media en Verde Apple Esmeralda -->
+                            <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-[#30d158]/50 shadow-inner" style="background: linear-gradient(90deg, rgba(48, 209, 88, 0.24) 0%, rgba(48, 209, 88, 0.38) 100%);">
+                                <span class="text-[9px] font-black uppercase tracking-tight text-[#30d158] truncate">${t('mean_lap')}</span>
+                                <span class="font-mono-num font-black text-[#68f789] text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${meanStr3}</span>
+                            </div>
+                            <!-- Última Vuelta en Cristal Blanco/Rosado Suave -->
+                            <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-white/40 shadow-sm" style="background: linear-gradient(90deg, rgba(255, 241, 242, 0.92) 0%, rgba(254, 205, 211, 0.95) 100%);">
+                                <span class="text-[9px] font-black uppercase tracking-tight text-rose-950/80 truncate">${t('card_last_lap')}</span>
+                                <span class="font-mono-num font-black text-slate-950 text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${lastStr3}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nombre del Piloto + Controles Minimalistas -->
+                    <div class="flex items-center justify-between gap-1 px-0.5">
+                        <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                            ${isLeader ? `<span class="w-2 h-2 rounded-full bg-[#ffd60a] shadow-[0_0_8px_#ffd60a] shrink-0"></span>` : ''}
+                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-xs sm:text-sm uppercase tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white/40"/>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded-lg bg-white/10 hover:bg-[#30d158]/30 text-white text-[9px] font-black transition cursor-pointer">+1</button>
+                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded-lg bg-white/10 hover:bg-[#ff453a]/30 text-white text-[9px] font-black transition cursor-pointer">-1</button>
+                        </div>
+                    </div>
+
+                    <!-- Selector Segmented Estilo Apple -->
+                    <div class="flex items-center justify-center gap-0.5 bg-black/45 p-0.5 rounded-xl border border-white/10 overflow-x-auto">
+                        ${layoutBtnsHtml}
+                    </div>
+                </div>
+
+                <!-- Bloque Hero Central: Vueltas Totales Gigantes + Velocidad + Línea Luminosa Naranja Apple -->
+                <div class="mac-silver-well py-2 px-2.5 my-1 text-center shrink-0 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="font-mono-num font-black text-white leading-none tracking-tighter" style="font-size: clamp(2.35rem, min(28cqw, 11.5cqh), 4.8rem); text-shadow: 0 4px 18px rgba(0,0,0,0.6);">
+                        ${a.laps}
+                    </div>
+                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-1 tracking-tight" style="font-size: clamp(1.1rem, min(15cqw, 5.2cqh), 2.1rem);">
+                        ${speedOrSecStr}
+                    </div>
+                    <!-- Línea Naranja Minimalista Característica con Glow Suave -->
+                    <div class="w-4/5 mx-auto h-[2.5px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1.5 shadow-[0_0_12px_#ff9f0a]"></div>
+                </div>
+
+                <!-- Columna Vertical de Mejores Vueltas con Tipografía Grande y Limpia -->
+                <div class="flex-1 min-h-0 flex flex-col justify-between overflow-y-auto px-0.5 py-0.5 divide-y divide-white/[0.04]">
+                    ${rowsHtml.join('')}
+                </div>
+            </div>`;
         }
 
         function cycleGlobalCardTheme() {
@@ -5975,7 +5968,16 @@
             const scaleFactor = state.scaleFactor || 32;
 
             let cols = 1, rows = 1;
-            if (n === 1) { cols = 1; rows = 1; }
+            const allUsingClassicColumns = assignments.every(ass => {
+                const m = state.laneLayoutModes[ass.lane] !== undefined ? state.laneLayoutModes[ass.lane] : state.globalCardLayout;
+                return m === 0;
+            });
+
+            if (allUsingClassicColumns && n >= 1) {
+                // En modo 0. CLÁSICO mostramos todas las pistas en columnas verticales lado a lado como en el monitor TicTac Slot
+                cols = n;
+                rows = 1;
+            } else if (n === 1) { cols = 1; rows = 1; }
             else if (n === 2) { cols = 2; rows = 1; }
             else if (n === 3) { cols = 3; rows = 1; }
             else if (n === 4) { cols = 2; rows = 2; }
@@ -5990,8 +5992,8 @@
                 const pal = a.laneInfo;
                 const pos = standings[a.lane];
                 const isLeader = pos === 1 && a.laps > 0;
-                const rawMode = state.laneLayoutModes[a.lane] || state.globalCardLayout || 1;
-                const layoutMode = [1, 2, 3].includes(rawMode) ? rawMode : 1;
+                const rawMode = state.laneLayoutModes[a.lane] !== undefined ? state.laneLayoutModes[a.lane] : (state.globalCardLayout !== undefined ? state.globalCardLayout : 1);
+                const layoutMode = [0, 1, 2, 3].includes(rawMode) ? rawMode : 1;
                 const themeIdx = state.laneThemeIndices[a.lane] !== undefined ? state.laneThemeIndices[a.lane] : (state.globalThemeIndex || 0);
                 const themeObj = PILOT_CARD_THEMES[themeIdx] || PILOT_CARD_THEMES[0];
                 const accentHex = themeObj.hex || pal.hex;
@@ -6325,15 +6327,20 @@
                 }
 
                 const levelLabels = [
+                    { num: 0, label: t('layout_0_short') },
                     { num: 1, label: t('layout_1_short') },
                     { num: 2, label: t('layout_2_short') },
                     { num: 3, label: t('layout_3_short') }
                 ];
                 const layoutBtnsHtml = levelLabels.map(item => `
-                    <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="px-2.5 py-1 rounded-lg text-[11px] font-black transition cursor-pointer ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/10 text-slate-200 hover:text-white'}" title="${item.label}">
+                    <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="px-2 py-0.5 rounded-lg text-[10px] font-black transition cursor-pointer ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/10 text-slate-200 hover:text-white'}" title="${item.label}">
                         ${item.label}
                     </button>
                 `).join('');
+
+                if (layoutMode === 0) {
+                    return buildClassicTicTacColumnHtml(a, pos, curSpeedKmh, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
+                }
 
                 return `
                 <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq p-2.5 lg:p-3 flex flex-col justify-between h-full min-h-0 relative overflow-hidden cursor-pointer" style="background: ${themeObj.bg}; border-top: 5px solid ${pal.hex};">
