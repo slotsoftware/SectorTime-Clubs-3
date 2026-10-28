@@ -5724,15 +5724,141 @@
             saveLocalDatabase();
         }
 
-        function buildClassicTicTacColumnHtml(a, pos, curSpeedKmh, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
+        function buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
             const pal = a.laneInfo || { hex: '#ff9f0a' };
             const isLeader = pos === 1 && a.laps > 0;
-            const meanVal = getDriverMeanLap(a);
-            const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
-            const lastStr3 = a.lastLap > 0 ? a.lastLap.toFixed(3) : '--.---';
-            const speedOrSecStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
+            const trackLen = state.trackLengthMeters || 28;
+            const scaleFactor = state.scaleFactor || 32;
 
-            // Lista de mejores vueltas ordenadas de más rápida a más lenta (estructura clásica TicTac con estética Apple)
+            const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
+            const prevLapVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
+            const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
+            const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
+            const meanVal = getDriverMeanLap(a);
+
+            const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
+            const lastStr3 = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
+            const bestStr3 = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
+            const worstStr3 = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
+
+            const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
+            const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
+            const scaleSpeedKmh = curSpeedKmh * scaleFactor;
+
+            const speedStr2 = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
+            const maxSpeedStr1 = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
+            const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
+
+            const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
+            const projectedLaps = meanVal > 0
+                ? Math.round(a.laps + (state.timeRemaining / meanVal))
+                : a.laps;
+
+            let stdDev = 0;
+            if (a.history.length >= 2 && meanVal > 0) {
+                const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanVal, 2), 0) / a.history.length;
+                stdDev = Math.sqrt(variance);
+            }
+            const stdDevStr = `±${stdDev.toFixed(2)}`;
+            const consistencyPct = (bestLapVal > 0 && meanVal > 0)
+                ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
+                : 100;
+
+            const lapDiffPrev = (lastLapVal > 0 && prevLapVal > 0) ? (lastLapVal - prevLapVal) : 0;
+            const diffPrevBadge = (lastLapVal > 0 && prevLapVal > 0)
+                ? (lapDiffPrev <= 0
+                    ? `<span class="text-[#30d158] font-black">▼${lapDiffPrev.toFixed(2)}</span>`
+                    : `<span class="text-[#ff453a] font-black">▲+${lapDiffPrev.toFixed(2)}</span>`)
+                : '';
+
+            // Bloques adicionales progresivos según el modo (1: BÁSICO, 2: MEDIO, 3: EXPERTO) manteniendo el estilo Clásico Apple
+            let extraTelemetryBlocksHtml = '';
+
+            if (layoutMode >= 1) {
+                // MODO 1 (BÁSICO) y superiores: Añade Píldoras de RÉCORD y META ESTIMADA / REGULARIDAD con letra grande
+                extraTelemetryBlocksHtml += `
+                <div class="grid grid-cols-2 gap-1.5 shrink-0 my-0.5">
+                    <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#30d158]/40 bg-[#30d158]/10">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-black uppercase text-[#30d158] tracking-tight">★ ${t('record')}</span>
+                            <span class="text-[9px] font-mono-num font-bold text-[#68f789]">${maxSpeedStr1} km/h</span>
+                        </div>
+                        <div class="font-mono-num font-black text-[#30d158] text-right leading-none mt-0.5" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
+                            ${bestStr3}
+                        </div>
+                    </div>
+                    <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-white/15">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-black uppercase text-[#ffd60a] tracking-tight">${t('card_est_short')} ${t('finish_line')}</span>
+                            <span class="text-[9px] font-mono-num font-bold text-[#d982ff]">${consistencyPct}%</span>
+                        </div>
+                        <div class="font-mono-num font-black text-white text-right leading-none mt-0.5" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
+                            ${projectedLaps}<span class="text-[0.55em] text-[#ffd60a] ml-0.5">V</span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            if (layoutMode >= 2) {
+                // MODO 2 (MEDIO) y superiores: Añade VUELTA LENTA, VELOCIDAD ESCALA 1:32, DISTANCIA y SECTORES
+                let compactSecRow = '';
+                if (sCount >= 2) {
+                    const activeBox = (idx) => curSec === idx ? 'border-[#5ac8fa] bg-[#0a84ff]/20' : 'border-white/10 bg-black/40';
+                    compactSecRow = `
+                    <div class="grid grid-cols-${sCount} gap-1 pt-0.5">
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(1)}">
+                            <span class="text-[8px] font-black text-slate-300">S1</span>
+                            <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                        </div>
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(2)}">
+                            <span class="text-[8px] font-black text-slate-300">${sCount === 2 ? 'META' : 'S2'}</span>
+                            <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                        </div>
+                        ${sCount === 3 ? `
+                        <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(3)}">
+                            <span class="text-[8px] font-black text-slate-300">S3</span>
+                            <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                        </div>` : ''}
+                    </div>`;
+                }
+
+                extraTelemetryBlocksHtml += `
+                <div class="flex flex-col gap-1 shrink-0 my-0.5">
+                    <div class="grid grid-cols-3 gap-1">
+                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-[#ff453a]/35">
+                            <span class="text-[8px] font-black uppercase text-[#ff8a84]">${t('card_slow_short')}</span>
+                            <span class="font-mono-num font-black text-[#ff8a84] text-xs sm:text-sm md:text-base leading-none text-right">${worstStr3}</span>
+                        </div>
+                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15">
+                            <span class="text-[8px] font-black uppercase text-[#5ac8fa]">1:${scaleFactor} KM/H</span>
+                            <span class="font-mono-num font-black text-[#5ac8fa] text-xs sm:text-sm md:text-base leading-none text-right">${scaleSpeedStr}</span>
+                        </div>
+                        <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15">
+                            <span class="text-[8px] font-black uppercase text-slate-300">${t('card_dist')}</span>
+                            <span class="font-mono-num font-black text-white text-xs sm:text-sm md:text-base leading-none text-right">${totalDistKm}k</span>
+                        </div>
+                    </div>
+                    ${compactSecRow}
+                </div>`;
+            }
+
+            if (layoutMode === 3) {
+                // MODO 3 (EXPERTO): Añade Curva Sparkline Apple en vivo + Desviación Estándar y Próximo Carril
+                extraTelemetryBlocksHtml += `
+                <div class="mac-silver-well p-2 flex flex-col justify-between border border-white/20 shrink-0 h-20 sm:h-24 my-0.5">
+                    <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-300 pb-0.5 border-b border-white/10">
+                        <span><i class="fa-solid fa-wave-square text-[#30d158] mr-1"></i>${t('card_std_dev')} ${stdDevStr}</span>
+                        <span class="text-[#ffd60a] font-mono-num">${a.nextAction}</span>
+                    </div>
+                    <div class="flex-1 min-h-0 w-full pt-1">
+                        ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanVal, accentHex)}
+                    </div>
+                </div>`;
+            }
+
+            // Número de filas visibles en el listado vertical clásico según espacio ocupado por los módulos extra
+            const maxVisibleRows = layoutMode === 0 ? 11 : (layoutMode === 1 ? 8 : (layoutMode === 2 ? 6 : 4));
+
             const indexedLaps = (a.history || []).map((val, idx) => ({
                 lapNum: idx + 1,
                 time: val,
@@ -5741,28 +5867,27 @@
             }));
 
             const sortedBest = [...indexedLaps].sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
-            let topRows = sortedBest.slice(0, 11);
+            let topRows = sortedBest.slice(0, maxVisibleRows);
             const latestEntry = indexedLaps.length > 0 ? indexedLaps[indexedLaps.length - 1] : null;
             if (latestEntry && !topRows.some(r => r.lapNum === latestEntry.lapNum)) {
-                if (topRows.length >= 11) topRows[topRows.length - 1] = latestEntry;
+                if (topRows.length >= maxVisibleRows) topRows[topRows.length - 1] = latestEntry;
                 else topRows.push(latestEntry);
                 topRows.sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
             }
 
             const rowsHtml = [];
-            for (let i = 0; i < 11; i++) {
+            for (let i = 0; i < maxVisibleRows; i++) {
                 const item = topRows[i];
                 if (!item) {
                     rowsHtml.push(`
-                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg text-white/15 font-mono-num select-none" style="font-size: clamp(0.9rem, min(14cqw, 4.8cqh), 2.15rem); line-height: 1.02;">
+                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg text-white/15 font-mono-num select-none" style="font-size: clamp(0.9rem, min(13.5cqw, 4.6cqh), 2.05rem); line-height: 1.02;">
                             <span class="text-[0.52em] font-semibold w-7 text-left">--</span>
                             <span class="font-bold tracking-tighter flex-1 text-right">--.--</span>
                         </div>
                     `);
                 } else if (item.isLatest) {
-                    // Cápsula Blanca/Rosada Perlada minimalista estilo Apple iOS/macOS para la última vuelta marcada
                     rowsHtml.push(`
-                        <div class="px-2.5 py-0.5 rounded-xl font-mono-num flex items-baseline justify-between shadow-[0_6px_20px_rgba(255,255,255,0.22)] border border-white transition-all duration-200 my-0.5" style="background: linear-gradient(180deg, #ffffff 0%, #ffe4e6 100%); font-size: clamp(1rem, min(15.5cqw, 5.3cqh), 2.35rem); line-height: 1.02;">
+                        <div class="px-2.5 py-0.5 rounded-xl font-mono-num flex items-baseline justify-between shadow-[0_6px_20px_rgba(255,255,255,0.22)] border border-white transition-all duration-200 my-0.5" style="background: linear-gradient(180deg, #ffffff 0%, #ffe4e6 100%); font-size: clamp(0.98rem, min(15cqw, 5cqh), 2.25rem); line-height: 1.02;">
                             <span class="text-[0.48em] font-black text-rose-600 w-7 text-left">V${item.lapNum}</span>
                             <span class="font-black tracking-tighter text-slate-950 flex-1 text-right">${item.time.toFixed(2)}</span>
                         </div>
@@ -5770,7 +5895,7 @@
                 } else {
                     const timeColor = item.isRecord ? 'text-[#30d158]' : 'text-white/95';
                     rowsHtml.push(`
-                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg hover:bg-white/[0.04] transition font-mono-num" style="font-size: clamp(0.95rem, min(14.5cqw, 5cqh), 2.2rem); line-height: 1.02;">
+                        <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg hover:bg-white/[0.04] transition font-mono-num" style="font-size: clamp(0.92rem, min(14cqw, 4.8cqh), 2.1rem); line-height: 1.02;">
                             <span class="text-[0.52em] font-bold text-slate-400 w-7 text-left">${item.lapNum}</span>
                             <span class="font-extrabold tracking-tighter ${timeColor} flex-1 text-right">${item.time.toFixed(2)}</span>
                         </div>
@@ -5784,20 +5909,18 @@
                 <!-- Cabecera Superior Clásica con Diseño Minimalista Apple -->
                 <div class="flex flex-col gap-1.5 pb-1.5 border-b border-white/10 shrink-0">
                     <div class="flex items-stretch gap-2 h-14 sm:h-16">
-                        <!-- Número de Carril en Bloque Ámbar/Color Carril Anodizado -->
+                        <!-- Número de Carril en Bloque Color Carril Anodizado -->
                         <div class="w-12 sm:w-14 rounded-2xl flex flex-col items-center justify-center shadow-lg border border-white/30 shrink-0" style="background: linear-gradient(160deg, ${pal.hex} 0%, #d97706 100%); color: #090b10;">
-                            <span class="text-[9px] font-black uppercase tracking-widest opacity-75 leading-none">P${pos}</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest opacity-80 leading-none">P${pos}</span>
                             <span class="font-mono-num font-black text-2xl sm:text-3xl leading-none tracking-tighter">${a.lane}</span>
                         </div>
 
                         <!-- Dos Píldoras Superiores: Verde (Vuelta Media) y Blanco/Rosa (Última Vuelta) con Números Grandes -->
                         <div class="flex-1 flex flex-col gap-1.5 justify-between min-w-0">
-                            <!-- Vuelta Media en Verde Apple Esmeralda -->
                             <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-[#30d158]/50 shadow-inner" style="background: linear-gradient(90deg, rgba(48, 209, 88, 0.24) 0%, rgba(48, 209, 88, 0.38) 100%);">
                                 <span class="text-[9px] font-black uppercase tracking-tight text-[#30d158] truncate">${t('mean_lap')}</span>
                                 <span class="font-mono-num font-black text-[#68f789] text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${meanStr3}</span>
                             </div>
-                            <!-- Última Vuelta en Cristal Blanco/Rosado Suave -->
                             <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-white/40 shadow-sm" style="background: linear-gradient(90deg, rgba(255, 241, 242, 0.92) 0%, rgba(254, 205, 211, 0.95) 100%);">
                                 <span class="text-[9px] font-black uppercase tracking-tight text-rose-950/80 truncate">${t('card_last_lap')}</span>
                                 <span class="font-mono-num font-black text-slate-950 text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${lastStr3}</span>
@@ -5812,30 +5935,41 @@
                             <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-xs sm:text-sm uppercase tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white/40"/>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-6 h-5 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-[9px] cursor-pointer" title="Cambiar Acabado Metálico">
+                                <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
+                            </button>
                             <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-1.5 py-0.5 rounded-lg bg-white/10 hover:bg-[#30d158]/30 text-white text-[9px] font-black transition cursor-pointer">+1</button>
                             <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-1.5 py-0.5 rounded-lg bg-white/10 hover:bg-[#ff453a]/30 text-white text-[9px] font-black transition cursor-pointer">-1</button>
                         </div>
                     </div>
 
-                    <!-- Selector Segmented Estilo Apple -->
-                    <div class="flex items-center justify-center gap-0.5 bg-black/45 p-0.5 rounded-xl border border-white/10 overflow-x-auto">
+                    <!-- Selector Segmented Estilo Apple (CLÁSICO · BÁSICO · MEDIO · EXPERTO) -->
+                    <div class="grid grid-cols-4 gap-0.5 bg-black/50 p-0.5 rounded-xl border border-white/10">
                         ${layoutBtnsHtml}
                     </div>
                 </div>
 
                 <!-- Bloque Hero Central: Vueltas Totales Gigantes + Velocidad + Línea Luminosa Naranja Apple -->
-                <div class="mac-silver-well py-2 px-2.5 my-1 text-center shrink-0 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div class="font-mono-num font-black text-white leading-none tracking-tighter" style="font-size: clamp(2.35rem, min(28cqw, 11.5cqh), 4.8rem); text-shadow: 0 4px 18px rgba(0,0,0,0.6);">
+                <div class="mac-silver-well py-1.5 px-2.5 my-0.5 text-center shrink-0 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="w-full flex items-center justify-between px-1 text-[9px] font-black text-slate-400 uppercase">
+                        <span>${t('laps')}</span>
+                        <span>${diffPrevBadge}</span>
+                    </div>
+                    <div class="font-mono-num font-black text-white leading-none tracking-tighter" style="font-size: clamp(2.2rem, min(26cqw, 10.5cqh), 4.6rem); text-shadow: 0 4px 18px rgba(0,0,0,0.6);">
                         ${a.laps}
                     </div>
-                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-1 tracking-tight" style="font-size: clamp(1.1rem, min(15cqw, 5.2cqh), 2.1rem);">
-                        ${speedOrSecStr}
+                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-0.5 tracking-tight flex items-baseline justify-center gap-1" style="font-size: clamp(1.05rem, min(14cqw, 4.8cqh), 2rem);">
+                        <span>${speedStr2}</span>
+                        <span class="text-[9px] font-extrabold text-[#5ac8fa] uppercase">km/h</span>
                     </div>
                     <!-- Línea Naranja Minimalista Característica con Glow Suave -->
-                    <div class="w-4/5 mx-auto h-[2.5px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1.5 shadow-[0_0_12px_#ff9f0a]"></div>
+                    <div class="w-4/5 mx-auto h-[2.5px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1 shadow-[0_0_12px_#ff9f0a]"></div>
                 </div>
 
-                <!-- Columna Vertical de Mejores Vueltas con Tipografía Grande y Limpia -->
+                <!-- Bloques Progresivos de Telemetría (BÁSICO / MEDIO / EXPERTO) con el mismo lenguaje visual -->
+                ${extraTelemetryBlocksHtml}
+
+                <!-- Columna Vertical de Mejores Vueltas con Tipografía Grande y Cápsula Blanca/Rosada en Última Vuelta -->
                 <div class="flex-1 min-h-0 flex flex-col justify-between overflow-y-auto px-0.5 py-0.5 divide-y divide-white/[0.04]">
                     ${rowsHtml.join('')}
                 </div>
@@ -5964,26 +6098,10 @@
             const n = assignments.length;
             const sCount = state.numSectors;
             const standings = getHeatStandingsMap(heat);
-            const trackLen = state.trackLengthMeters || 28;
-            const scaleFactor = state.scaleFactor || 32;
 
-            let cols = 1, rows = 1;
-            const allUsingClassicColumns = assignments.every(ass => {
-                const m = state.laneLayoutModes[ass.lane] !== undefined ? state.laneLayoutModes[ass.lane] : state.globalCardLayout;
-                return m === 0;
-            });
-
-            if (allUsingClassicColumns && n >= 1) {
-                // En modo 0. CLÁSICO mostramos todas las pistas en columnas verticales lado a lado como en el monitor TicTac Slot
-                cols = n;
-                rows = 1;
-            } else if (n === 1) { cols = 1; rows = 1; }
-            else if (n === 2) { cols = 2; rows = 1; }
-            else if (n === 3) { cols = 3; rows = 1; }
-            else if (n === 4) { cols = 2; rows = 2; }
-            else if (n <= 6) { cols = 3; rows = 2; }
-            else if (n <= 8) { cols = 4; rows = 2; }
-            else { cols = 5; rows = 2; }
+            // Todos los modos (0. CLÁSICO, 1. BÁSICO, 2. MEDIO y 3. EXPERTO) usan columnas verticales estilo monitor TicTac Apple
+            const cols = Math.max(1, n);
+            const rows = 1;
 
             container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
             container.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
@@ -5991,340 +6109,17 @@
             container.innerHTML = assignments.map(a => {
                 const pal = a.laneInfo;
                 const pos = standings[a.lane];
-                const isLeader = pos === 1 && a.laps > 0;
                 const rawMode = state.laneLayoutModes[a.lane] !== undefined ? state.laneLayoutModes[a.lane] : (state.globalCardLayout !== undefined ? state.globalCardLayout : 1);
                 const layoutMode = [0, 1, 2, 3].includes(rawMode) ? rawMode : 1;
                 const themeIdx = state.laneThemeIndices[a.lane] !== undefined ? state.laneThemeIndices[a.lane] : (state.globalThemeIndex || 0);
                 const themeObj = PILOT_CARD_THEMES[themeIdx] || PILOT_CARD_THEMES[0];
                 const accentHex = themeObj.hex || pal.hex;
 
-                const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
-                const prevLapVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
-                const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
-                const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
-                const meanLapVal = getDriverMeanLap(a);
-
-                const lastLapStr = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
-                const bestLapStr = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
-                const worstLapStr = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
-                const meanLapStr = meanLapVal > 0 ? meanLapVal.toFixed(3) : '--.---';
-
-                const lapDiffPrev = (lastLapVal > 0 && prevLapVal > 0) ? (lastLapVal - prevLapVal) : 0;
-                const trendVsPrevArrow = (lastLapVal > 0 && prevLapVal > 0)
-                    ? (lapDiffPrev <= 0
-                        ? `<span class="text-[#30d158] font-black ml-1" title="Mejora ${lapDiffPrev.toFixed(3)} vs vuelta anterior">▼${lapDiffPrev.toFixed(3)}</span>`
-                        : `<span class="text-[#ff453a] font-black ml-1" title="Empeora +${lapDiffPrev.toFixed(3)} vs vuelta anterior">▲+${lapDiffPrev.toFixed(3)}</span>`)
-                    : `<span class="text-slate-400 font-bold ml-1">●</span>`;
-
-                const trendMainIconOnly = (lastLapVal > 0 && prevLapVal > 0)
-                    ? (lapDiffPrev <= 0
-                        ? `<span class="text-[#30d158] font-black ml-1">▼</span>`
-                        : `<span class="text-[#ff453a] font-black ml-1">▲</span>`)
-                    : '';
-
-                const paceDelta = (lastLapVal > 0 && meanLapVal > 0) ? (lastLapVal - meanLapVal) : 0;
-                const trendVsMeanHtml = (lastLapVal > 0 && meanLapVal > 0)
-                    ? (paceDelta <= 0
-                        ? `<span class="text-[#30d158] font-black">▼ ${paceDelta.toFixed(3)}</span>`
-                        : `<span class="text-[#ff453a] font-black">▲ +${paceDelta.toFixed(3)}</span>`)
-                    : `<span class="text-slate-400 font-bold">0.000</span>`;
-
-                let stdDev = 0;
-                if (a.history.length >= 2 && meanLapVal > 0) {
-                    const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanLapVal, 2), 0) / a.history.length;
-                    stdDev = Math.sqrt(variance);
-                }
-                const stdDevStr = `±${stdDev.toFixed(3)}`;
-                const consistencyPct = (bestLapVal > 0 && meanLapVal > 0)
-                    ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanLapVal)) * 100)))
-                    : 100;
-
-                const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
-                const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
-                const avgSpeedKmh = meanLapVal > 0 ? (trackLen / meanLapVal) * 3.6 : 0;
-                const scaleSpeedKmh = curSpeedKmh * scaleFactor;
-
-                const curSpeedStr = curSpeedKmh > 0 ? curSpeedKmh.toFixed(1) : '0.0';
-                const maxSpeedStr = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
-                const avgSpeedStr = avgSpeedKmh > 0 ? avgSpeedKmh.toFixed(1) : '0.0';
-                const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
-
-                const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
-                const projectedLaps = meanLapVal > 0
-                    ? Math.round(a.laps + (state.timeRemaining / meanLapVal))
-                    : a.laps;
-
                 const getSecColor = (c) => c === 'sector-purple' ? 'sector-purple' : c === 'sector-green' ? 'sector-green' : 'text-white';
-                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(3) : '--.---';
-                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(3) : '--.---';
-                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(3) : '--.---';
+                const s1Val = a.lastSectors[1] !== null ? a.lastSectors[1].toFixed(2) : '--.--';
+                const s2Val = a.lastSectors[2] !== null ? a.lastSectors[2].toFixed(2) : '--.--';
+                const s3Val = a.lastSectors[3] !== null ? a.lastSectors[3].toFixed(2) : '--.--';
                 const curSec = a.currentSector || 1;
-
-                let compactSectorsHtml = '';
-                if (sCount >= 2) {
-                    const activeBox = (idx) => curSec === idx ? 'border-2 border-white bg-white/15' : '';
-                    compactSectorsHtml = `
-                        <div class="grid grid-cols-${sCount} gap-1.5 h-[16%] min-h-[34px] max-h-[64px] pt-1.5 shrink-0">
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="mac-silver-well well-cq px-3 py-1 !flex-row items-center justify-between ${activeBox(1)}">
-                                <span class="fluid-sector-lbl font-black text-slate-200">${t('card_sector')} 1</span>
-                                <span class="fluid-sector-num font-mono-num font-black ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
-                            </div>
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="mac-silver-well well-cq px-3 py-1 !flex-row items-center justify-between ${activeBox(2)}">
-                                <span class="fluid-sector-lbl font-black text-slate-200">${sCount === 2 ? t('finish_line') : `${t('card_sector')} 2`}</span>
-                                <span class="fluid-sector-num font-mono-num font-black ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
-                            </div>
-                            ${sCount === 3 ? `
-                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="mac-silver-well well-cq px-3 py-1 !flex-row items-center justify-between ${activeBox(3)}">
-                                <span class="fluid-sector-lbl font-black text-slate-200">${t('finish_line')}</span>
-                                <span class="fluid-sector-num font-mono-num font-black ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
-                            </div>` : ''}
-                        </div>`;
-                }
-
-                let bodyLayoutHtml = '';
-
-                if (layoutMode === 1) {
-                    bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-12 gap-2 min-h-0 h-full">
-                            <div class="col-span-4 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
-                                <div class="w-full flex items-center justify-between px-1">
-                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">${t('laps')}</span>
-                                    <span class="fluid-label font-mono-num font-black text-[#d982ff]">${consistencyPct}% REG</span>
-                                </div>
-                                <div class="flex-1 flex items-center justify-center w-full min-h-0">
-                                    <span class="fluid-num-hero font-mono-num font-black text-white">${a.laps}</span>
-                                </div>
-                                <div class="w-full pt-1 border-t border-white/15 flex items-center justify-between px-1">
-                                    <span class="fluid-label font-bold text-slate-300">${t('card_est_goal')}</span>
-                                    <span class="fluid-sub font-mono-num font-black text-[#ffd60a]">${projectedLaps}V (${a.nextAction})</span>
-                                </div>
-                            </div>
-
-                            <div class="col-span-5 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
-                                <div class="w-full flex items-center justify-between px-1">
-                                    <span class="fluid-label font-black tracking-wider text-slate-200 uppercase">${t('card_last_lap')}</span>
-                                    <span class="fluid-label font-mono-num">${trendVsPrevArrow}</span>
-                                </div>
-                                <div class="flex-1 flex items-center justify-center w-full min-h-0">
-                                    <span class="fluid-num-xl font-mono-num font-black text-white">${lastLapStr}${trendMainIconOnly}</span>
-                                </div>
-                                <div class="w-full pt-1 border-t border-white/15 grid grid-cols-3 gap-1 text-center">
-                                    <div>
-                                        <div class="fluid-label font-black text-[#30d158]">${t('record')}</div>
-                                        <div class="fluid-sub font-mono-num font-black text-[#30d158]">${bestLapStr}</div>
-                                    </div>
-                                    <div class="border-x border-white/10">
-                                        <div class="fluid-label font-black text-slate-200">${t('mean_lap')}</div>
-                                        <div class="fluid-sub font-mono-num font-black text-white">${meanLapStr}</div>
-                                    </div>
-                                    <div>
-                                        <div class="fluid-label font-black text-[#ff453a]">${t('card_slow_short')}</div>
-                                        <div class="fluid-sub font-mono-num font-black text-[#ff8a84]">${worstLapStr}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-span-3 mac-silver-well well-cq p-2.5 lg:p-3 items-center text-center h-full border border-white/20">
-                                <span class="fluid-label font-black tracking-wider text-[#5ac8fa] uppercase w-full">${t('card_speed')}</span>
-                                <div class="flex-1 flex items-center justify-center w-full min-h-0">
-                                    <span class="fluid-num-xl font-mono-num font-black text-[#5ac8fa]">${curSpeedStr}</span>
-                                </div>
-                                <div class="w-full pt-1 border-t border-white/15 flex items-center justify-between px-1">
-                                    <span class="fluid-label font-bold text-slate-300">1:${scaleFactor}:</span>
-                                    <span class="fluid-sub font-mono-num font-black text-[#ffd60a]">${scaleSpeedStr} km/h</span>
-                                </div>
-                            </div>
-                        </div>
-                        ${compactSectorsHtml}
-                    `;
-                } else if (layoutMode === 2) {
-                    bodyLayoutHtml = `
-                        <div class="flex-1 grid grid-cols-12 gap-2 min-h-0 h-full">
-                            <div class="col-span-8 grid grid-cols-3 grid-rows-2 gap-1.5 lg:gap-2 min-h-0 h-full">
-                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200 uppercase">${t('laps')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-[#ffd60a]">${t('card_est_short')} ${projectedLaps}V</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-xl font-mono-num font-black text-white">${a.laps}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">${t('card_dist')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-white">${totalDistKm} km</span>
-                                    </div>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200 uppercase">${t('card_last_short')}</span>
-                                        <span class="fluid-label font-mono-num">${trendVsPrevArrow}</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-white">${lastLapStr}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">${t('card_vs_mean')}</span>
-                                        <span class="fluid-label font-mono-num">${trendVsMeanHtml}</span>
-                                    </div>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#5ac8fa] uppercase">${t('mean_lap')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">${t('card_std_dev')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-[#d982ff]">${stdDevStr}</span>
-                                    </div>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-2 h-full border border-[#30d158]/40">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#30d158] uppercase">▼ ${t('record')}</span>
-                                        <span class="fluid-label font-mono-num font-bold text-[#30d158]">${t('card_best_tag')}</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">${t('card_top_speed')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-[#30d158]">${maxSpeedStr} km/h</span>
-                                    </div>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-2 h-full border border-[#ff453a]/35">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#ff453a] uppercase">▲ ${t('card_slowest')}</span>
-                                        <span class="fluid-label font-mono-num font-bold text-[#ff8a84]">${t('card_worst_tag')}</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#ff8a84]">${worstLapStr}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">${t('card_range')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-white">${bestLapVal > 0 ? (worstLapVal - bestLapVal).toFixed(3) : '0.000'}</span>
-                                    </div>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#ffd60a] uppercase">${t('card_speed_full')}</span>
-                                        <span class="fluid-label font-mono-num font-bold text-slate-200">KM/H</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#ffd60a]">${curSpeedStr}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between border-t border-white/10 pt-0.5">
-                                        <span class="fluid-label text-slate-300">1:${scaleFactor}:</span>
-                                        <span class="fluid-label font-mono-num font-black text-white">${scaleSpeedStr} km/h</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-span-4 mac-silver-well well-cq p-2 h-full border border-white/20">
-                                <div class="flex items-center justify-between border-b border-white/15 pb-1 mb-1 shrink-0">
-                                    <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-list-ol mr-1 text-[#5ac8fa]"></i>${t('card_lap_history')}</span>
-                                    <span class="fluid-label font-mono-num font-black text-[#30d158]">${t('card_improve')} <span class="text-[#ff453a]">${t('card_worse')}</span></span>
-                                </div>
-                                <div class="flex-1 min-h-0 overflow-hidden">
-                                    ${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 6)}
-                                </div>
-                            </div>
-                        </div>
-                        ${compactSectorsHtml}
-                    `;
-                } else {
-                    bodyLayoutHtml = `
-                        <div class="flex-1 flex flex-col gap-1.5 lg:gap-2 min-h-0 h-full">
-                            <div class="h-[52%] grid grid-cols-6 gap-1.5 min-h-0">
-                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200">${t('laps')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-[#ffd60a]">→${projectedLaps}V</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-white">${a.laps}</span>
-                                    </div>
-                                    <span class="fluid-label font-mono-num font-bold text-slate-300 text-center border-t border-white/10 pt-0.5">${totalDistKm} km</span>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-slate-200">${t('card_last_short')}</span>
-                                        <span class="fluid-label font-mono-num">${trendMainIconOnly}</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-white">${lastLapStr}</span>
-                                    </div>
-                                    <span class="fluid-label font-mono-num text-center border-t border-white/10 pt-0.5">${trendVsPrevArrow}</span>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <span class="fluid-label font-black text-[#5ac8fa]">${t('mean_lap')}</span>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#5ac8fa]">${meanLapStr}</span>
-                                    </div>
-                                    <span class="fluid-label font-mono-num text-center border-t border-white/10 pt-0.5">${trendVsMeanHtml}</span>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-[#30d158]/40">
-                                    <span class="fluid-label font-black text-[#30d158]">▼${t('record')} / ▲${t('card_slow_short')}</span>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#30d158]">${bestLapStr}</span>
-                                    </div>
-                                    <span class="fluid-label font-mono-num font-black text-[#ff8a84] text-center border-t border-white/10 pt-0.5">▲ ${t('card_slow_short')}: ${worstLapStr}</span>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <span class="fluid-label font-black text-[#d982ff]">${t('card_consistency')}</span>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#d982ff]">${consistencyPct}%</span>
-                                    </div>
-                                    <span class="fluid-label font-mono-num font-bold text-slate-200 text-center border-t border-white/10 pt-0.5">${t('card_std_dev')} ${stdDevStr}</span>
-                                </div>
-
-                                <div class="mac-silver-well well-cq p-1.5 lg:p-2 h-full border border-white/15">
-                                    <div class="flex items-center justify-between">
-                                        <span class="fluid-label font-black text-[#ffd60a]">${t('card_speed')}</span>
-                                        <span class="fluid-label font-mono-num text-slate-300">M:${avgSpeedStr}</span>
-                                    </div>
-                                    <div class="flex-1 flex items-center justify-center min-h-0">
-                                        <span class="fluid-num-lg font-mono-num font-black text-[#ffd60a]">${curSpeedStr}</span>
-                                    </div>
-                                    <span class="fluid-label font-mono-num font-bold text-white text-center border-t border-white/10 pt-0.5">1:${scaleFactor}: ${scaleSpeedStr} km/h</span>
-                                </div>
-                            </div>
-
-                            <div class="h-[48%] grid grid-cols-12 gap-1.5 min-h-0">
-                                <div class="col-span-7 mac-silver-well well-cq p-2 h-full border border-white/20">
-                                    <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
-                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-chart-area mr-1 text-[#30d158]"></i>${t('card_pace_chart')}</span>
-                                        <span class="fluid-label font-mono-num font-bold text-[#ffd60a]">--- ${t('mean_lap')} ${meanLapStr}</span>
-                                    </div>
-                                    <div class="flex-1 min-h-0 w-full">
-                                        ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanLapVal, accentHex)}
-                                    </div>
-                                </div>
-
-                                <div class="col-span-5 mac-silver-well well-cq p-2 h-full border border-white/20">
-                                    <div class="flex items-center justify-between border-b border-white/10 pb-0.5 mb-1 shrink-0">
-                                        <span class="fluid-label font-black text-slate-200 uppercase"><i class="fa-solid fa-stopwatch mr-1 text-[#5ac8fa]"></i>${t('card_time_list')}</span>
-                                        <span class="fluid-label font-mono-num font-black text-[#30d158]">▼ <span class="text-[#ff453a]">▲</span></span>
-                                    </div>
-                                    <div class="flex-1 min-h-0 overflow-hidden">
-                                        ${buildLapHistoryListHtml(a.history, a.bestLap, worstLapVal, 5)}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        ${compactSectorsHtml}
-                    `;
-                }
 
                 const levelLabels = [
                     { num: 0, label: t('layout_0_short') },
@@ -6333,44 +6128,12 @@
                     { num: 3, label: t('layout_3_short') }
                 ];
                 const layoutBtnsHtml = levelLabels.map(item => `
-                    <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="px-2 py-0.5 rounded-lg text-[10px] font-black transition cursor-pointer ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/10 text-slate-200 hover:text-white'}" title="${item.label}">
+                    <button onclick="event.stopPropagation(); setLaneCardLayout(${a.lane}, ${item.num})" class="py-0.5 px-1 rounded-lg text-[9px] font-black transition cursor-pointer truncate ${layoutMode === item.num ? 'mac-silver-active' : 'bg-white/5 text-slate-300 hover:text-white'}" title="${item.label}">
                         ${item.label}
                     </button>
                 `).join('');
 
-                if (layoutMode === 0) {
-                    return buildClassicTicTacColumnHtml(a, pos, curSpeedKmh, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
-                }
-
-                return `
-                <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq p-2.5 lg:p-3 flex flex-col justify-between h-full min-h-0 relative overflow-hidden cursor-pointer" style="background: ${themeObj.bg}; border-top: 5px solid ${pal.hex};">
-                    <div class="flex justify-between items-center gap-2 pb-1.5 shrink-0 z-10 border-b border-white/15">
-                        <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <span class="px-2.5 py-1 rounded-xl fluid-header-badge font-black uppercase shrink-0 shadow" style="background:${pal.hex}; color:#090b10;">
-                                C${a.lane}
-                            </span>
-                            <span class="px-2.5 py-1 rounded-xl fluid-header-badge font-black shrink-0 ${isLeader ? 'mac-silver-active' : 'bg-white/15 text-white border border-white/20'}">
-                                P${pos}
-                            </span>
-                            <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black fluid-header-name tracking-tight truncate w-full focus:outline-none border-b border-transparent focus:border-white"/>
-                        </div>
-
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <div class="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-white/15">
-                                ${layoutBtnsHtml}
-                            </div>
-                            <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-8 h-8 rounded-xl mac-silver-btn flex items-center justify-center text-xs cursor-pointer" title="Cambiar Acabado Metálico (${themeObj.name})">
-                                <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-1 rounded-xl bg-[#30d158]/25 hover:bg-[#30d158]/45 border border-[#30d158]/50 text-[#30d158] text-xs font-black cursor-pointer">+1</button>
-                            <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-1 rounded-xl bg-[#ff453a]/25 hover:bg-[#ff453a]/45 border border-[#ff453a]/50 text-[#ff453a] text-xs font-black cursor-pointer">-1</button>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 flex flex-col justify-between min-h-0 pt-1.5 z-10">
-                        ${bodyLayoutHtml}
-                    </div>
-                </div>`;
+                return buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
             }).join('');
         }
 
