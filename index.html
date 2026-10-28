@@ -1568,29 +1568,25 @@
                 layout_0_btn: "0. KLASIKOA", layout_0_short: "KLASIK.",
                 layout_1_btn: "1. OINARRIZKOA", layout_2_btn: "2. ERTAINA", layout_3_btn: "3. ADITUA",
                 layout_1_short: "OINARR.", layout_2_short: "ERTAINA", layout_3_short: "ADITUA",
-                theme_silver: "ZILARRA MAC", heat_clock_lbl: "TXANDA KRONOA",
-<!-- ... existing code --> -->
+                theme_silver: "ZILARRA MAC", heat_clock_lbl: "TXANDA KRONOA"
             },
             en: {
                 layout_0_btn: "0. CLASSIC", layout_0_short: "CLASSIC",
                 layout_1_btn: "1. BASIC", layout_2_btn: "2. MEDIUM", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIC", layout_2_short: "MEDIUM", layout_3_short: "EXPERT",
-                theme_silver: "MAC SILVER", heat_clock_lbl: "HEAT TIMER",
-<!-- ... existing code --> -->
+                theme_silver: "MAC SILVER", heat_clock_lbl: "HEAT TIMER"
             },
             fr: {
                 layout_0_btn: "0. CLASSIQUE", layout_0_short: "CLASSIQ.",
                 layout_1_btn: "1. BASIQUE", layout_2_btn: "2. MOYEN", layout_3_btn: "3. EXPERT",
                 layout_1_short: "BASIQUE", layout_2_short: "MOYEN", layout_3_short: "EXPERT",
-                theme_silver: "ARGENT MAC", heat_clock_lbl: "CHRONO MANCHE",
-<!-- ... existing code --> -->
+                theme_silver: "ARGENT MAC", heat_clock_lbl: "CHRONO MANCHE"
             },
             it: {
                 layout_0_btn: "0. CLASSICO", layout_0_short: "CLASSICO",
                 layout_1_btn: "1. BASE", layout_2_btn: "2. MEDIO", layout_3_btn: "3. ESPERTO",
                 layout_1_short: "BASE", layout_2_short: "MEDIO", layout_3_short: "ESPERTO",
-                theme_silver: "ARGENTO MAC", heat_clock_lbl: "CRONO MANCHE",
-<!-- ... existing code --> -->
+                theme_silver: "ARGENTO MAC", heat_clock_lbl: "CRONO MANCHE"
             },
             de: {
                 layout_0_btn: "0. KLASSISCH", layout_0_short: "KLASSIK",
@@ -2100,26 +2096,25 @@
 
         function startMobileAutoRadarLoop() {
             if (mobileAutoRadarInterval) clearInterval(mobileAutoRadarInterval);
-            // Supervisa en segundo plano cambios de vuelta, posición o rivales y los canta automáticamente sin tocar nada
+            // Supervisa en segundo plano EXCLUSIVAMENTE cuando el propio piloto completa una nueva vuelta en su carril
             mobileAutoRadarInterval = setInterval(() => {
                 if (!activeMobileDriverId || !mobileSpotterVoiceEnabled) return;
                 const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
                 if (!ctx) return;
                 const ass = ctx.assignment;
+                // El hash solo depende de la manga y del número de vueltas del propio piloto (ignora cambios de otros carriles)
                 const currentHash = ass
-                    ? `${ctx.heatNumber}_${ass.laps}_${ass.lastLap}_${ctx.position}_${ctx.ahead ? ctx.ahead.driverId : 'none'}_${ctx.behind ? ctx.behind.driverId : 'none'}`
-                    : `MARSHAL_${ctx.heatNumber}_${ctx.totalCareerLaps}`;
+                    ? `${ctx.heatNumber}_${ass.laps}`
+                    : `MARSHAL_${ctx.heatNumber}`;
 
                 const now = Date.now();
-                // Si el piloto ha completado nueva vuelta o ha cambiado el rival de delante/detrás, canta inmediatamente
+                // Solo canta si el propio piloto ha sumado una vuelta nueva y no se acaba de cantar hace menos de 1.5s
                 if (currentHash !== lastSpokenMobileStateHash && ass && ass.laps > 0) {
                     lastSpokenMobileStateHash = currentHash;
-                    lastMobileSpeechTimestamp = now;
-                    speakMobileDriverStatusNow(true);
-                } else if (state.raceStatus === 'RACING' && (now - lastMobileSpeechTimestamp > 14000)) {
-                    // Recordatorio automático periódico durante la carrera aunque no haya cambiado el hash
-                    lastMobileSpeechTimestamp = now;
-                    speakMobileDriverStatusNow(false);
+                    if (now - lastMobileSpeechTimestamp > 1500) {
+                        lastMobileSpeechTimestamp = now;
+                        speakMobileDriverStatusNow(true);
+                    }
                 }
             }, 900);
         }
@@ -2253,18 +2248,14 @@
 
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                // Canta automáticamente al instante cada vuelta del piloto o si un rival directo le adelanta / se acerca
-                if (mobileSpotterVoiceEnabled) {
+                // Canta EXCLUSIVAMENTE cuando el coche que ha cruzado meta es el del propio piloto de este móvil
+                if (mobileSpotterVoiceEnabled && packet.triggerDriverId === activeMobileDriverId) {
                     const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                    const isRelatedDriver = packet.triggerDriverId === activeMobileDriverId ||
-                        (ctx && ctx.ahead && packet.triggerDriverId === ctx.ahead.driverId) ||
-                        (ctx && ctx.behind && packet.triggerDriverId === ctx.behind.driverId);
-
-                    if (packet.triggerDriverId === activeMobileDriverId) {
-                        speakMobileDriverStatusNow(true);
-                    } else if (isRelatedDriver && (!('speechSynthesis' in window) || !window.speechSynthesis.speaking)) {
-                        speakMobileDriverStatusNow(false);
+                    if (ctx && ctx.assignment) {
+                        lastSpokenMobileStateHash = `${ctx.heatNumber}_${ctx.assignment.laps}`;
                     }
+                    lastMobileSpeechTimestamp = Date.now();
+                    speakMobileDriverStatusNow(true);
                 }
             }
         }
@@ -5475,20 +5466,13 @@
             if (state.mainTab === 'qr') renderDriversQRView();
             if (activeMobileDriverId) {
                 updateMobileCompanionModalUI();
-                if (mobileSpotterVoiceEnabled) {
-                    if (a.driverId === activeMobileDriverId) {
-                        // Siempre que el piloto del móvil cruza meta, le canta inmediatamente su tiempo y quién va delante y detrás
-                        speakMobileDriverStatusNow(true);
-                    } else {
-                        // Si cruza meta el rival justo de delante o de detrás y el spotter está libre, le actualiza las posiciones automáticamente
-                        const ctx = getDriverLiveTelemetryContext(activeMobileDriverId);
-                        const isDirectRival = (ctx && ctx.ahead && ctx.ahead.driverId === a.driverId) ||
-                                              (ctx && ctx.behind && ctx.behind.driverId === a.driverId);
-                        if (isDirectRival && (!('speechSynthesis' in window) || !window.speechSynthesis.speaking)) {
-                            speakMobileDriverStatusNow(false);
-                        }
-                    }
+                // Solo habla en el móvil si el carril que acaba de cruzar meta es el del piloto activo en el móvil
+                if (mobileSpotterVoiceEnabled && a.driverId === activeMobileDriverId) {
+                    lastSpokenMobileStateHash = `${heat.heatNumber}_${a.laps}`;
+                    lastMobileSpeechTimestamp = Date.now();
+                    speakMobileDriverStatusNow(true);
                 }
+                return;
             }
 
             if (state.targetLaps !== 'infinity' && a.laps >= state.targetLaps) {
@@ -5724,6 +5708,285 @@
             saveLocalDatabase();
         }
 
+        // Generador universal de flechas Verde (mejora) / Roja (empeora) para todos los datos de telemetría
+        function getTimeDeltaArrowHtml(currentTime, referenceTime, showNumbers = true) {
+            if (!currentTime || !referenceTime || currentTime <= 0 || referenceTime <= 0 || currentTime === Infinity || referenceTime === Infinity) {
+                return `<span class="text-[#30d158] font-black">▼</span><span class="text-[#ff453a] font-black">▲</span>`;
+            }
+            const diff = currentTime - referenceTime;
+            // En tiempos: bajar tiempo (diff <= 0) es MEJORA (Flecha Verde ▼), subir tiempo (diff > 0) es PEOR (Flecha Roja ▲)
+            if (diff <= 0.0005) {
+                const txt = showNumbers ? `${diff.toFixed(2)}s` : '';
+                return `<span class="text-[#30d158] font-black inline-flex items-center gap-0.5" title="Mejora tiempo">▼${txt}</span>`;
+            } else {
+                const txt = showNumbers ? `+${diff.toFixed(2)}s` : '';
+                return `<span class="text-[#ff453a] font-black inline-flex items-center gap-0.5" title="Empeora tiempo">▲${txt}</span>`;
+            }
+        }
+
+        function getSpeedDeltaArrowHtml(currentSpeed, referenceSpeed, showNumbers = true) {
+            if (!currentSpeed || !referenceSpeed || currentSpeed <= 0 || referenceSpeed <= 0) {
+                return `<span class="text-[#30d158] font-black">▲</span><span class="text-[#ff453a] font-black">▼</span>`;
+            }
+            const diff = currentSpeed - referenceSpeed;
+            // En velocidad / meta estimada: subir (diff >= 0) es MEJORA (Flecha Verde ▲), bajar es PEOR (Flecha Roja ▼)
+            if (diff >= -0.01) {
+                const txt = showNumbers ? `+${diff.toFixed(1)}` : '';
+                return `<span class="text-[#30d158] font-black inline-flex items-center gap-0.5" title="Sube velocidad">▲${txt}</span>`;
+            } else {
+                const txt = showNumbers ? `${diff.toFixed(1)}` : '';
+                return `<span class="text-[#ff453a] font-black inline-flex items-center gap-0.5" title="Baja velocidad">▼${txt}</span>`;
+            }
+        }
+
+        function getSectorDeltaArrowHtml(a, secIdx) {
+            const cur = a.lastSectors ? a.lastSectors[secIdx] : null;
+            const prev = a.prevSectors ? a.prevSectors[secIdx] : null;
+            const best = a.bestSectors ? a.bestSectors[secIdx] : Infinity;
+            if (cur === null || cur === undefined) {
+                return `<span class="text-[#30d158] opacity-60 font-black">▼</span><span class="text-[#ff453a] opacity-60 font-black">▲</span>`;
+            }
+            const ref = (prev !== null && prev !== undefined && prev > 0) ? prev : (best < Infinity ? best : null);
+            if (!ref) return `<span class="text-[#30d158] font-black">▼</span>`;
+            const diff = cur - ref;
+            if (diff <= 0.0005) {
+                return `<span class="text-[#30d158] font-black text-[10px]">▼${diff.toFixed(2)}</span>`;
+            } else {
+                return `<span class="text-[#ff453a] font-black text-[10px]">▲+${diff.toFixed(2)}</span>`;
+            }
+        }
+
+        function buildExpertHorizontalBentoCardHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
+            const pal = a.laneInfo || { hex: '#ff9f0a' };
+            const isLeader = pos === 1 && a.laps > 0;
+            const trackLen = state.trackLengthMeters || 28;
+            const scaleFactor = state.scaleFactor || 32;
+
+            const lastLapVal = a.lastLap > 0 ? a.lastLap : 0;
+            const prevLapVal = a.history.length >= 2 ? a.history[a.history.length - 2] : 0;
+            const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
+            const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
+            const meanVal = getDriverMeanLap(a);
+            const prevMeanVal = a.history.length >= 2
+                ? a.history.slice(0, -1).reduce((x, y) => x + y, 0) / (a.history.length - 1)
+                : meanVal;
+
+            const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
+            const lastStr3 = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
+            const bestStr3 = bestLapVal > 0 ? bestLapVal.toFixed(3) : '--.---';
+            const worstStr3 = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
+
+            const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
+            const prevSpeedKmh = prevLapVal > 0 ? (trackLen / prevLapVal) * 3.6 : curSpeedKmh;
+            const meanSpeedKmh = meanVal > 0 ? (trackLen / meanVal) * 3.6 : 0;
+            const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
+            const scaleSpeedKmh = curSpeedKmh * scaleFactor;
+            const prevScaleSpeedKmh = prevSpeedKmh * scaleFactor;
+
+            const speedStr2 = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
+            const maxSpeedStr1 = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
+            const scaleSpeedStr = scaleSpeedKmh > 0 ? Math.round(scaleSpeedKmh) : '0';
+
+            const totalDistKm = ((a.laps * trackLen) / 1000).toFixed(2);
+            const projectedLaps = meanVal > 0
+                ? Math.round(a.laps + (state.timeRemaining / meanVal))
+                : a.laps;
+            const prevProjectedLaps = prevMeanVal > 0
+                ? Math.round(a.laps + (state.timeRemaining / prevMeanVal))
+                : projectedLaps;
+
+            let stdDev = 0;
+            if (a.history.length >= 2 && meanVal > 0) {
+                const variance = a.history.reduce((acc, v) => acc + Math.pow(v - meanVal, 2), 0) / a.history.length;
+                stdDev = Math.sqrt(variance);
+            }
+            const stdDevStr = `±${stdDev.toFixed(3)}s`;
+            const consistencyPct = (bestLapVal > 0 && meanVal > 0)
+                ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
+                : 100;
+
+            // Flechas verdes y rojas para cada bloque de datos
+            const arrowLastVsPrev = getTimeDeltaArrowHtml(lastLapVal, prevLapVal, true);
+            const arrowLastVsBest = getTimeDeltaArrowHtml(lastLapVal, bestLapVal, true);
+            const arrowMeanTrend = getTimeDeltaArrowHtml(lastLapVal, meanVal, true);
+            const arrowWorstGap = (lastLapVal > 0 && worstLapVal > 0)
+                ? (lastLapVal < worstLapVal
+                    ? `<span class="text-[#30d158] font-black">▼-${(worstLapVal - lastLapVal).toFixed(2)}s</span>`
+                    : `<span class="text-[#ff453a] font-black">▲PEOR</span>`)
+                : `<span class="text-[#ff453a] font-black">▲</span>`;
+            const arrowSpeedReal = getSpeedDeltaArrowHtml(curSpeedKmh, meanSpeedKmh || prevSpeedKmh, true);
+            const arrowSpeedScale = getSpeedDeltaArrowHtml(scaleSpeedKmh, prevScaleSpeedKmh, false);
+            const arrowProjLaps = projectedLaps >= prevProjectedLaps
+                ? `<span class="text-[#30d158] font-black">▲</span>`
+                : `<span class="text-[#ff453a] font-black">▼</span>`;
+
+            const activeBox = (idx) => curSec === idx ? 'border-[#5ac8fa] bg-[#0a84ff]/20' : 'border-white/10 bg-black/45';
+
+            return `
+            <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 flex flex-col justify-between overflow-hidden cursor-pointer select-none p-2.5 sm:p-3 relative gap-2" style="background: ${themeObj.bg}; border-left: 6px solid ${pal.hex};">
+                
+                <!-- BARRA SUPERIOR PANORÁMICA: Carril + Posición + Piloto + Próximo Destino + Selector de Nivel + Auditoría -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-white/15 shrink-0">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="px-3 py-1 rounded-xl flex items-center gap-2 shadow border border-white/30 shrink-0" style="background: linear-gradient(135deg, ${pal.hex} 0%, #d97706 100%); color: #090b10;">
+                            <span class="font-mono-num font-black text-lg sm:text-xl leading-none">C${a.lane}</span>
+                            <span class="px-1.5 py-0.5 rounded bg-black/25 text-[10px] font-black uppercase leading-none">P${pos}</span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-1.5">
+                                ${isLeader ? `<span class="w-2.5 h-2.5 rounded-full bg-[#ffd60a] shadow-[0_0_8px_#ffd60a] shrink-0"></span>` : ''}
+                                <input type="text" value="${a.driverName}" onclick="event.stopPropagation()" onchange="updateHeatDriverName(${a.lane}, this.value)" class="bg-transparent text-white font-black text-sm sm:text-base md:text-lg uppercase tracking-tight truncate max-w-[180px] sm:max-w-[240px] focus:outline-none border-b border-transparent focus:border-white/40"/>
+                                <span class="hidden xl:inline-block px-2 py-0.5 rounded-md bg-white/10 text-[10px] font-mono-num font-bold text-[#ffd60a] shrink-0">${a.nextAction}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <div class="grid grid-cols-4 gap-0.5 bg-black/55 p-0.5 rounded-xl border border-white/10">
+                            ${layoutBtnsHtml}
+                        </div>
+                        <button onclick="event.stopPropagation(); cycleLaneCardTheme(${a.lane})" class="w-7 h-6 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-[10px] cursor-pointer" title="Cambiar Acabado Metálico">
+                            <i class="fa-solid fa-palette" style="color:${accentHex}"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, 1)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-[#30d158]/30 text-white text-[10px] font-black transition cursor-pointer">+1</button>
+                        <button onclick="event.stopPropagation(); auditLap(${a.lane}, -1)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-[#ff453a]/30 text-white text-[10px] font-black transition cursor-pointer">-1</button>
+                    </div>
+                </div>
+
+                <!-- CUERPO CENTRAL BENTO HORIZONTAL CON FLECHAS VERDES Y ROJAS EN TODOS LOS DATOS -->
+                <div class="flex-1 min-h-0 grid grid-cols-12 gap-2 overflow-hidden">
+                    
+                    <!-- ZONA IZQUIERDA (3 cols): Vueltas + Meta Estimada + Velocidad & Distancia con Flechas -->
+                    <div class="col-span-4 sm:col-span-3 mac-silver-well p-2.5 flex flex-col justify-between border border-white/15 min-h-0">
+                        <div class="flex items-center justify-between text-[9px] font-black text-slate-300 uppercase">
+                            <span>${t('laps')} <span class="text-[#30d158]">▲</span></span>
+                            <span class="text-[#ffd60a]">${t('card_est_short')}: ${projectedLaps}V ${arrowProjLaps}</span>
+                        </div>
+                        <div class="font-mono-num font-black text-white text-center leading-none tracking-tighter my-auto flex items-center justify-center gap-1.5" style="font-size: clamp(2rem, min(11cqw, 26cqh), 4.2rem);">
+                            <span>${a.laps}</span>
+                            <span class="text-[0.42em] font-mono-num">${arrowLastVsPrev}</span>
+                        </div>
+                        <div class="pt-1.5 border-t border-white/10 flex flex-col gap-0.5 text-[10px] font-mono-num">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[#5ac8fa] font-black">${speedStr2} <small class="text-[8px]">km/h</small></span>
+                                <span>${arrowSpeedReal}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[9px]">
+                                <span class="text-slate-300 font-bold">1:${scaleFactor} → ${scaleSpeedStr} km/h</span>
+                                <span>${arrowSpeedScale}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ZONA CENTRAL (5 cols): Matriz Horizontal 2x2 de Tiempos (Todos con Flechas Verdes/Rojas) -->
+                    <div class="col-span-8 sm:col-span-5 flex flex-col justify-between gap-1.5 min-h-0">
+                        <div class="flex-1 grid grid-cols-2 gap-1.5 min-h-0">
+                            <!-- Última Vuelta -->
+                            <div class="rounded-xl px-2.5 py-1.5 flex flex-col justify-between border border-white/40 shadow-sm" style="background: linear-gradient(135deg, rgba(255, 241, 242, 0.95) 0%, rgba(254, 205, 211, 0.95) 100%);">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-black uppercase text-rose-950">${t('card_last_short')}</span>
+                                    <span class="text-[10px] font-mono-num bg-slate-950/90 px-1.5 py-0.5 rounded">${arrowLastVsPrev}</span>
+                                </div>
+                                <div class="font-mono-num font-black text-slate-950 text-right leading-none" style="font-size: clamp(1.15rem, min(7cqw, 16cqh), 2.1rem);">
+                                    ${lastStr3}
+                                </div>
+                            </div>
+
+                            <!-- Récord Personal -->
+                            <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#30d158]/50 bg-[#30d158]/15">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-black uppercase text-[#30d158]">★ ${t('record')} <span class="text-[#30d158]">▼</span></span>
+                                    <span class="text-[9px] font-mono-num font-bold">${arrowLastVsBest}</span>
+                                </div>
+                                <div class="font-mono-num font-black text-[#30d158] text-right leading-none flex items-baseline justify-end gap-1" style="font-size: clamp(1.15rem, min(7cqw, 16cqh), 2.1rem);">
+                                    <span class="text-[10px] text-[#68f789] font-bold">▲${maxSpeedStr1}k/h</span>
+                                    <span>${bestStr3}</span>
+                                </div>
+                            </div>
+
+                            <!-- Vuelta Media -->
+                            <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#5ac8fa]/35">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-black uppercase text-[#5ac8fa]">${t('mean_lap')}</span>
+                                    <span class="text-[9px] font-mono-num font-bold">${arrowMeanTrend}</span>
+                                </div>
+                                <div class="font-mono-num font-black text-white text-right leading-none flex items-baseline justify-end gap-1.5" style="font-size: clamp(1.05rem, min(6.5cqw, 14cqh), 1.85rem);">
+                                    <span class="text-[9px] font-bold ${consistencyPct >= 92 ? 'text-[#30d158]' : 'text-[#ff453a]'}">${consistencyPct >= 92 ? '▲' : '▼'}${consistencyPct}%</span>
+                                    <span>${meanStr3}</span>
+                                </div>
+                            </div>
+
+                            <!-- Más Lenta & Distancia -->
+                            <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#ff453a]/35">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-black uppercase text-[#ff8a84]">${t('card_slow_short')} <span class="text-[#ff453a]">▲</span></span>
+                                    <span class="text-[9px] font-mono-num font-bold">${arrowWorstGap}</span>
+                                </div>
+                                <div class="font-mono-num font-black text-[#ff8a84] text-right leading-none flex items-baseline justify-end gap-1.5" style="font-size: clamp(1.05rem, min(6.5cqw, 14cqh), 1.85rem);">
+                                    <span class="text-[9px] font-bold text-[#30d158]">▲${totalDistKm}km</span>
+                                    <span>${worstStr3}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Barra Horizontal de Sectores (S1 · S2 · S3) con Flechas Verdes/Rojas en cada Sector -->
+                        ${sCount >= 2 ? `
+                        <div class="grid grid-cols-${sCount} gap-1.5 shrink-0">
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(1)}">
+                                <span class="text-[9px] font-black text-slate-300">S1</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                                    ${getSectorDeltaArrowHtml(a, 1)}
+                                </div>
+                            </div>
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(2)}">
+                                <span class="text-[9px] font-black text-slate-300">${sCount === 2 ? 'META' : 'S2'}</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                                    ${getSectorDeltaArrowHtml(a, 2)}
+                                </div>
+                            </div>
+                            ${sCount === 3 ? `
+                            <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(3)}">
+                                <span class="text-[9px] font-black text-slate-300">S3</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                                    ${getSectorDeltaArrowHtml(a, 3)}
+                                </div>
+                            </div>` : ''}
+                        </div>` : ''}
+                    </div>
+
+                    <!-- ZONA DERECHA (4 cols): Gráfica de Ritmo Panorámica + Tira Horizontal de Vueltas con Flecha Verde/Roja en cada vuelta -->
+                    <div class="col-span-12 sm:col-span-4 mac-silver-well p-2 flex flex-col justify-between border border-white/15 min-h-0">
+                        <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-300 pb-1 border-b border-white/10 shrink-0">
+                            <span><i class="fa-solid fa-wave-square text-[#30d158] mr-1"></i>${t('card_pace_chart')}</span>
+                            <span class="font-mono-num text-[#ffd60a]">${t('card_std_dev')} ${stdDevStr} ${stdDev <= 0.15 ? '<span class="text-[#30d158]">▼</span>' : '<span class="text-[#ff453a]">▲</span>'}</span>
+                        </div>
+                        <div class="flex-1 min-h-0 w-full py-1">
+                            ${buildLapSparklineSVG(a.history, a.bestLap, worstLapVal, meanVal, accentHex)}
+                        </div>
+                        <div class="pt-1 border-t border-white/10 flex items-center gap-1 overflow-x-auto shrink-0">
+                            ${(a.history.length > 0 ? a.history.slice(-5).reverse().map((lapT, idx) => {
+                                const realIdx = a.history.length - 1 - idx;
+                                const realLapNum = realIdx + 1;
+                                const prevT = realIdx > 0 ? a.history[realIdx - 1] : meanVal;
+                                const improved = prevT > 0 ? lapT <= prevT : true;
+                                const arrowIcon = improved
+                                    ? `<span class="text-[#30d158] font-black">▼</span>`
+                                    : `<span class="text-[#ff453a] font-black">▲</span>`;
+                                const isBest = a.bestLap < Infinity && Math.abs(lapT - a.bestLap) < 0.0005;
+                                return `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono-num font-black shrink-0 inline-flex items-center gap-0.5 ${idx === 0 ? 'bg-slate-950 text-white border border-white/40' : (isBest ? 'bg-[#30d158]/25 text-[#30d158] border border-[#30d158]/40' : 'bg-white/5 text-slate-200')}">
+                                    V${realLapNum}:${lapT.toFixed(2)}${arrowIcon}
+                                </span>`;
+                            }).join('') : `<span class="text-[10px] text-slate-500 font-bold uppercase">${t('card_touch_to_log')}</span>`)}
+                        </div>
+                    </div>
+
+                </div>
+            </div>`;
+        }
+
         function buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor) {
             const pal = a.laneInfo || { hex: '#ff9f0a' };
             const isLeader = pos === 1 && a.laps > 0;
@@ -5735,6 +5998,9 @@
             const bestLapVal = a.bestLap < Infinity ? a.bestLap : 0;
             const worstLapVal = a.history.length > 0 ? Math.max(...a.history) : 0;
             const meanVal = getDriverMeanLap(a);
+            const prevMeanVal = a.history.length >= 2
+                ? a.history.slice(0, -1).reduce((x, y) => x + y, 0) / (a.history.length - 1)
+                : meanVal;
 
             const meanStr3 = meanVal > 0 ? meanVal.toFixed(3) : '--.---';
             const lastStr3 = lastLapVal > 0 ? lastLapVal.toFixed(3) : '--.---';
@@ -5742,8 +6008,11 @@
             const worstStr3 = worstLapVal > 0 ? worstLapVal.toFixed(3) : '--.---';
 
             const curSpeedKmh = lastLapVal > 0 ? (trackLen / lastLapVal) * 3.6 : 0;
+            const prevSpeedKmh = prevLapVal > 0 ? (trackLen / prevLapVal) * 3.6 : curSpeedKmh;
+            const meanSpeedKmh = meanVal > 0 ? (trackLen / meanVal) * 3.6 : 0;
             const maxSpeedKmh = bestLapVal > 0 ? (trackLen / bestLapVal) * 3.6 : 0;
             const scaleSpeedKmh = curSpeedKmh * scaleFactor;
+            const prevScaleSpeedKmh = prevSpeedKmh * scaleFactor;
 
             const speedStr2 = curSpeedKmh > 0 ? curSpeedKmh.toFixed(2) : '0.00';
             const maxSpeedStr1 = maxSpeedKmh > 0 ? maxSpeedKmh.toFixed(1) : '0.0';
@@ -5753,6 +6022,9 @@
             const projectedLaps = meanVal > 0
                 ? Math.round(a.laps + (state.timeRemaining / meanVal))
                 : a.laps;
+            const prevProjectedLaps = prevMeanVal > 0
+                ? Math.round(a.laps + (state.timeRemaining / prevMeanVal))
+                : projectedLaps;
 
             let stdDev = 0;
             if (a.history.length >= 2 && meanVal > 0) {
@@ -5764,43 +6036,48 @@
                 ? Math.min(100, Math.max(50, Math.round((1 - (stdDev / meanVal)) * 100)))
                 : 100;
 
-            const lapDiffPrev = (lastLapVal > 0 && prevLapVal > 0) ? (lastLapVal - prevLapVal) : 0;
-            const diffPrevBadge = (lastLapVal > 0 && prevLapVal > 0)
-                ? (lapDiffPrev <= 0
-                    ? `<span class="text-[#30d158] font-black">▼${lapDiffPrev.toFixed(2)}</span>`
-                    : `<span class="text-[#ff453a] font-black">▲+${lapDiffPrev.toFixed(2)}</span>`)
-                : '';
+            // Flechas verdes/rojas para todos los indicadores en modos Clásico, Básico y Medio
+            const diffPrevBadge = getTimeDeltaArrowHtml(lastLapVal, prevLapVal, true);
+            const arrowMeanBadge = getTimeDeltaArrowHtml(lastLapVal, meanVal, false);
+            const arrowBestBadge = getTimeDeltaArrowHtml(lastLapVal, bestLapVal, true);
+            const arrowSpeedBadge = getSpeedDeltaArrowHtml(curSpeedKmh, meanSpeedKmh || prevSpeedKmh, true);
+            const arrowScaleSpeedBadge = getSpeedDeltaArrowHtml(scaleSpeedKmh, prevScaleSpeedKmh, false);
+            const arrowProjBadge = projectedLaps >= prevProjectedLaps
+                ? `<span class="text-[#30d158] font-black">▲</span>`
+                : `<span class="text-[#ff453a] font-black">▼</span>`;
 
             // Bloques adicionales progresivos según el modo (1: BÁSICO, 2: MEDIO, 3: EXPERTO) manteniendo el estilo Clásico Apple
             let extraTelemetryBlocksHtml = '';
 
             if (layoutMode >= 1) {
-                // MODO 1 (BÁSICO) y superiores: Añade Píldoras de RÉCORD y META ESTIMADA / REGULARIDAD con letra grande
+                // MODO 1 (BÁSICO) y superiores: Añade Píldoras de RÉCORD y META ESTIMADA / REGULARIDAD con flechas verdes y rojas
                 extraTelemetryBlocksHtml += `
                 <div class="grid grid-cols-2 gap-1.5 shrink-0 my-0.5">
                     <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-[#30d158]/40 bg-[#30d158]/10">
                         <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-black uppercase text-[#30d158] tracking-tight">★ ${t('record')}</span>
-                            <span class="text-[9px] font-mono-num font-bold text-[#68f789]">${maxSpeedStr1} km/h</span>
+                            <span class="text-[9px] font-black uppercase text-[#30d158] tracking-tight">★ ${t('record')} <span class="text-[#30d158]">▼</span></span>
+                            <span class="text-[9px] font-mono-num font-bold">${arrowBestBadge}</span>
                         </div>
-                        <div class="font-mono-num font-black text-[#30d158] text-right leading-none mt-0.5" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
-                            ${bestStr3}
+                        <div class="font-mono-num font-black text-[#30d158] text-right leading-none mt-0.5 flex items-baseline justify-end gap-1" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
+                            <span class="text-[9px] font-bold text-[#68f789]">▲${maxSpeedStr1}k/h</span>
+                            <span>${bestStr3}</span>
                         </div>
                     </div>
                     <div class="mac-silver-well px-2.5 py-1.5 flex flex-col justify-between border border-white/15">
                         <div class="flex items-center justify-between">
                             <span class="text-[9px] font-black uppercase text-[#ffd60a] tracking-tight">${t('card_est_short')} ${t('finish_line')}</span>
-                            <span class="text-[9px] font-mono-num font-bold text-[#d982ff]">${consistencyPct}%</span>
+                            <span class="text-[9px] font-mono-num font-bold ${consistencyPct >= 92 ? 'text-[#30d158]' : 'text-[#ff453a]'}">${consistencyPct >= 92 ? '▲' : '▼'}${consistencyPct}%</span>
                         </div>
-                        <div class="font-mono-num font-black text-white text-right leading-none mt-0.5" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
-                            ${projectedLaps}<span class="text-[0.55em] text-[#ffd60a] ml-0.5">V</span>
+                        <div class="font-mono-num font-black text-white text-right leading-none mt-0.5 flex items-baseline justify-end gap-1" style="font-size: clamp(1.1rem, min(14cqw, 3.8cqh), 1.95rem);">
+                            <span class="text-xs">${arrowProjBadge}</span>
+                            <span>${projectedLaps}<span class="text-[0.55em] text-[#ffd60a] ml-0.5">V</span></span>
                         </div>
                     </div>
                 </div>`;
             }
 
             if (layoutMode >= 2) {
-                // MODO 2 (MEDIO) y superiores: Añade VUELTA LENTA, VELOCIDAD ESCALA 1:32, DISTANCIA y SECTORES
+                // MODO 2 (MEDIO) y superiores: Añade VUELTA LENTA, VELOCIDAD ESCALA 1:32, DISTANCIA y SECTORES con Flechas Verdes/Rojas
                 let compactSecRow = '';
                 if (sCount >= 2) {
                     const activeBox = (idx) => curSec === idx ? 'border-[#5ac8fa] bg-[#0a84ff]/20' : 'border-white/10 bg-black/40';
@@ -5808,16 +6085,25 @@
                     <div class="grid grid-cols-${sCount} gap-1 pt-0.5">
                         <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 1)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(1)}">
                             <span class="text-[8px] font-black text-slate-300">S1</span>
-                            <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[1])}">${s1Val}</span>
+                                ${getSectorDeltaArrowHtml(a, 1)}
+                            </div>
                         </div>
                         <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 2)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(2)}">
                             <span class="text-[8px] font-black text-slate-300">${sCount === 2 ? 'META' : 'S2'}</span>
-                            <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[2])}">${s2Val}</span>
+                                ${getSectorDeltaArrowHtml(a, 2)}
+                            </div>
                         </div>
                         ${sCount === 3 ? `
                         <div onclick="event.stopPropagation(); triggerNextCheckpoint(${a.lane}, 3)" class="rounded-lg px-2 py-1 border flex items-center justify-between ${activeBox(3)}">
                             <span class="text-[8px] font-black text-slate-300">S3</span>
-                            <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-mono-num font-black text-xs sm:text-sm ${getSecColor(a.sectorColors[3])}">${s3Val}</span>
+                                ${getSectorDeltaArrowHtml(a, 3)}
+                            </div>
                         </div>` : ''}
                     </div>`;
                 }
@@ -5826,15 +6112,24 @@
                 <div class="flex flex-col gap-1 shrink-0 my-0.5">
                     <div class="grid grid-cols-3 gap-1">
                         <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-[#ff453a]/35">
-                            <span class="text-[8px] font-black uppercase text-[#ff8a84]">${t('card_slow_short')}</span>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[8px] font-black uppercase text-[#ff8a84]">${t('card_slow_short')}</span>
+                                <span class="text-[9px] text-[#ff453a] font-black">▲</span>
+                            </div>
                             <span class="font-mono-num font-black text-[#ff8a84] text-xs sm:text-sm md:text-base leading-none text-right">${worstStr3}</span>
                         </div>
                         <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15">
-                            <span class="text-[8px] font-black uppercase text-[#5ac8fa]">1:${scaleFactor} KM/H</span>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[8px] font-black uppercase text-[#5ac8fa]">1:${scaleFactor} KM/H</span>
+                                <span class="text-[9px]">${arrowScaleSpeedBadge}</span>
+                            </div>
                             <span class="font-mono-num font-black text-[#5ac8fa] text-xs sm:text-sm md:text-base leading-none text-right">${scaleSpeedStr}</span>
                         </div>
                         <div class="mac-silver-well px-2 py-1 flex flex-col justify-between border border-white/15">
-                            <span class="text-[8px] font-black uppercase text-slate-300">${t('card_dist')}</span>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[8px] font-black uppercase text-slate-300">${t('card_dist')}</span>
+                                <span class="text-[9px] text-[#30d158] font-black">▲</span>
+                            </div>
                             <span class="font-mono-num font-black text-white text-xs sm:text-sm md:text-base leading-none text-right">${totalDistKm}k</span>
                         </div>
                     </div>
@@ -5859,12 +6154,18 @@
             // Número de filas visibles en el listado vertical clásico según espacio ocupado por los módulos extra
             const maxVisibleRows = layoutMode === 0 ? 11 : (layoutMode === 1 ? 8 : (layoutMode === 2 ? 6 : 4));
 
-            const indexedLaps = (a.history || []).map((val, idx) => ({
-                lapNum: idx + 1,
-                time: val,
-                isLatest: idx === a.history.length - 1,
-                isRecord: a.bestLap < Infinity && Math.abs(val - a.bestLap) < 0.0005
-            }));
+            const indexedLaps = (a.history || []).map((val, idx) => {
+                const prevLapTime = idx > 0 ? a.history[idx - 1] : meanVal;
+                const diffFromPrev = prevLapTime > 0 ? (val - prevLapTime) : 0;
+                return {
+                    lapNum: idx + 1,
+                    time: val,
+                    diffFromPrev,
+                    improved: diffFromPrev <= 0.0005,
+                    isLatest: idx === a.history.length - 1,
+                    isRecord: a.bestLap < Infinity && Math.abs(val - a.bestLap) < 0.0005
+                };
+            });
 
             const sortedBest = [...indexedLaps].sort((x, y) => x.time - y.time || y.lapNum - x.lapNum);
             let topRows = sortedBest.slice(0, maxVisibleRows);
@@ -5886,18 +6187,24 @@
                         </div>
                     `);
                 } else if (item.isLatest) {
+                    const rowArrow = item.improved
+                        ? `<span class="text-[#16a34a] font-black text-[0.55em] ml-1">▼</span>`
+                        : `<span class="text-[#dc2626] font-black text-[0.55em] ml-1">▲</span>`;
                     rowsHtml.push(`
                         <div class="px-2.5 py-0.5 rounded-xl font-mono-num flex items-baseline justify-between shadow-[0_6px_20px_rgba(255,255,255,0.22)] border border-white transition-all duration-200 my-0.5" style="background: linear-gradient(180deg, #ffffff 0%, #ffe4e6 100%); font-size: clamp(0.98rem, min(15cqw, 5cqh), 2.25rem); line-height: 1.02;">
-                            <span class="text-[0.48em] font-black text-rose-600 w-7 text-left">V${item.lapNum}</span>
-                            <span class="font-black tracking-tighter text-slate-950 flex-1 text-right">${item.time.toFixed(2)}</span>
+                            <span class="text-[0.48em] font-black text-rose-600 w-8 text-left">V${item.lapNum}</span>
+                            <span class="font-black tracking-tighter text-slate-950 flex-1 text-right">${item.time.toFixed(2)}${rowArrow}</span>
                         </div>
                     `);
                 } else {
                     const timeColor = item.isRecord ? 'text-[#30d158]' : 'text-white/95';
+                    const rowArrow = item.improved
+                        ? `<span class="text-[#30d158] font-black text-[0.55em] ml-1">▼</span>`
+                        : `<span class="text-[#ff453a] font-black text-[0.55em] ml-1">▲</span>`;
                     rowsHtml.push(`
                         <div class="flex items-baseline justify-between px-2.5 py-0.5 rounded-lg hover:bg-white/[0.04] transition font-mono-num" style="font-size: clamp(0.92rem, min(14cqw, 4.8cqh), 2.1rem); line-height: 1.02;">
-                            <span class="text-[0.52em] font-bold text-slate-400 w-7 text-left">${item.lapNum}</span>
-                            <span class="font-extrabold tracking-tighter ${timeColor} flex-1 text-right">${item.time.toFixed(2)}</span>
+                            <span class="text-[0.52em] font-bold text-slate-400 w-8 text-left">V${item.lapNum}</span>
+                            <span class="font-extrabold tracking-tighter ${timeColor} flex-1 text-right">${item.time.toFixed(2)}${rowArrow}</span>
                         </div>
                     `);
                 }
@@ -5906,7 +6213,7 @@
             return `
             <div onclick="triggerNextCheckpoint(${a.lane})" class="mac-studio-silver pilot-card-cq h-full min-h-0 flex flex-col justify-between overflow-hidden cursor-pointer select-none p-2 sm:p-2.5 relative" style="background: ${themeObj.bg}; border-top: 4px solid ${pal.hex};">
                 
-                <!-- Cabecera Superior Clásica con Diseño Minimalista Apple -->
+                <!-- Cabecera Superior Clásica con Diseño Minimalista Apple y Flechas Verdes/Rojas -->
                 <div class="flex flex-col gap-1.5 pb-1.5 border-b border-white/10 shrink-0">
                     <div class="flex items-stretch gap-2 h-14 sm:h-16">
                         <!-- Número de Carril en Bloque Color Carril Anodizado -->
@@ -5915,14 +6222,15 @@
                             <span class="font-mono-num font-black text-2xl sm:text-3xl leading-none tracking-tighter">${a.lane}</span>
                         </div>
 
-                        <!-- Dos Píldoras Superiores: Verde (Vuelta Media) y Blanco/Rosa (Última Vuelta) con Números Grandes -->
+                        <!-- Dos Píldoras Superiores: Verde (Vuelta Media + Flecha) y Blanco/Rosa (Última Vuelta + Flecha) -->
                         <div class="flex-1 flex flex-col gap-1.5 justify-between min-w-0">
                             <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-[#30d158]/50 shadow-inner" style="background: linear-gradient(90deg, rgba(48, 209, 88, 0.24) 0%, rgba(48, 209, 88, 0.38) 100%);">
-                                <span class="text-[9px] font-black uppercase tracking-tight text-[#30d158] truncate">${t('mean_lap')}</span>
+                                <span class="text-[9px] font-black uppercase tracking-tight text-[#30d158] truncate">${t('mean_lap')} ${arrowMeanBadge}</span>
                                 <span class="font-mono-num font-black text-[#68f789] text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${meanStr3}</span>
                             </div>
                             <div class="flex-1 rounded-xl px-2.5 flex items-center justify-between gap-1.5 border border-white/40 shadow-sm" style="background: linear-gradient(90deg, rgba(255, 241, 242, 0.92) 0%, rgba(254, 205, 211, 0.95) 100%);">
                                 <span class="text-[9px] font-black uppercase tracking-tight text-rose-950/80 truncate">${t('card_last_lap')}</span>
+                                <span class="text-[10px] font-mono-num bg-slate-950/90 px-1.5 py-0.5 rounded shrink-0">${diffPrevBadge}</span>
                                 <span class="font-mono-num font-black text-slate-950 text-sm sm:text-base md:text-xl leading-none tracking-tight ml-auto shrink-0">${lastStr3}</span>
                             </div>
                         </div>
@@ -5949,18 +6257,19 @@
                     </div>
                 </div>
 
-                <!-- Bloque Hero Central: Vueltas Totales Gigantes + Velocidad + Línea Luminosa Naranja Apple -->
+                <!-- Bloque Hero Central: Vueltas Totales Gigantes + Velocidad con Flechas Verdes/Rojas + Línea Luminosa Naranja Apple -->
                 <div class="mac-silver-well py-1.5 px-2.5 my-0.5 text-center shrink-0 flex flex-col items-center justify-center relative overflow-hidden">
                     <div class="w-full flex items-center justify-between px-1 text-[9px] font-black text-slate-400 uppercase">
-                        <span>${t('laps')}</span>
+                        <span>${t('laps')} <span class="text-[#30d158]">▲</span></span>
                         <span>${diffPrevBadge}</span>
                     </div>
                     <div class="font-mono-num font-black text-white leading-none tracking-tighter" style="font-size: clamp(2.2rem, min(26cqw, 10.5cqh), 4.6rem); text-shadow: 0 4px 18px rgba(0,0,0,0.6);">
                         ${a.laps}
                     </div>
-                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-0.5 tracking-tight flex items-baseline justify-center gap-1" style="font-size: clamp(1.05rem, min(14cqw, 4.8cqh), 2rem);">
+                    <div class="font-mono-num font-bold text-slate-300 leading-none mt-0.5 tracking-tight flex items-baseline justify-center gap-1.5" style="font-size: clamp(1.05rem, min(14cqw, 4.8cqh), 2rem);">
                         <span>${speedStr2}</span>
                         <span class="text-[9px] font-extrabold text-[#5ac8fa] uppercase">km/h</span>
+                        <span class="text-xs">${arrowSpeedBadge}</span>
                     </div>
                     <!-- Línea Naranja Minimalista Característica con Glow Suave -->
                     <div class="w-4/5 mx-auto h-[2.5px] rounded-full bg-gradient-to-r from-transparent via-[#ff9f0a] to-transparent mt-1 shadow-[0_0_12px_#ff9f0a]"></div>
@@ -6099,9 +6408,26 @@
             const sCount = state.numSectors;
             const standings = getHeatStandingsMap(heat);
 
-            // Todos los modos (0. CLÁSICO, 1. BÁSICO, 2. MEDIO y 3. EXPERTO) usan columnas verticales estilo monitor TicTac Apple
-            const cols = Math.max(1, n);
-            const rows = 1;
+            // Detectar si el diseño global o mayoritario está en modo 3. EXPERTO para usar cuadrícula Bento panorámica (no columnas verticales estrechas)
+            const allInExpert = state.globalCardLayout === 3 || assignments.every(a => state.laneLayoutModes[a.lane] === 3);
+            let cols = Math.max(1, n);
+            let rows = 1;
+
+            if (allInExpert) {
+                if (n <= 2) {
+                    cols = 1;
+                    rows = Math.max(1, n);
+                } else if (n <= 4) {
+                    cols = 2;
+                    rows = Math.ceil(n / 2);
+                } else if (n <= 6) {
+                    cols = 2;
+                    rows = Math.ceil(n / 2);
+                } else {
+                    cols = 3;
+                    rows = Math.ceil(n / 3);
+                }
+            }
 
             container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
             container.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
@@ -6132,6 +6458,10 @@
                         ${item.label}
                     </button>
                 `).join('');
+
+                if (layoutMode === 3) {
+                    return buildExpertHorizontalBentoCardHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
+                }
 
                 return buildUnifiedVerticalAppleColumnHtml(a, pos, layoutMode, layoutBtnsHtml, themeObj, accentHex, sCount, curSec, s1Val, s2Val, s3Val, getSecColor);
             }).join('');
